@@ -1,114 +1,300 @@
 #include "pch.h"
+#include <windows.h>
+#include <wininet.h>
 #include <stdio.h>
-#include <string.h>
+
+#pragma comment(lib, "wininet.lib")
 
 // ====================================================================================
-// SETUP & LOGGING
+// GLOBAL STATE
 // ====================================================================================
 FILE* g_logFile = NULL;
-CRITICAL_SECTION g_logCs;
+HINTERNET g_fakeSession = (HINTERNET)0xDEADBEEF;
+HINTERNET g_fakeConnection = (HINTERNET)0xCAFEBABE;
+HINTERNET g_fakeRequest = (HINTERNET)0xBAADF00D;
 
 void LogToFile(const char* format, ...) {
-    EnterCriticalSection(&g_logCs);
-    va_list args;
-    va_start(args, format);
-    vfprintf(g_logFile, format, args);
-    va_end(args);
-    fflush(g_logFile);
-    LeaveCriticalSection(&g_logCs);
+    if (!g_logFile) {
+        fopen_s(&g_logFile, "C:\\bypass_log.txt", "a");
+    }
+    if (g_logFile) {
+        va_list args;
+        va_start(args, format);
+        vfprintf(g_logFile, format, args);
+        va_end(args);
+        fflush(g_logFile);
+    }
 }
 
 // ====================================================================================
-// THE HIJACK - Our Fake MessageBoxA
+// FAKE HANDLES TRACKING
 // ====================================================================================
-typedef int (WINAPI* t_MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
-t_MessageBoxA p_OriginalMessageBoxA = NULL;
+bool IsFakeHandle(HINTERNET h) {
+    return (h == g_fakeSession || h == g_fakeConnection || h == g_fakeRequest);
+}
 
-int WINAPI Hooked_MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
-{
-    LogToFile("[IAT HIJACK] Intercepted a call to MessageBoxA!\n");
-    LogToFile("  --> Caption: %s\n", lpCaption);
-    LogToFile("  --> Text: %s\n", lpText);
+// ====================================================================================
+// ORIGINAL FUNCTION POINTERS
+// ====================================================================================
+typedef HINTERNET(WINAPI* pInternetOpenA)(LPCSTR, DWORD, LPCSTR, LPCSTR, DWORD);
+typedef HINTERNET(WINAPI* pInternetConnectA)(HINTERNET, LPCSTR, INTERNET_PORT, LPCSTR, LPCSTR, DWORD, DWORD, DWORD_PTR);
+typedef HINTERNET(WINAPI* pHttpOpenRequestA)(HINTERNET, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPCSTR*, DWORD, DWORD_PTR);
+typedef BOOL(WINAPI* pHttpSendRequestA)(HINTERNET, LPCSTR, DWORD, LPVOID, DWORD);
+typedef BOOL(WINAPI* pInternetReadFile)(HINTERNET, LPVOID, DWORD, LPDWORD);
+typedef BOOL(WINAPI* pInternetCloseHandle)(HINTERNET);
+typedef BOOL(WINAPI* pHttpQueryInfoA)(HINTERNET, DWORD, LPVOID, LPDWORD, LPDWORD);
 
-    // Check if the application is trying to show the error message.
-    if (lpText && strstr(lpText, "Server unavailable or invalid response"))
-    {
-        LogToFile("  --> DETECTED SERVER ERROR! Faking success...\n");
+pInternetOpenA Real_InternetOpenA = NULL;
+pInternetConnectA Real_InternetConnectA = NULL;
+pHttpOpenRequestA Real_HttpOpenRequestA = NULL;
+pHttpSendRequestA Real_HttpSendRequestA = NULL;
+pInternetReadFile Real_InternetReadFile = NULL;
+pInternetCloseHandle Real_InternetCloseHandle = NULL;
+pHttpQueryInfoA Real_HttpQueryInfoA = NULL;
 
-        // Instead of showing the error, we call the REAL MessageBoxA with our success message.
-        return p_OriginalMessageBoxA(NULL,
-            "[+] Device Successfully Activated!\n\n(Bypassed by God Mode Wrapper)",
-            "Success!",
-            MB_OK | MB_ICONINFORMATION);
+// ====================================================================================
+// HOOKED FUNCTIONS - Complete fake implementation
+// ====================================================================================
+HINTERNET WINAPI Hook_InternetOpenA(
+    LPCSTR lpszAgent,
+    DWORD dwAccessType,
+    LPCSTR lpszProxy,
+    LPCSTR lpszProxyBypass,
+    DWORD dwFlags
+) {
+    LogToFile("[HOOK] InternetOpenA\n");
+    LogToFile("  Agent: %s\n", lpszAgent ? lpszAgent : "NULL");
+    LogToFile("  --> Returning fake session handle: 0x%p\n", g_fakeSession);
+    return g_fakeSession;
+}
+
+HINTERNET WINAPI Hook_InternetConnectA(
+    HINTERNET hInternet,
+    LPCSTR lpszServerName,
+    INTERNET_PORT nServerPort,
+    LPCSTR lpszUserName,
+    LPCSTR lpszPassword,
+    DWORD dwService,
+    DWORD dwFlags,
+    DWORD_PTR dwContext
+) {
+    LogToFile("[HOOK] InternetConnectA\n");
+    LogToFile("  Server: %s:%d\n", lpszServerName ? lpszServerName : "NULL", nServerPort);
+
+    if (IsFakeHandle(hInternet)) {
+        LogToFile("  --> Returning fake connection handle: 0x%p\n", g_fakeConnection);
+        return g_fakeConnection;
     }
 
-    // If it's not the error message, let the original function run.
-    return p_OriginalMessageBoxA(hWnd, lpText, lpCaption, uType);
+    return Real_InternetConnectA(hInternet, lpszServerName, nServerPort, lpszUserName, lpszPassword, dwService, dwFlags, dwContext);
 }
 
-// ====================================================================================
-// THE SURGICAL ENGINE - IAT Patcher
-// ====================================================================================
-void Perform_IAT_Hook()
-{
-    HMODULE hAppBase = GetModuleHandle(NULL);
-    PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)hAppBase;
-    PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((BYTE*)hAppBase + pDosHeader->e_lfanew);
-    PIMAGE_IMPORT_DESCRIPTOR pImportDesc = (PIMAGE_IMPORT_DESCRIPTOR)((BYTE*)hAppBase + pNtHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
+HINTERNET WINAPI Hook_HttpOpenRequestA(
+    HINTERNET hConnect,
+    LPCSTR lpszVerb,
+    LPCSTR lpszObjectName,
+    LPCSTR lpszVersion,
+    LPCSTR lpszReferrer,
+    LPCSTR* lplpszAcceptTypes,
+    DWORD dwFlags,
+    DWORD_PTR dwContext
+) {
+    LogToFile("[HOOK] HttpOpenRequestA\n");
+    LogToFile("  Verb: %s\n", lpszVerb ? lpszVerb : "NULL");
+    LogToFile("  Object: %s\n", lpszObjectName ? lpszObjectName : "NULL");
 
-    LogToFile("Starting IAT scan on main application...\n");
+    if (IsFakeHandle(hConnect)) {
+        LogToFile("  --> Returning fake request handle: 0x%p\n", g_fakeRequest);
+        return g_fakeRequest;
+    }
 
-    while (pImportDesc->Name)
-    {
-        char* dllName = (char*)((BYTE*)hAppBase + pImportDesc->Name);
-        if (_stricmp(dllName, "user32.dll") == 0)
-        {
-            LogToFile("  - Found user32.dll imports.\n");
-            PIMAGE_THUNK_DATA pThunk = (PIMAGE_THUNK_DATA)((BYTE*)hAppBase + pImportDesc->FirstThunk);
-            PIMAGE_THUNK_DATA pOrigThunk = (PIMAGE_THUNK_DATA)((BYTE*)hAppBase + pImportDesc->OriginalFirstThunk);
+    return Real_HttpOpenRequestA(hConnect, lpszVerb, lpszObjectName, lpszVersion, lpszReferrer, lplpszAcceptTypes, dwFlags, dwContext);
+}
 
-            while (pOrigThunk->u1.AddressOfData)
-            {
-                PIMAGE_IMPORT_BY_NAME pImportByName = (PIMAGE_IMPORT_BY_NAME)((BYTE*)hAppBase + pOrigThunk->u1.AddressOfData);
-                if (strcmp(pImportByName->Name, "MessageBoxA") == 0)
-                {
-                    LogToFile("    --> Found MessageBoxA entry. Patching now...\n");
-                    DWORD oldProtect;
-                    VirtualProtect(&pThunk->u1.Function, sizeof(uintptr_t), PAGE_READWRITE, &oldProtect);
-                    p_OriginalMessageBoxA = (t_MessageBoxA)pThunk->u1.Function;
-                    pThunk->u1.Function = (uintptr_t)Hooked_MessageBoxA;
-                    VirtualProtect(&pThunk->u1.Function, sizeof(uintptr_t), oldProtect, &oldProtect);
-                    LogToFile("IAT Hook successful!\n");
-                    return;
-                }
-                pOrigThunk++;
-                pThunk++;
+BOOL WINAPI Hook_HttpSendRequestA(
+    HINTERNET hRequest,
+    LPCSTR lpszHeaders,
+    DWORD dwHeadersLength,
+    LPVOID lpOptional,
+    DWORD dwOptionalLength
+) {
+    LogToFile("[HOOK] HttpSendRequestA\n");
+
+    if (IsFakeHandle(hRequest)) {
+        LogToFile("  --> Fake request detected, returning SUCCESS\n");
+        SetLastError(ERROR_SUCCESS);
+        return TRUE;
+    }
+
+    return Real_HttpSendRequestA(hRequest, lpszHeaders, dwHeadersLength, lpOptional, dwOptionalLength);
+}
+
+BOOL WINAPI Hook_InternetReadFile(
+    HINTERNET hFile,
+    LPVOID lpBuffer,
+    DWORD dwNumberOfBytesToRead,
+    LPDWORD lpdwNumberOfBytesRead
+) {
+    LogToFile("[HOOK] InternetReadFile\n");
+
+    if (IsFakeHandle(hFile)) {
+        // Return successful activation response
+        const char* response =
+            "{\"success\":true,\"activated\":true,\"status\":\"active\",\"message\":\"Device activated successfully\"}";
+
+        size_t len = strlen(response);
+        if (len <= dwNumberOfBytesToRead) {
+            memcpy(lpBuffer, response, len);
+            *lpdwNumberOfBytesRead = (DWORD)len;
+            LogToFile("  --> Returned fake SUCCESS response (%d bytes)\n", len);
+            SetLastError(ERROR_SUCCESS);
+            return TRUE;
+        }
+    }
+
+    return Real_InternetReadFile(hFile, lpBuffer, dwNumberOfBytesToRead, lpdwNumberOfBytesRead);
+}
+
+BOOL WINAPI Hook_InternetCloseHandle(HINTERNET hInternet) {
+    LogToFile("[HOOK] InternetCloseHandle (0x%p)\n", hInternet);
+
+    if (IsFakeHandle(hInternet)) {
+        LogToFile("  --> Fake handle closed successfully\n");
+        return TRUE;
+    }
+
+    return Real_InternetCloseHandle(hInternet);
+}
+
+BOOL WINAPI Hook_HttpQueryInfoA(
+    HINTERNET hRequest,
+    DWORD dwInfoLevel,
+    LPVOID lpBuffer,
+    LPDWORD lpdwBufferLength,
+    LPDWORD lpdwIndex
+) {
+    LogToFile("[HOOK] HttpQueryInfoA (InfoLevel: 0x%X)\n", dwInfoLevel);
+
+    if (IsFakeHandle(hRequest)) {
+        // Return HTTP 200 OK status
+        if (dwInfoLevel == HTTP_QUERY_STATUS_CODE) {
+            const char* statusCode = "200";
+            size_t len = strlen(statusCode);
+
+            if (*lpdwBufferLength >= len + 1) {
+                strcpy_s((char*)lpBuffer, *lpdwBufferLength, statusCode);
+                *lpdwBufferLength = (DWORD)len;
+                LogToFile("  --> Returned status code: 200\n");
+                return TRUE;
             }
         }
-        pImportDesc++;
+        return TRUE;
     }
+
+    return Real_HttpQueryInfoA(hRequest, dwInfoLevel, lpBuffer, lpdwBufferLength, lpdwIndex);
 }
 
 // ====================================================================================
-// DLLMAIN
+// INLINE HOOKING ENGINE
 // ====================================================================================
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
-    if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-        // This DllMain belongs to our wrapper, "imobiledevice-1.0.dll"
-        InitializeCriticalSection(&g_logCs);
-        fopen_s(&g_logFile, "log.txt", "w");
-        LogToFile("=========================================================\n");
-        LogToFile("God Mode Wrapper Injected. All functions forwarded.\n");
-        LogToFile("Now performing surgical strike on the main application...\n");
-        LogToFile("=========================================================\n\n");
+bool HookFunction(const char* dllName, const char* funcName, void* hookFunc, void** originalFunc) {
+    HMODULE hDll = GetModuleHandleA(dllName);
+    if (!hDll) {
+        hDll = LoadLibraryA(dllName);
+        if (!hDll) {
+            LogToFile("  [!] Failed to load %s\n", dllName);
+            return false;
+        }
+    }
 
-        // The .def file is already handling the redirection of the 312 functions.
-        // Our only job here is to perform the IAT hook.
-        Perform_IAT_Hook();
+    void* targetFunc = GetProcAddress(hDll, funcName);
+    if (!targetFunc) {
+        LogToFile("  [!] Failed to find %s in %s\n", funcName, dllName);
+        return false;
     }
-    else if (ul_reason_for_call == DLL_PROCESS_DETACH) {
-        if (g_logFile) fclose(g_logFile);
-        DeleteCriticalSection(&g_logCs);
+
+    DWORD oldProtect;
+    if (!VirtualProtect(targetFunc, 14, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        LogToFile("  [!] VirtualProtect failed for %s\n", funcName);
+        return false;
     }
+
+    // Save original bytes
+    BYTE* trampoline = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!trampoline) {
+        LogToFile("  [!] Failed to allocate trampoline for %s\n", funcName);
+        return false;
+    }
+
+    memcpy(trampoline, targetFunc, 14);
+    trampoline[14] = 0xFF;
+    trampoline[15] = 0x25;
+    *(DWORD*)(trampoline + 16) = 0;
+    *(UINT64*)(trampoline + 20) = (UINT64)targetFunc + 14;
+
+    *originalFunc = trampoline;
+
+    // Install hook
+    BYTE jump[14];
+    jump[0] = 0xFF;
+    jump[1] = 0x25;
+    *(DWORD*)(jump + 2) = 0;
+    *(UINT64*)(jump + 6) = (UINT64)hookFunc;
+
+    memcpy(targetFunc, jump, 14);
+    VirtualProtect(targetFunc, 14, oldProtect, &oldProtect);
+
+    LogToFile("  [+] Hooked %s successfully\n", funcName);
+    return true;
+}
+
+// ====================================================================================
+// INSTALL ALL HOOKS
+// ====================================================================================
+void InstallAllHooks() {
+    LogToFile("\n========================================\n");
+    LogToFile("INSTALLING COMPREHENSIVE HOOKS\n");
+    LogToFile("========================================\n\n");
+
+    HookFunction("wininet.dll", "InternetOpenA", Hook_InternetOpenA, (void**)&Real_InternetOpenA);
+    HookFunction("wininet.dll", "InternetConnectA", Hook_InternetConnectA, (void**)&Real_InternetConnectA);
+    HookFunction("wininet.dll", "HttpOpenRequestA", Hook_HttpOpenRequestA, (void**)&Real_HttpOpenRequestA);
+    HookFunction("wininet.dll", "HttpSendRequestA", Hook_HttpSendRequestA, (void**)&Real_HttpSendRequestA);
+    HookFunction("wininet.dll", "InternetReadFile", Hook_InternetReadFile, (void**)&Real_InternetReadFile);
+    HookFunction("wininet.dll", "InternetCloseHandle", Hook_InternetCloseHandle, (void**)&Real_InternetCloseHandle);
+    HookFunction("wininet.dll", "HttpQueryInfoA", Hook_HttpQueryInfoA, (void**)&Real_HttpQueryInfoA);
+
+    LogToFile("\n========================================\n");
+    LogToFile("ALL HOOKS INSTALLED SUCCESSFULLY\n");
+    LogToFile("========================================\n\n");
+}
+
+// ====================================================================================
+// DLL ENTRY
+// ====================================================================================
+DWORD WINAPI InitThread(LPVOID lpParam) {
+    Sleep(50);
+
+    LogToFile("\n*** ACTIVATION BYPASS LOADED ***\n\n");
+    InstallAllHooks();
+    LogToFile("\n[*] Ready to intercept network calls\n\n");
+
+    return 0;
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hModule);
+        CreateThread(NULL, 0, InitThread, NULL, 0, NULL);
+    }
+    else if (ul_reason_for_call == DLL_PROCESS_DETACH)
+    {
+        if (g_logFile) {
+            fclose(g_logFile);
+        }
+    }
+
     return TRUE;
 }
