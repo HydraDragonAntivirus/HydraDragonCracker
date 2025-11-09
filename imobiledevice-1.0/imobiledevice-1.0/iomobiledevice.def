@@ -317,3 +317,4 @@ EXPORTS
     webinspector_receive = orig.webinspector_receive
     webinspector_receive_with_timeout = orig.webinspector_receive_with_timeout
     webinspector_send = orig.webinspector_send
+    lockdownd_get_value = orig.lockdownd_get_value
