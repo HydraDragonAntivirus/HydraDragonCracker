@@ -11,6 +11,8 @@ EXPORTS
     idevice_free
     lockdownd_client_free
 
+    plist_free
+
     ; SECTION 2: All other 311 functions are forwarded to orig.dll.
     afc_client_free = orig.afc_client_free
     afc_client_new = orig.afc_client_new

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <stdio.h>
-#include <stdlib.h> // for malloc
-#include <string.h> // for strcpy
+#include <stdlib.h>
+#include <string.h>
 
 // ====================================================================================
 // SETUP, LOGGING, and DEFINITIONS
@@ -33,6 +33,10 @@ void LogToFile(const char* format, ...) {
     LeaveCriticalSection(&g_logCs);
 }
 
+// --- Pointers for the REAL functions we need to call ---
+typedef plist_t(*t_plist_new_string)(const char* val);
+t_plist_new_string p_plist_new_string = NULL;
+
 // ====================================================================================
 // DLLMAIN
 // ====================================================================================
@@ -42,12 +46,20 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
         InitializeCriticalSection(&g_logCs);
         fopen_s(&g_logFile, "log.txt", "w");
         LogToFile("=========================================================\n");
-        LogToFile("MASTER DECEPTION ENGINE INJECTED. Faking device list...\n");
+        LogToFile("SERVER FORGERY ENGINE INJECTED. Faking activation status...\n");
         LogToFile("=========================================================\n\n");
 
         hOriginalDll = LoadLibraryA("orig.dll");
         if (!hOriginalDll) {
             MessageBoxA(NULL, "FATAL ERROR: Could not load orig.dll!", "Wrapper Error", MB_OK);
+            return FALSE;
+        }
+
+        // We need to call a REAL function from the DLL to create our fake response.
+        // So, we must get its address.
+        p_plist_new_string = (t_plist_new_string)GetProcAddress(hOriginalDll, "plist_new_string");
+        if (!p_plist_new_string) {
+            MessageBoxA(NULL, "FATAL ERROR: Could not get address for plist_new_string!", "Wrapper Error", MB_OK);
             return FALSE;
         }
     }
@@ -60,80 +72,90 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 }
 
 // ====================================================================================
-// FAKE FUNCTIONS - This is where we lie to the application
+// FAKE FUNCTIONS
 // ====================================================================================
 
-// --- FAKE #1: The most important one! Pretend a device is connected. ---
-EXPORT_FUNC HRESULT idevice_get_device_list(char*** devices, int* count) {
-    LogToFile("[MASTER FAKE] Intercepted idevice_get_device_list(). Giving the app a FAKE device!\n");
+// --- THE FINAL FAKE: Intercept the check for "ActivationState" ---
+EXPORT_FUNC HRESULT lockdownd_get_value(lockdownd_client_t client, const char* domain, const char* key, plist_t* pvalue)
+{
+    LogToFile("[FINAL FAKE] Intercepted lockdownd_get_value(domain: %s, key: %s)\n", (domain ? domain : "NULL"), (key ? key : "NULL"));
 
-    // 1. Create a fake UDID. It must be a 40-character hex string.
-    const char* fake_udid = "f1d2d3d4d5d6d7d8d9d0d1d2d3d4d5d6d7d8d9d0";
+    // Check if the application is asking for the activation status.
+    if (key && strcmp(key, "ActivationState") == 0)
+    {
+        LogToFile("  --> App is asking for ActivationState. LYING!\n");
+        MessageBoxA(NULL, "App is asking for activation status... We're going to lie and say 'Activated'!", "Final Deception", MB_OK);
 
-    // 2. Allocate memory for the list of devices. We need space for one device + a NULL terminator.
-    char** device_list = (char**)malloc(sizeof(char*) * 2);
+        // We will create a fake response that says "Activated".
+        // To do this, we must call a REAL function from the original DLL to create a valid plist object.
+        *pvalue = p_plist_new_string("Activated");
 
-    // 3. Allocate memory for our fake UDID string and copy it.
-    device_list[0] = (char*)malloc(strlen(fake_udid) + 1);
-    strcpy_s(device_list[0], strlen(fake_udid) + 1, fake_udid);
+        LogToFile("  [FAKE-RETURN] Returning SUCCESS with a fake plist containing 'Activated'.\n");
+        return LOCKDOWN_E_SUCCESS;
+    }
 
-    // 4. The list must end with a NULL pointer.
-    device_list[1] = NULL;
-
-    // 5. Give the fake list and count back to the application.
-    *devices = device_list;
-    *count = 1;
-
-    LogToFile("  [FAKE-RETURN] Returning SUCCESS with 1 fake device (UDID: %s)\n", fake_udid);
-    return IDEVICE_E_SUCCESS; // Return 0 for success
+    // If the app asks for any other key, we can just say we didn't find it.
+    LogToFile("  --> App is asking for something else. Returning NOT_FOUND.\n");
+    *pvalue = NULL;
+    // Returning a "not found" error is safer than crashing.
+    const HRESULT LOCKDOWN_E_NO_SUCH_KEY = -4;
+    return LOCKDOWN_E_NO_SUCH_KEY;
 }
 
-// --- FAKE #2: Safely handle the cleanup of our fake device list. ---
-EXPORT_FUNC HRESULT idevice_device_list_free(char** devices) {
-    LogToFile("[FAKE] Intercepted idevice_device_list_free(). Cleaning up our fake list.\n");
 
-    // We must free the memory we allocated in our fake idevice_get_device_list.
+// --- Previous fakes are still needed to get to this stage! ---
+
+EXPORT_FUNC HRESULT idevice_get_device_list(char*** devices, int* count) {
+    LogToFile("[FAKE] Intercepted idevice_get_device_list(). Giving the app a FAKE device!\n");
+    const char* fake_udid = "f1d2d3d4d5d6d7d8d9d0d1d2d3d4d5d6d7d8d9d0";
+    char** device_list = (char**)malloc(sizeof(char*) * 2);
+    device_list[0] = (char*)malloc(strlen(fake_udid) + 1);
+    strcpy_s(device_list[0], strlen(fake_udid) + 1, fake_udid);
+    device_list[1] = NULL;
+    *devices = device_list;
+    *count = 1;
+    LogToFile("  [FAKE-RETURN] Returning SUCCESS with 1 fake device.\n");
+    return IDEVICE_E_SUCCESS;
+}
+
+EXPORT_FUNC HRESULT idevice_device_list_free(char** devices) {
+    LogToFile("[FAKE] Intercepted idevice_device_list_free(). Cleaning up fake list.\n");
     if (devices) {
-        if (devices[0]) {
-            LogToFile("  - Freeing fake UDID string.\n");
-            free(devices[0]);
-        }
-        LogToFile("  - Freeing fake device list array.\n");
+        if (devices[0]) free(devices[0]);
         free(devices);
     }
     return IDEVICE_E_SUCCESS;
 }
 
-// --- FAKE #3: Pretend we can connect to the fake device. ---
 EXPORT_FUNC HRESULT idevice_new(idevice_t* device, const char* udid) {
-    LogToFile("[FAKE] Intercepted idevice_new(). App is trying to connect to our fake device: %s\n", udid);
-    *device = (idevice_t)0xDEADBEEF; // Give it a fake handle.
-    LogToFile("  [FAKE-RETURN] Returning SUCCESS and fake device handle 0x%p\n", *device);
+    LogToFile("[FAKE] Intercepted idevice_new().\n");
+    *device = (idevice_t)0xDEADBEEF;
     return IDEVICE_E_SUCCESS;
 }
 
-// --- FAKE #4: Pretend the secure connection always works. ---
 EXPORT_FUNC HRESULT lockdownd_client_new_with_handshake(idevice_t device, lockdownd_client_t* client, const char* label) {
-    LogToFile("[FAKE] Intercepted lockdownd_client_new_with_handshake(). Faking the handshake!\n");
+    LogToFile("[FAKE] Intercepted lockdownd_client_new_with_handshake().\n");
     *client = (lockdownd_client_t)0xCAFEF00D;
-    LogToFile("  [FAKE-RETURN] Returning SUCCESS and fake client handle 0x%p\n", *client);
     return LOCKDOWN_E_SUCCESS;
 }
 
-// --- FAKE #5: Pretend the device is always paired. ---
 EXPORT_FUNC HRESULT lockdownd_pair(lockdownd_client_t client, plist_t* pair_record) {
-    LogToFile("[FAKE] Intercepted lockdownd_pair(). Saying the device is already paired!\n");
-    LogToFile("  [FAKE-RETURN] Returning SUCCESS.\n");
+    LogToFile("[FAKE] Intercepted lockdownd_pair().\n");
     return LOCKDOWN_E_SUCCESS;
 }
 
-// --- FAKE #6: Handle cleanup of our other fake handles. ---
 EXPORT_FUNC HRESULT idevice_free(idevice_t device) {
-    LogToFile("[FAKE] Intercepted idevice_free(). Cleaning up fake device handle (0x%p).\n", device);
+    LogToFile("[FAKE] Intercepted idevice_free().\n");
     return IDEVICE_E_SUCCESS;
 }
 
 EXPORT_FUNC HRESULT lockdownd_client_free(lockdownd_client_t client) {
-    LogToFile("[FAKE] Intercepted lockdownd_client_free(). Cleaning up fake client handle (0x%p).\n", client);
+    LogToFile("[FAKE] Intercepted lockdownd_client_free().\n");
     return LOCKDOWN_E_SUCCESS;
+}
+
+// We also need to fake the cleanup for the plist we created.
+EXPORT_FUNC void plist_free(plist_t plist) {
+    LogToFile("[FAKE] Intercepted plist_free() for our fake 'Activated' response. Doing nothing.\n");
+    // We don't call the real function because our handle is fake.
 }
