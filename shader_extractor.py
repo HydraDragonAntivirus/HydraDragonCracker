@@ -7,6 +7,7 @@ Extracts C++ source code, functions, classes, and symbols from compiled binaries
 Called by the C++ proxy DLL to perform deep analysis.
 
 This is the C++ equivalent of the Nuitka Python extractor.
+NOW WITH MULTI-THREADED ANALYSIS, PE RESOURCES, RTTI, AND DIRECTORY SCANNING
 """
 
 import sys
@@ -19,7 +20,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
-
+from concurrent.futures import ThreadPoolExecutor
 
 class CPPSourceExtractor:
     def __init__(self):
@@ -39,6 +40,7 @@ class CPPSourceExtractor:
         (self.output_dir / "BINARY_ANALYSIS").mkdir(exist_ok=True)
         (self.output_dir / "RECONSTRUCTED_CODE").mkdir(exist_ok=True)
         (self.output_dir / "DISASSEMBLY").mkdir(exist_ok=True)
+        (self.output_dir / "EXTRACTED_RESOURCES").mkdir(exist_ok=True)
         
     def extract_shader(self):
         """Extract shader source code from temp file"""
@@ -95,12 +97,16 @@ class CPPSourceExtractor:
         return counter
     
     def analyze_executable(self):
-        """Deep analysis of the main executable"""
+        """Deep analysis of the main executable using multi-threading"""
+        # --- FIX: Add verbose logging to debug user's issue ---
+        print(f"[CPP-EXTRACT] Searching for .exe files in: {self.exe_dir.resolve()}")
         exe_files = list(self.exe_dir.glob("*.exe"))
         
         if not exe_files:
-            print("[CPP-EXTRACT] No .exe files found in the current directory.")
+            print(f"[CPP-EXTRACT] CRITICAL: No .exe files found in the current directory ({self.exe_dir.resolve()}).")
+            print("[CPP-EXTRACT] Please run this script from the same folder as the target executable.")
             return None
+        # --- END FIX ---
         
         main_exe = exe_files[0]
         print(f"[CPP-EXTRACT] Analyzing: {main_exe.name}")
@@ -110,15 +116,70 @@ class CPPSourceExtractor:
             'file_name': main_exe.name,
             'file_size': main_exe.stat().st_size,
             'timestamp': datetime.now().isoformat(),
-            'pe_analysis': self.analyze_pe_structure(main_exe),
-            'strings': self.extract_strings(main_exe),
-            'symbols': self.extract_symbols(main_exe),
-            'functions': self.extract_functions(main_exe),
-            'classes': self.extract_classes(main_exe),
-            'imports': self.extract_imports(main_exe),
-            'exports': self.extract_exports(main_exe)
         }
         
+        # Step 1: PE Structure (must run first, as others may depend on it)
+        print("[CPP-EXTRACT] Analyzing PE structure...")
+        try:
+            analysis['pe_analysis'] = self.analyze_pe_structure(main_exe)
+            if 'error' in analysis['pe_analysis']:
+                print(f"[CPP-EXTRACT] CRITICAL: Failed to parse PE structure: {analysis['pe_analysis']['error']}")
+                return None
+        except Exception as e:
+            print(f"[CPP-EXTRACT] CRITICAL: PE analysis failed: {e}")
+            self.log_error(f"PE analysis failed: {e}")
+            return None
+            
+        print("[CPP-EXTRACT] PE structure analysis complete.")
+
+        # Step 2: Run parallel analysis tasks
+        analysis_futures = {}
+        with ThreadPoolExecutor(max_workers=8, thread_name_prefix="CPP_Analyzer") as executor:
+            print("[CPP-EXTRACT] Starting parallel analysis (strings, symbols, imports, exports, resources, RTTI, directory)...")
+            
+            future_strings = executor.submit(self.extract_strings, main_exe)
+            future_symbols = executor.submit(self.extract_symbols, main_exe)
+            future_imports = executor.submit(self.extract_imports, main_exe)
+            future_exports = executor.submit(self.extract_exports, main_exe)
+            future_resources = executor.submit(self.extract_pe_resources, main_exe, analysis['pe_analysis'])
+            future_rtti = executor.submit(self.extract_rtti_symbols, main_exe) # <-- NEW
+            future_dir = executor.submit(self.analyze_directory_artifacts, self.exe_dir) # <-- NEW
+
+            analysis_futures = {
+                'strings': future_strings,
+                'symbols': future_symbols,
+                'imports': future_imports,
+                'exports': future_exports,
+                'resources': future_resources,
+                'rtti': future_rtti, # <-- NEW
+                'directory_artifacts': future_dir, # <-- NEW
+            }
+
+            # Retrieve results as they complete
+            for key, future in analysis_futures.items():
+                try:
+                    print(f"[CPP-EXTRACT] Waiting for {key} analysis...")
+                    analysis[key] = future.result()
+                    print(f"[CPP-EXTRACT] ...{key} analysis complete.")
+                except Exception as e:
+                    print(f"[CPP-EXTRACT] ERROR: {key} analysis failed: {e}")
+                    self.log_error(f"{key} analysis failed: {e}")
+                    analysis[key] = {'error': str(e)} # Store error in analysis
+
+        print("[CPP-EXTRACT] Parallel analysis complete. Reconstructing dependencies...")
+        
+        # Step 3: Reconstruct functions and classes (which depend on symbols/strings/rtti)
+        try:
+            analysis['functions'] = self.extract_functions(analysis.get('symbols', {}), analysis.get('strings', {}))
+            # Pass RTTI data to class extractor
+            analysis['classes'] = self.extract_classes(analysis.get('symbols', {}), analysis.get('rtti', {}))
+        except Exception as e:
+            print(f"[CPP-EXTRACT] ERROR: Function/Class reconstruction failed: {e}")
+            self.log_error(f"Function/Class reconstruction failed: {e}")
+            analysis['functions'] = []
+            analysis['classes'] = {}
+
+        print("[CPP-EXTRACT] Dependency reconstruction complete.")
         return analysis
     
     def analyze_pe_structure(self, exe_path):
@@ -426,55 +487,159 @@ class CPPSourceExtractor:
         
         return mangled_name
     
-    def extract_functions(self, exe_path):
-        """Extract function information"""
+    def sanitize_cpp_identifier(self, name):
+        """Sanitizes a string to be a valid C++ identifier."""
+        if not name:
+            return "InvalidName"
+        
+        # Keep letters, numbers, and underscores. Replace everything else.
+        # We specifically DO NOT keep '::' here because we will sanitize
+        # the components *before* joining them in extract_classes.
+        sanitized = re.sub(r'[^a-zA-Z0-9_]+', '_', name)
+        
+        # Ensure it starts with a letter or underscore
+        if not re.match(r'^[a-zA-Z_]', sanitized):
+            sanitized = f"_{sanitized}"
+        
+        # If it's all underscores (or empty), return a default
+        if not sanitized.strip('_'):
+            return "SanitizedName"
+        
+        return sanitized[:100] # Limit length
+
+    def extract_rtti_symbols(self, exe_path):
+        """
+        Extract C++ RTTI (Run-Time Type Information) symbols by matching patterns
+        for vtables and type descriptors in the binary.
+        """
+        print("[CPP-EXTRACT] Scanning for C++ RTTI symbols...")
+        rtti_symbols = {
+            'class_names': []
+        }
+        
+        try:
+            with open(exe_path, 'rb') as f:
+                content = f.read()
+
+            # Regex for MSVC RTTI type descriptor names (e.g., '.?AVClassName@@')
+            # This looks for the ".?AV" prefix, followed by class name, ending with "@@"
+            # It's a common pattern in the .rdata section
+            # We look for printable characters in the class name
+            rtti_pattern = rb'\.\?AV[a-zA-Z0-9_:]+@@'
+            
+            found_classes = set()
+
+            for match in re.finditer(rtti_pattern, content):
+                try:
+                    # The matched string is like '.?AVClassName@@'
+                    # We need to extract 'ClassName'
+                    rtti_string = match.group().decode('ascii')
+                    
+                    # Demangle the RTTI name
+                    # ?.AVClassName@@ -> ClassName
+                    demangled_name = rtti_string.split('@@')[0][4:]
+                    
+                    # Simple demangling for '::' namespace
+                    demangled_name = demangled_name.replace('@', '::')
+                    
+                    if demangled_name and demangled_name not in found_classes:
+                        rtti_symbols['class_names'].append(demangled_name)
+                        found_classes.add(demangled_name)
+                        
+                except Exception:
+                    continue
+            
+            print(f"[CPP-EXTRACT] Found {len(rtti_symbols['class_names'])} class names via RTTI scanning.")
+        
+        except Exception as e:
+            print(f"[CPP-EXTRACT] RTTI scanning error: {e}")
+            self.log_error(f"RTTI scanning error: {e}")
+            rtti_symbols['error'] = str(e)
+            
+        return rtti_symbols
+
+    def extract_functions(self, symbols_data, strings_data):
+        """Extract function information from existing analysis data"""
         functions = []
         
         # Get functions from symbols
-        symbols = self.extract_symbols(exe_path)
-        
-        for func_name in symbols.get('function_symbols', []):
+        for func_name in symbols_data.get('function_symbols', []):
+            sanitized_name = self.sanitize_cpp_identifier(func_name)
             functions.append({
-                'name': func_name,
+                'name': sanitized_name,
+                'original_name': func_name,
                 'type': 'function',
                 'source': 'symbol_table'
             })
         
         # Get functions from strings patterns
-        strings = self.extract_strings(exe_path)
-        
-        for func_pattern in strings.get('function_patterns', []):
-            if func_pattern not in [f['name'] for f in functions]:
+        for func_pattern in strings_data.get('function_patterns', []):
+            sanitized_name = self.sanitize_cpp_identifier(func_pattern)
+            if sanitized_name not in [f['name'] for f in functions]:
                 functions.append({
-                    'name': func_pattern,
+                    'name': sanitized_name,
+                    'original_name': func_pattern,
                     'type': 'function',
                     'source': 'string_pattern'
                 })
         
         return functions
     
-    def extract_classes(self, exe_path):
-        """Extract class information"""
-        classes = defaultdict(lambda: {'methods': [], 'vtables': []})
+    def extract_classes(self, symbols_data, rtti_data):
+        """Extract class information from existing analysis data"""
+        classes = defaultdict(lambda: {'methods': [], 'vtables': [], 'original_name': None})
         
-        # Get classes from symbols
-        symbols = self.extract_symbols(exe_path)
-        
-        for class_symbol in symbols.get('class_symbols', []):
+        # 1. Get classes from symbols
+        for class_symbol in symbols_data.get('class_symbols', []):
             if '::' in class_symbol:
                 parts = class_symbol.split('::')
-                class_name = parts[0]
-                method_name = '::'.join(parts[1:])
+                # Sanitize the class name part
+                class_name = self.sanitize_cpp_identifier(parts[0])
+                # Sanitize the method name part
+                method_name = self.sanitize_cpp_identifier('::'.join(parts[1:]))
+
+                if not class_name or not method_name: continue # Skip if sanitization failed
+
                 classes[class_name]['methods'].append(method_name)
+                classes[class_name]['original_name'] = parts[0]
         
-        # Add vtable information
-        for vtable in symbols.get('vtable_symbols', []):
+        # 2. Add vtable information from symbols
+        for vtable in symbols_data.get('vtable_symbols', []):
             for class_name in classes:
-                if class_name in vtable:
+                # Check against the *original* name
+                original_name = classes[class_name].get('original_name', class_name)
+                if original_name in vtable:
                     classes[class_name]['vtables'].append(vtable)
 
+        # 3. Get classes from RTTI data
+        for rtti_name in rtti_data.get('class_names', []):
+            original_rtti_name = rtti_name
+            if '::' in rtti_name:
+                parts = rtti_name.split('::')
+                class_name = self.sanitize_cpp_identifier(parts[0])
+                # Sanitize all parts for the "full name"
+                full_rtti_name = '::'.join(self.sanitize_cpp_identifier(p) for p in parts if p)
+            else:
+                class_name = self.sanitize_cpp_identifier(rtti_name)
+                full_rtti_name = class_name
+            
+            if not class_name: continue
+
+            if class_name not in classes:
+                classes[class_name] # Ensure it exists
+                classes[class_name]['original_name'] = rtti_name.split('::')[0]
+            
+            # Add the RTTI name as a "method" for info, prefixed
+            if f"(RTTI) {full_rtti_name}" not in classes[class_name]['methods']:
+                 classes[class_name]['methods'].append(f"(RTTI) {full_rtti_name}")
+
         # Convert back to regular dict for JSON serialization
-        final_classes = {k: {'name': k, 'methods': sorted(list(set(v['methods']))), 'vtables': sorted(list(set(v['vtables'])))} for k, v in classes.items()}
+        final_classes = {k: {
+            'name': k, 
+            'original_name': v.get('original_name', k),
+            'methods': sorted(list(set(v['methods']))), 
+            'vtables': sorted(list(set(v['vtables'])))
+        } for k, v in classes.items()}
 
         return final_classes
     
@@ -555,6 +720,118 @@ class CPPSourceExtractor:
         
         return exports
     
+    def extract_pe_resources(self, exe_path, pe_analysis):
+        """
+        Extracts data from the .rsrc section, inspired by Nuitka RCDATA scanning.
+        """
+        print("[CPP-EXTRACT] Analyzing PE resource section (.rsrc)...")
+        resource_dir = self.output_dir / "EXTRACTED_RESOURCES"
+        
+        results = {
+            'dump_file': None,
+            'found_signatures': []
+        }
+        
+        try:
+            rsrc_section = None
+            for section in pe_analysis.get('sections', []):
+                if section['name'] == '.rsrc':
+                    rsrc_section = section
+                    break
+            
+            if not rsrc_section:
+                print("[CPP-EXTRACT] No .rsrc section found in PE analysis.")
+                return {'error': 'No .rsrc section found'}
+                
+            print(f"[CPP-EXTRACT] .rsrc section found at 0x{rsrc_section['raw_pointer']:X}, size {rsrc_section['raw_size']} bytes")
+
+            with open(exe_path, 'rb') as f:
+                f.seek(rsrc_section['raw_pointer'])
+                resource_data = f.read(rsrc_section['raw_size'])
+            
+            # Save the full resource blob
+            dump_file = resource_dir / f"{exe_path.stem}_rsrc.bin"
+            with open(dump_file, 'wb') as f:
+                f.write(resource_data)
+            results['dump_file'] = str(dump_file)
+            print(f"[CPP-EXTRACT] Full .rsrc section dumped to: {dump_file.name}")
+
+            # Scan the blob for common file signatures
+            signatures = {
+                'PNG': b'\x89PNG\r\n\x1a\n',
+                'XML': b'<?xml',
+                'HLSL_CSO': b'DXBC',
+                'HLSL_Text': b'// PSSample',
+                'Icon': b'\x00\x00\x01\x00',
+                'VersionInfo': b'VS_VERSION_INFO',
+            }
+            
+            for name, sig in signatures.items():
+                pos = resource_data.find(sig)
+                if pos != -1:
+                    print(f"[CPP-EXTRACT] Found signature for '{name}' at offset 0x{pos:X}")
+                    results['found_signatures'].append({'name': name, 'offset': pos})
+                    
+                    # Try to dump a small snippet
+                    snippet_file = resource_dir / f"resource_snippet_{name}.bin"
+                    snippet_data = resource_data[pos : pos + 256] # Dump 256 bytes
+                    with open(snippet_file, 'wb') as f:
+                        f.write(snippet_data)
+
+        except Exception as e:
+            print(f"[CPP-EXTRACT] Error extracting PE resources: {e}")
+            self.log_error(f"PE resource extraction failed: {e}")
+            return {'error': str(e)}
+        
+        return results
+
+    def analyze_directory_artifacts(self, base_dir):
+        """
+        Analyzes sibling files in the executable's directory, like DLLs,
+        PDBs, and config files, similar to __hook__.py's environment scan.
+        """
+        print(f"[CPP-EXTRACT] Scanning directory for artifacts: {base_dir}")
+        artifacts = {
+            'dll_analysis': [],
+            'pdb_files': [],
+            'config_files': {}
+        }
+        
+        try:
+            # 1. Analyze DLLs
+            for dll_file in base_dir.glob("*.dll"):
+                print(f"[CPP-EXTRACT] Analyzing artifact: {dll_file.name}")
+                dll_info = {
+                    'file_name': dll_file.name,
+                    'exports': self.extract_exports(dll_file),
+                    'imports': self.extract_imports(dll_file)
+                }
+                artifacts['dll_analysis'].append(dll_info)
+            
+            # 2. Find PDB files
+            for pdb_file in base_dir.glob("*.pdb"):
+                print(f"[CPP-EXTRACT] Found artifact: {pdb_file.name}")
+                artifacts['pdb_files'].append(pdb_file.name)
+            
+            # 3. Read Config files
+            for config_ext in ["*.xml", "*.ini", "*.cfg", "*.json"]:
+                for config_file in base_dir.glob(config_ext):
+                    print(f"[CPP-EXTRACT] Reading artifact: {config_file.name}")
+                    try:
+                        with open(config_file, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                            artifacts['config_files'][config_file.name] = content[:1024] # Store first 1KB
+                    except Exception as e:
+                        artifacts['config_files'][config_file.name] = f"Error reading: {e}"
+            
+        except Exception as e:
+            print(f"[CPP-EXTRACT] Error analyzing directory artifacts: {e}")
+            self.log_error(f"Directory artifact analysis failed: {e}")
+            artifacts['error'] = str(e)
+            
+        print(f"[CPP-EXTRACT] Directory artifact scan complete.")
+        return artifacts
+
     def disassemble_functions(self, exe_path, analysis):
         """Disassemble key functions"""
         if shutil.which("objdump") is None:
@@ -624,6 +901,8 @@ class CPPSourceExtractor:
             f.write("// ============================================\n\n")
             
             for class_name, class_info in analysis['classes'].items():
+                original_name = class_info.get('original_name', class_name)
+                f.write(f"// Original Name (from symbol/RTTI): {original_name}\n")
                 f.write(f"class {class_name} {{\n")
                 f.write("public:\n")
                 
@@ -631,6 +910,14 @@ class CPPSourceExtractor:
                 f.write(f"    {class_name}();\n")
                 f.write(f"    virtual ~{class_name}();\n\n")
                 
+                # --- MODIFICATION: Add VTable hints ---
+                if class_info['vtables']:
+                    f.write("    // VTable symbols found:\n")
+                    for vtable in class_info['vtables'][:3]: # Show first 3
+                        f.write(f"    //   - {vtable}\n")
+                    f.write("\n")
+                # --- END MODIFICATION ---
+
                 # Methods
                 for method in class_info['methods']:
                     if method != class_name and not method.startswith('~'):
@@ -649,7 +936,9 @@ class CPPSourceExtractor:
             
             for func in analysis['functions']:
                 func_name = func['name']
+                original_name = func.get('original_name', func_name)
                 if '::' not in func_name:  # Skip class methods
+                    f.write(f"// Original Name (from symbol/string): {original_name}\n")
                     f.write(f"void {func_name}(); // Parameters and return type are unknown\n")
         
         print(f"[CPP-EXTRACT] Header file generated: {header_file.name}")
@@ -688,7 +977,9 @@ class CPPSourceExtractor:
             
             for func in analysis['functions'][:30]:  # Limit to first 30
                 func_name = func['name']
+                original_name = func.get('original_name', func_name)
                 if '::' not in func_name:
+                    f.write(f"// Original Name (from symbol/string): {original_name}\n")
                     f.write(f"void {func_name}() {{\n")
                     f.write(f"    // Reconstructed from binary analysis ({func['source']})\n")
                     f.write(f"    // TODO: Implement function logic based on disassembly.\n")
@@ -696,7 +987,6 @@ class CPPSourceExtractor:
         
         print(f"[CPP-EXTRACT] Implementation file generated: {impl_file.name}")
     
-    # +++ ADDED HELPER FUNCTION +++
     def sanitize_filename(self, filename):
         """Remove invalid characters from a string to make it a valid filename."""
         if not filename:
@@ -718,15 +1008,16 @@ class CPPSourceExtractor:
 
         for class_name, class_info in list(analysis['classes'].items())[:15]:  # Limit to 15
             
-            # +++ FIX: Sanitize the class_name before using it as a filename +++
-            sanitized_class_name = self.sanitize_filename(class_name)
-            class_file = class_dir / f"{sanitized_class_name}.cpp"
+            original_name = class_info.get('original_name', class_name)
+            sanitized_class_name_for_file = self.sanitize_filename(class_name)
+            class_file = class_dir / f"{sanitized_class_name_for_file}.cpp"
             
             try:
                 with open(class_file, 'w', encoding='utf-8') as f:
                     f.write(f"// ============================================\n")
                     f.write(f"// RECONSTRUCTED CLASS: {class_name}\n")
-                    f.write(f"// (Filename sanitized to: {sanitized_class_name}.cpp)\n")
+                    f.write(f"// Original Name (from symbol/RTTI): {original_name}\n")
+                    f.write(f"// (Filename sanitized to: {sanitized_class_name_for_file}.cpp)\n")
                     f.write(f"// ============================================\n\n")
                     
                     f.write('#include "../HEADERS/reconstructed.h"\n\n')
@@ -745,13 +1036,14 @@ class CPPSourceExtractor:
                     # Methods
                     for method in class_info['methods'][:20]:  # Limit to 20 methods
                         if method != class_name and not method.startswith('~'):
+                            # Method name was already sanitized in extract_classes
                             f.write(f"void {class_name}::{method}() {{\n")
                             f.write(f"    // Reconstructed method\n")
                             f.write(f"    // TODO: Implement method logic based on disassembly.\n")
                             f.write(f"}}\n\n")
             
             except Exception as e:
-                self.log_error(f"Failed to write class file for: {class_name} (Sanitized: {sanitized_class_name}). Error: {e}")
+                self.log_error(f"Failed to write class file for: {class_name} Error: {e}")
                 print(f"[CPP-EXTRACT] WARNING: Could not write class file for '{class_name}'. Error: {e}")
         
         print(f"[CPP-EXTRACT] Class implementation files generated in: {class_dir.name}")
@@ -781,16 +1073,21 @@ class CPPSourceExtractor:
                 
                 f.write("STATISTICS SUMMARY:\n")
                 f.write("-" * 70 + "\n")
-                f.write(f"Functions Identified: {len(analysis['functions'])}\n")
-                f.write(f"Classes Identified: {len(analysis['classes'])}\n")
-                f.write(f"Total Strings Extracted: {len(analysis['strings'].get('all_strings', []))}\n")
-                f.write(f"URLs Found: {len(analysis['strings'].get('urls', []))}\n")
-                f.write(f"Imported DLLs: {len(analysis['imports'])}\n")
-                f.write(f"Exported Functions: {len(analysis['exports'])}\n\n")
+                f.write(f"Functions Identified: {len(analysis.get('functions', []))}\n")
+                f.write(f"Classes Identified (Symbols): {len(analysis.get('classes', {}))}\n")
+                f.write(f"Classes Identified (RTTI): {len(analysis.get('rtti', {}).get('class_names', []))}\n")
+                f.write(f"Total Strings Extracted: {len(analysis.get('strings', {}).get('all_strings', []))}\n")
+                f.write(f"URLs Found: {len(analysis.get('strings', {}).get('urls', []))}\n")
+                f.write(f"Imported DLLs: {len(analysis.get('imports', {}))}\n")
+                f.write(f"Exported Functions: {len(analysis.get('exports', []))}\n")
+                f.write(f"Resources Found: {len(analysis.get('resources', {}).get('found_signatures', []))}\n")
+                f.write(f"Artifact DLLs Found: {len(analysis.get('directory_artifacts', {}).get('dll_analysis', []))}\n")
+                f.write(f"Artifact PDBs Found: {len(analysis.get('directory_artifacts', {}).get('pdb_files', []))}\n")
+                f.write(f"Artifact Configs Found: {len(analysis.get('directory_artifacts', {}).get('config_files', {}))}\n\n")
                 
                 f.write("PE STRUCTURE:\n")
                 f.write("-" * 70 + "\n")
-                if 'pe_analysis' in analysis and 'sections' in analysis['pe_analysis']:
+                if analysis.get('pe_analysis', {}).get('sections'):
                     f.write(f"{'Section':<10} {'VirtSize':>10} {'RawSize':>10}   {'Permissions'}\n")
                     f.write(f"{'-'*8:<10} {'-'*8:>10} {'-'*8:>10}   {'-----------'}\n")
                     for section in analysis['pe_analysis']['sections']:
@@ -800,24 +1097,35 @@ class CPPSourceExtractor:
                 
                 f.write("FUNCTIONS (First 20):\n")
                 f.write("-" * 70 + "\n")
-                for func in analysis['functions'][:20]:
+                for func in analysis.get('functions', [])[:20]:
                     f.write(f"  - {func['name']} (Source: {func['source']})\n")
-                if len(analysis['functions']) > 20:
+                if len(analysis.get('functions', [])) > 20:
                     f.write("  - ... and more\n")
                 f.write("\n")
                 
                 f.write("CLASSES (First 10):\n")
                 f.write("-" * 70 + "\n")
-                for class_name, class_info in list(analysis['classes'].items())[:10]:
-                    f.write(f"  - {class_name} ({len(class_info['methods'])} methods identified)\n")
-                if len(analysis['classes']) > 10:
+                for class_name, class_info in list(analysis.get('classes', {}).items())[:10]:
+                    f.write(f"  - {class_name} ({len(class_info['methods'])} methods/symbols identified)\n")
+                if len(analysis.get('classes', {})) > 10:
                     f.write("  - ... and more\n")
                 f.write("\n")
                 
+                f.write("RTTI CLASS NAMES (First 20):\n")
+                f.write("-" * 70 + "\n")
+                if analysis.get('rtti', {}).get('class_names'):
+                    for class_name in analysis['rtti']['class_names'][:20]:
+                        f.write(f"  - {class_name}\n")
+                    if len(analysis['rtti']['class_names']) > 20:
+                        f.write("  - ... and more\n")
+                else:
+                    f.write("  - None found\n")
+                f.write("\n")
+
                 f.write("URLs FOUND:\n")
                 f.write("-" * 70 + "\n")
-                if analysis['strings'].get('urls'):
-                    for url in analysis['strings'].get('urls', [])[:15]:
+                if analysis.get('strings', {}).get('urls'):
+                    for url in analysis['strings']['urls'][:15]:
                         f.write(f"  - {url}\n")
                 else:
                     f.write("  - None\n")
@@ -825,13 +1133,54 @@ class CPPSourceExtractor:
 
                 f.write("IMPORTED DLLs:\n")
                 f.write("-" * 70 + "\n")
-                if analysis['imports']:
+                if analysis.get('imports'):
                     for dll, funcs in analysis['imports'].items():
                         f.write(f"  - {dll} ({len(funcs)} functions)\n")
                 else:
                     f.write("  - None\n")
+                f.write("\n")
+                
+                f.write("EXTRACTED RESOURCES:\n")
+                f.write("-" * 70 + "\n")
+                if analysis.get('resources') and analysis['resources'].get('found_signatures'):
+                    for sig in analysis['resources']['found_signatures']:
+                        f.write(f"  - Found '{sig['name']}' signature at offset 0x{sig['offset']:X}\n")
+                    f.write(f"\n  Full resource dump file: {analysis['resources'].get('dump_file', 'N/A')}\n")
+                else:
+                    f.write("  - No common resource signatures found.\n")
+                f.write("\n")
+
+                f.write("DIRECTORY ARTIFACTS:\n")
+                f.write("-" * 70 + "\n")
+                if analysis.get('directory_artifacts'):
+                    artifacts = analysis['directory_artifacts']
+                    f.write(f"  PDB Files:\n")
+                    if artifacts.get('pdb_files'):
+                        for pdb in artifacts['pdb_files']:
+                            f.write(f"    - {pdb}\n")
+                    else:
+                        f.write("    - None found\n")
+                    
+                    f.write(f"\n  Config Files:\n")
+                    if artifacts.get('config_files'):
+                        for cfg in artifacts['config_files']:
+                            f.write(f"    - {cfg}\n")
+                    else:
+                        f.write("    - None found\n")
+                        
+                    f.write(f"\n  Analyzed DLLs:\n")
+                    if artifacts.get('dll_analysis'):
+                        for dll in artifacts['dll_analysis']:
+                            f.write(f"    - {dll['file_name']} ({len(dll['exports'])} exports, {len(dll['imports'])} imports)\n")
+                    else:
+                        f.write("    - None found\n")
+                else:
+                    f.write("  - Directory scan failed or produced no results.\n")
+                f.write("\n")
+
         except Exception as e:
             self.log_error(f"Failed to write text report: {e}")
+            print(f"[CPP-EXTRACT] ERROR: Failed to write text report: {e}")
 
         
         print(f"[CPP-EXTRACT] Reports generated successfully.")
@@ -857,7 +1206,7 @@ class CPPSourceExtractor:
             # Check for and extract any pending shader data
             self.extract_shader()
             
-            # Analyze executable
+            # Analyze executable (now multi-threaded and more comprehensive)
             analysis = self.analyze_executable()
             
             if analysis:
@@ -891,3 +1240,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
