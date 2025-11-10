@@ -1,0 +1,28 @@
+LIBRARY "D3DCompiler_43"
+EXPORTS
+    ; ===================================================================
+    ; SECTION 1: OUR INTERCEPTED FUNCTION
+    ; This is implemented in dllmain.cpp. The linker finds it there.
+    ; ===================================================================
+    D3DCompile
+
+    ; ===================================================================
+    ; SECTION 2: ALL OTHER FUNCTIONS ARE FORWARDED to orig.dll
+    ; This prevents the "Entry Point Not Found" error for everything else.
+    ; ===================================================================
+    D3DAssemble                 = orig.D3DAssemble
+    D3DCompressShaders          = orig.D3DCompressShaders
+    D3DCreateBlob               = orig.D3DCreateBlob
+    D3DDecompressShaders        = orig.D3DDecompressShaders
+    D3DDisassemble              = orig.D3DDisassemble
+    D3DDisassemble10Effect      = orig.D3DDisassemble10Effect
+    D3DGetBlobPart              = orig.D3DGetBlobPart
+    D3DGetDebugInfo             = orig.D3DGetDebugInfo
+    D3DGetInputAndOutputSignatureBlob = orig.D3DGetInputAndOutputSignatureBlob
+    D3DGetInputSignatureBlob    = orig.D3DGetInputSignatureBlob
+    D3DGetOutputSignatureBlob   = orig.D3DGetOutputSignatureBlob
+    D3DPreprocess               = orig.D3DPreprocess
+    D3DReflect                  = orig.D3DReflect
+    D3DReturnFailure1           = orig.D3DReturnFailure1
+    D3DStripShader              = orig.D3DStripShader
+    DebugSetMute                = orig.DebugSetMute
