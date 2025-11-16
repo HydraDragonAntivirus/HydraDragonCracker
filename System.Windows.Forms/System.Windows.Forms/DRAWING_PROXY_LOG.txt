@@ -1,0 +1,142 @@
+=== SYSTEM.DRAWING PROXY LOADED ===
+Process: CrackmeLoader
+PID: 20372
+Time: 2025-11-14 22:54:03
+ERROR loading real assembly: System.ArgumentException: Yol geçerli bir biçimde değil.
+   konum: System.IO.Path.NormalizePath(String path, Boolean fullCheck, Int32 maxPathLength, Boolean expandShortPaths)
+   konum: System.IO.Path.InternalGetDirectoryName(String path)
+   konum: RikaDrawingProxy.ProxyBootstrap.PreloadRealAssembly()
+
+=== STARTING CRACKME ANALYSIS ===
+Analyzing process: CrackmeLoader (PID: 20372)
+
+Loaded assemblies: 10
+
+>>> FOUND CRACKME ASSEMBLY: CrackmeLoader
+
+Analyzing types in CrackmeLoader:
+  Total types: 4
+
+>>> FOUND CRACKME ASSEMBLY: RikaCrackmeV1
+
+Analyzing types in RikaCrackmeV1:
+  Total types: 329
+
+  >>> FORM FOUND: Wbj=.cyR=
+      Property: KeyPreview (Boolean)
+      Property: Text (String)
+      Property: TransparencyKey (Color)
+      Property: WindowText (String)
+      Property: BindingContext (BindingContext)
+      Property: DpiAwarenessContext (DpiAwarenessContext)
+      Property: BindingContextInternal (BindingContext)
+      Property: CacheTextInternal (Boolean)
+      Property: ContextMenu (ContextMenu)
+      Property: ContextMenuStrip (ContextMenuStrip)
+      Property: ShowKeyboardCues (Boolean)
+      Property: UseCompatibleTextRenderingInt (Boolean)
+      Property: SupportsUseCompatibleTextRendering (Boolean)
+      Property: CurrentImeContextMode (ImeMode)
+    >>> Interesting method: cyR=.get_AutoValidate
+    >>> Interesting method: cyR=.set_AutoValidate
+    >>> Interesting method: cyR=.ProcessCmdKey
+    >>> Interesting method: cyR=.ProcessDialogKey
+    >>> Interesting method: cyR=.ProcessKeyPreview
+    >>> Interesting method: cyR=.ProcessTabKey
+    >>> Interesting method: cyR=.ShouldSerializeAutoScaleBaseSize
+    >>> Interesting method: cyR=.ShouldSerializeSize
+    >>> Interesting method: cyR=.ValidateChildren
+    >>> Interesting method: cyR=.ValidateChildren
+    >>> Interesting method: cyR=.add_AutoValidateChanged
+    >>> Interesting method: cyR=.remove_AutoValidateChanged
+    >>> Interesting method: cyR=.get_KeyPreview
+    >>> Interesting method: cyR=.set_KeyPreview
+    >>> Interesting method: cyR=.get_TransparencyKey
+    >>> Interesting method: cyR=.set_TransparencyKey
+    >>> Interesting method: cyR=.CheckCloseDialog
+    >>> Interesting method: cyR=.ShouldSerializeTransparencyKey
+    >>> Interesting method: cyR=.OnAutoValidateChanged
+    >>> Interesting method: cyR=.ShouldSerializeAutoValidate
+    >>> Interesting method: cyR=.add_AutoValidateChanged
+    >>> Interesting method: cyR=.remove_AutoValidateChanged
+    >>> Interesting method: cyR=.Validate
+    >>> Interesting method: cyR=.Validate
+    >>> Interesting method: cyR=.ValidateInternal
+    >>> Interesting method: cyR=.NotifyValidationResult
+    >>> Interesting method: cyR=.get_ShowKeyboardCues
+    >>> Interesting method: cyR=.IsInputKey
+    >>> Interesting method: cyR=.NotifyInvalidate
+    >>> Interesting method: cyR=.OnCausesValidationChanged
+    >>> Interesting method: cyR=.OnInvalidated
+    >>> Interesting method: cyR=.OnKeyDown
+    >>> Interesting method: cyR=.OnKeyPress
+    >>> Interesting method: cyR=.OnKeyUp
+    >>> Interesting method: cyR=.OnPreviewKeyDown
+    >>> Interesting method: cyR=.OnValidating
+    >>> Interesting method: cyR=.OnValidated
+    >>> Interesting method: cyR=.ProcessKeyMessage
+    >>> Interesting method: cyR=.ShouldPerformContainerValidation
+    >>> Interesting method: cyR=.ShouldSerializeBackColor
+    >>> Interesting method: cyR=.ShouldSerializeCursor
+    >>> Interesting method: cyR=.ShouldSerializeForeColor
+    >>> Interesting method: cyR=.ShouldSerializeFont
+    >>> Interesting method: cyR=.ShouldSerializeRightToLeft
+    >>> Interesting method: cyR=.ShouldSerializeMaximumSize
+    >>> Interesting method: cyR=.ShouldSerializeMinimumSize
+    >>> Interesting method: cyR=.ShouldSerializeText
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.CanShowToolTipsNow
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.GetNativeScreenRectangle
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.GetNeighboringToolsRectangles
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.IsHoveredWithMouse
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.HasRtlModeEnabled
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.AllowsToolTip
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.GetOwnerWindow
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.OnHooked
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.OnUnhooked
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.GetCaptionForTool
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.ShowsOwnToolTip
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.IsBeingTabbedTo
+    >>> Interesting method: cyR=.System.Windows.Forms.IKeyboardToolTip.AllowsChildrenToShowToolTips
+    >>> Interesting method: cyR=.ShowsOwnKeyboardToolTip
+    >>> Interesting method: cyR=.OnKeyboardToolTipHook
+    >>> Interesting method: cyR=.OnKeyboardToolTipUnhook
+    >>> Interesting method: cyR=.AllowsKeyboardToolTip
+    >>> Interesting method: cyR=.ShouldSerializeImeMode
+    >>> Interesting method: cyR=.get_CausesValidation
+    >>> Interesting method: cyR=.set_CausesValidation
+    >>> Interesting method: cyR=.add_CausesValidationChanged
+    >>> Interesting method: cyR=.remove_CausesValidationChanged
+    >>> Interesting method: cyR=.ValidateActiveControl
+    >>> Interesting method: cyR=.set_ValidationCancelled
+    >>> Interesting method: cyR=.get_ValidationCancelled
+    >>> Interesting method: cyR=.add_Invalidated
+    >>> Interesting method: cyR=.remove_Invalidated
+    >>> Interesting method: cyR=.add_KeyDown
+    >>> Interesting method: cyR=.remove_KeyDown
+    >>> Interesting method: cyR=.add_KeyPress
+    >>> Interesting method: cyR=.remove_KeyPress
+    >>> Interesting method: cyR=.add_KeyUp
+    >>> Interesting method: cyR=.remove_KeyUp
+    >>> Interesting method: cyR=.add_PreviewKeyDown
+    >>> Interesting method: cyR=.remove_PreviewKeyDown
+    >>> Interesting method: cyR=.add_Validating
+    >>> Interesting method: cyR=.remove_Validating
+    >>> Interesting method: cyR=.add_Validated
+    >>> Interesting method: cyR=.remove_Validated
+    >>> Interesting method: cyR=.RaiseKeyEvent
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.Invalidate
+    >>> Interesting method: cyR=.PerformControlValidation
+    >>> Interesting method: cyR=.PerformContainerValidation
+    >>> Interesting method: cyR=.ProcessKeyEventArgs
+    >>> Interesting method: cyR=.get_ShouldAutoValidate
+    >>> Interesting method: cyR=.ShouldSerializeMargin
+    >>> Interesting method: cyR=.ShouldSerializePadding
+    >>> Interesting method: SEK=.get_SettingsKey
+    >>> Interesting method: SEK=.set_SettingsKey
+    >>> Interesting method: \*?\*$\+\+\*%.add_SerializeObjectState
+    >>> Interesting method: \*?\*$\+\+\*%.remove_SerializeObjectState

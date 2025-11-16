@@ -1,0 +1,1 @@
+"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\Roslyn\csc.exe" /t:library /out:System.Windows.Forms.dll /platform:x86 /reference:System.dll /reference:real=orig.dll System.Windows.Forms.cs TypeForwarders.cs

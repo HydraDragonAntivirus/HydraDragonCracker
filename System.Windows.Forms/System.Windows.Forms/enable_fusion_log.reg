@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Fusion]
+"EnableLog"=dword:00000001
+"ForceLog"=dword:00000001
+"LogFailures"=dword:00000001
+"LogResourceBinds"=dword:00000001
+"LogPath"="C:\\FusionLog"
+

@@ -1,0 +1,6 @@
+=== Proxy Log Started: 14.11.2025 22:54:03 ===
+[2025-11-14 22:54:03.197] ProxyBootstrap initialized.
+[2025-11-14 22:54:03.198] Using local orig.dll: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\orig.dll
+[2025-11-14 22:54:03.198] Pre-loading real assembly from: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\orig.dll
+[2025-11-14 22:54:03.208] Real assembly loaded: System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+[2025-11-14 22:54:03.213] Analysis timer started (5 second delay)...

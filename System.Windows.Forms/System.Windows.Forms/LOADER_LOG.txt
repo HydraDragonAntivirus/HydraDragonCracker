@@ -1,0 +1,43 @@
+=== CRACKME LOADER STARTED ===
+Time: 2025-11-14 22:54:03
+Current directory: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\
+
+=== LOADING PROXY DLLs ===
+Loading System.Drawing proxy from: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\System.Drawing.dll
+  Loaded: System.Drawing, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  System.Drawing.Graphics static constructor triggered
+Loading System.Windows.Forms proxy from: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\System.Windows.Forms.dll
+  Loaded: System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null
+  System.Windows.Forms.Application static constructor triggered
+AssemblyResolve handler installed
+
+=== LOADING CRACKME: C:\Users\victim\Documents\GitHub\HydraDragonCracker\System.Windows.Forms\System.Windows.Forms\RikaCrackmeV1.exe ===
+Crackme loaded: RikaCrackmeV1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Entry point: Wbj=.pKh=.HJF=
+
+=== EXECUTING CRACKME ===
+
+=== FATAL ERROR ===
+System.TypeInitializationException: '<Module>' tür başlatıcısı özel durum döndürdü. ---> System.ArgumentException: Boş yol adı geçerli değil.
+   konum: System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   konum: System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   konum: System.IO.File.InternalReadAllBytes(String path, Boolean checkHost)
+   konum: $!<)@$<\..=^<!&<?#(Object& <)%$(!*&, Object[] -=@&?(^>, Boolean $/%=?$/-, MethodBase >#(@-/^*, Boolean &&&^&=/<)
+   konum: $!<)@$<\..*#_%!/+^(MethodBase >#(@-/^*, ^%^#)<\*_ -(^>%?)_, Boolean <!>^)>!+)
+   konum: \&@!?!\*(\&.?)/^-$^((^%^#)<\*_ -(^>%?)_)
+   konum: \*$^<($-/.=)</()-#(^%^#)<\*_ -(^>%?)_)
+   konum: \*$^<($-/.+^!<!$+/(^%^#)<\*_ -(^>%?)_, Exception +*(!*$#%, Int32 @=>$&?^&)
+   konum: \*$^<($-/.=)</()-#(^%^#)<\*_ -(^>%?)_)
+   konum: ?=>#=>\*\&.)*!_?$*#(\*$^<($-/[] %+#>)>@*, ^%^#)<\*_ -(^>%?)_)
+   konum: ?=>#=>\*\&.+$&!%-^>(String >(@>$^$&, Object[] >-=^(&=%)
+   konum: \*!=\.\&)^=.=?>(@?)/()
+   konum: %^!%$($$.(<(@-/%+(Assembly -)>$$%_>)
+   konum: %^!%$($$..ctor(Assembly =*^$(%<(, Dictionary`2 _+=>^^%()
+   konum: ?=>#=>\*\&.+$&!%-^>(String >(@>$^$&, Object[] >-=^(&=%)
+   konum: %$@#%?>/.+_$^&*_-()
+   konum: .cctor()
+   --- İç özel durum yığını izlemesinin sonu ---
+   konum: System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   konum: System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   konum: System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   konum: CrackmeLoader.Program.Main(String[] args)
