@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python extract_exports.py:*)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
