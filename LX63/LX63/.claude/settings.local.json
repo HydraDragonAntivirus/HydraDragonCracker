@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python analyze_dll.py:*)",
+      "Bash(python understand_dll.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

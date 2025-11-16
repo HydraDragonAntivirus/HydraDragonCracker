@@ -1,0 +1,132 @@
+=================================================================
+              DLL LAUNCHER - KULLANIM ÖRNEKLERİ
+=================================================================
+
+GEREKSINIMLER:
+  pip install pefile psutil
+
+=================================================================
+1. DLL'İ SADECE ANALİZ ET
+=================================================================
+
+# Basit analiz (konsola yazdır + JSON kaydet)
+python dll_launcher.py LX63.dll -a
+
+# Belirli bir dosyaya kaydet
+python dll_launcher.py LX63.dll -a -s my_analysis.json
+
+=================================================================
+2. DLL'İ MEVCUT PROCESS'E YÜKLE
+=================================================================
+
+# DLL'i yükle ve bekle
+python dll_launcher.py LX63.dll -l
+
+# DLL'i yükle ve bir fonksiyon çağır
+python dll_launcher.py LX63.dll -l -c FonksiyonAdi
+
+=================================================================
+3. DLL'İ BAŞKA BİR PROCESS'E INJECT ET
+=================================================================
+
+# Process ismi ile inject et
+python dll_launcher.py LX63.dll -i game.exe
+
+# Process ID ile inject et
+python dll_launcher.py LX63.dll -i 1234
+
+=================================================================
+4. YENİ PROCESS BAŞLAT VE DLL INJECT ET
+=================================================================
+
+# Basit başlatma
+python dll_launcher.py LX63.dll -e "C:\Games\game.exe"
+
+# Argümanlarla başlatma
+python dll_launcher.py LX63.dll -e "C:\Games\game.exe" --args -windowed -debug
+
+=================================================================
+ÖRNEKLER
+=================================================================
+
+ÖRNEK 1: Sadece analiz
+-----------------------
+python dll_launcher.py orig.dll -a
+
+Çıktı:
+[*] Analyzing: orig.dll
+[+] Architecture: x64
+[+] Entry Point: 0x16d8a4
+[+] Exports: 0
+[+] Imports from 25 DLLs
+[+] Analysis saved to: orig_analysis.json
+
+
+ÖRNEK 2: DLL yükle ve kullan
+-----------------------------
+python dll_launcher.py LX63.dll -l
+
+Çıktı:
+[*] Analyzing: LX63.dll
+[+] Architecture: x64
+...
+[*] Loading DLL into current process...
+[+] DLL loaded successfully!
+[+] Handle: 140712345678912
+[*] Available exports:
+    - D3DCompile @ 1
+    - D3DPreprocess @ 2
+    - D3DDisassemble @ 3
+
+
+ÖRNEK 3: Çalışan oyuna inject et
+---------------------------------
+python dll_launcher.py LX63.dll -i game.exe
+
+Çıktı:
+[*] Analyzing: LX63.dll
+...
+[*] Injecting DLL into process: game.exe
+[*] Target PID: 5678
+[+] DLL injected successfully!
+[+] Thread ID: 9012
+
+
+ÖRNEK 4: Oyunu DLL ile başlat
+------------------------------
+python dll_launcher.py LX63.dll -e "C:\Games\game.exe" --args -windowed
+
+Çıktı:
+[*] Analyzing: LX63.dll
+...
+[*] Launching: C:\Games\game.exe
+[+] Process started (PID: 3456)
+[*] Injecting DLL into process: 3456
+[+] DLL injected successfully!
+
+=================================================================
+OPSIYONLAR
+=================================================================
+
+Argüman         Açıklama
+--------        --------
+dll             DLL dosya yolu (zorunlu)
+-a, --analyze   Sadece analiz et, başlatma
+-s, --save      Analiz sonucunu JSON'a kaydet
+-l, --load      DLL'i mevcut process'e yükle
+-c, --call      Export edilen fonksiyonu çağır
+-i, --inject    Başka bir process'e inject et
+-e, --execute   Yeni process başlat ve inject et
+--args          Başlatılan process için argümanlar
+
+=================================================================
+NOTLAR
+=================================================================
+
+1. YÖNETICI YETKİSİ: Injection için admin yetkisi gerekebilir
+2. ANTIVIRUS: Injection'ı engelleyebilir, geçici kapat
+3. ARCHITECTURE: DLL ve process mimarisi uyumlu olmalı (x64/x86)
+4. EXPORTS: Fonksiyon çağırmak için DLL export etmeli
+5. PYTHON VERSİYON: Python 3.6+ gerekli
+
+=================================================================
