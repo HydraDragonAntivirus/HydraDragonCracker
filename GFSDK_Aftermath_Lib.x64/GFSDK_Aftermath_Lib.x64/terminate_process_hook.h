@@ -40,16 +40,7 @@ extern "C" BOOL WINAPI Hooked_TerminateProcess(HANDLE hProcess, UINT uExitCode) 
         return FALSE;
     }
     
-    // Check if this is during game initialization (first few seconds)
-    static DWORD initTime = GetTickCount();
-    DWORD currentTime = GetTickCount();
-    if (currentTime - initTime < 5000) {  // First 5 seconds - allow termination (game init)
-        if (g_origTerminateProcess) {
-            return g_origTerminateProcess(hProcess, uExitCode);
-        }
-    }
-    
-    // CAPTURE FULL SOURCE CODE OF CALLER
+    // CAPTURE FULL SOURCE CODE OF CALLER (but don't block - just redirect/log)
     g_logger->Log("================================================================================\n");
     g_logger->Log("[TERMINATE PROCESS BLOCKED] - Capturing full source code of caller\n");
     g_logger->LogFormat("Process Handle: %p, Exit Code: %u\n", hProcess, uExitCode);
@@ -193,11 +184,15 @@ extern "C" BOOL WINAPI Hooked_TerminateProcess(HANDLE hProcess, UINT uExitCode) 
     }
     
     g_logger->Log("================================================================================\n");
-    g_logger->Log("[TERMINATE PROCESS BLOCKED] - Call prevented, redirecting to else block\n");
-    g_logger->Log("Process will NOT be terminated. Execution continues normally.\n");
+    g_logger->Log("[TERMINATE PROCESS CALLED] - Source code captured, redirecting to original\n");
+    g_logger->Log("Calling original TerminateProcess (not blocked, just logged)\n");
     
-    // BLOCK THE CALL - Return FALSE to prevent termination
-    // This acts as an "else" block - the process continues instead of terminating
-    return FALSE;  // FALSE = process NOT terminated
+    // REDIRECT TO ORIGINAL - Don't block, just log and redirect
+    // This acts as a redirect - we capture everything but still allow termination
+    if (g_origTerminateProcess) {
+        return g_origTerminateProcess(hProcess, uExitCode);
+    }
+    
+    return FALSE;
 }
 
