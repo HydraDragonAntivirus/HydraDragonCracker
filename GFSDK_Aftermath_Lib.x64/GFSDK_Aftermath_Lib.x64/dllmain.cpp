@@ -12,7 +12,7 @@
 #include <DbgHelp.h>
 #include <psapi.h>
 #include "logger.h"
-#include "monkey_patch_terminate.h"
+#include "anti_anti_debug.h"
 
 #pragma comment(lib, "psapi.lib")
 
@@ -242,29 +242,25 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved) {
                 g_logger->Log("WARNING: Original DLL not loaded - dynamic hooks will NOT work!");
             }
 
-            // Monkey patch TerminateProcess calls AFTER 5 second delay
-            // Find call sites in source code and patch them directly
+            // Initialize ANTI-ANTI-DEBUG system AFTER 5 second delay
+            // Blocks ALL exit attempts and detects debuggers
             CreateThread(NULL, 0, [](LPVOID) -> DWORD {
                 // Wait 5 seconds for game to fully initialize
                 Sleep(5000);
                 
                 if (g_logger) {
-                    g_logger->Log("Scanning for TerminateProcess call sites (monkey patching)...");
+                    g_logger->Log("================================================================================\n");
+                    g_logger->Log("INITIALIZING ANTI-ANTI-DEBUG SYSTEM\n");
+                    g_logger->Log("  - Blocking ALL exit attempts (TerminateProcess, ExitProcess, etc.)\n");
+                    g_logger->Log("  - Hiding debugger presence (IsDebuggerPresent, etc.)\n");
+                    g_logger->Log("  - Detecting CheatEngine, x64dbg, and other debuggers\n");
+                    g_logger->Log("  - Continuous scanning and dynamic hooking\n");
+                    g_logger->Log("  - Source code capture on all blocked calls\n");
+                    g_logger->Log("================================================================================\n");
                 }
                 
-                // Find all TerminateProcess calls in the EXE code
-                std::vector<PatchedCallSite> callSites = FindTerminateProcessCalls();
-                
-                if (g_logger) {
-                    g_logger->LogFormat("Found %d TerminateProcess call sites\n", callSites.size());
-                }
-                
-                // Patch all call sites
-                PatchTerminateProcessCalls(callSites);
-                
-                if (g_logger) {
-                    g_logger->Log("Monkey patching complete - all TerminateProcess calls redirected");
-                }
+                // Initialize the anti-anti-debug system
+                InitializeAntiAntiDebug();
                 
                 return 0;
             }, NULL, 0, NULL);
