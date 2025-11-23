@@ -9,9 +9,12 @@
 #include <sstream>
 #include <map>
 #include <filesystem>
+#include <DbgHelp.h>
 #include "logger.h"
+#include "terminate_process_hook.h"
 
 #pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "dbghelp.lib")
 
 // ===================================================================================
 // CONFIGURATION MANAGER
@@ -90,6 +93,13 @@ static Config* g_config = nullptr;
 // Global logger instance (used by hooks)
 Logger* g_logger = nullptr;
 
+// TerminateProcess hook - declared in terminate_process_hook.h
+TerminateProcess_t g_origTerminateProcess = nullptr;
+
+// Forward declaration
+extern "C" BOOL WINAPI Hooked_TerminateProcess(HANDLE hProcess, UINT uExitCode);
+static void InstallTerminateProcessHook();
+
 // ===================================================================================
 // UTILITY FUNCTIONS
 // ===================================================================================
@@ -159,6 +169,79 @@ static bool LoadOriginalDll() {
     }
 
     return true;
+}
+
+// ===================================================================================
+// TERMINATE PROCESS HOOK INSTALLATION
+// ===================================================================================
+static void InstallTerminateProcessHook() {
+    if (!g_logger) return;
+    
+    // Get kernel32.dll
+    HMODULE kernel32 = GetModuleHandleA("kernel32.dll");
+    if (!kernel32) {
+        g_logger->Log("ERROR: Cannot get kernel32.dll handle for TerminateProcess hook");
+        return;
+    }
+    
+    // Get original TerminateProcess address
+    g_origTerminateProcess = (TerminateProcess_t)GetProcAddress(kernel32, "TerminateProcess");
+    if (!g_origTerminateProcess) {
+        g_logger->Log("ERROR: Cannot find TerminateProcess in kernel32.dll");
+        return;
+    }
+    
+    // Hook using IAT (Import Address Table) hooking
+    HMODULE hModule = NULL;
+    GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                       GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                       (LPCWSTR)InstallTerminateProcessHook, &hModule);
+    
+    if (hModule) {
+        PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
+        PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)hModule + dosHeader->e_lfanew);
+        PIMAGE_IMPORT_DESCRIPTOR importDesc = (PIMAGE_IMPORT_DESCRIPTOR)((BYTE*)hModule + 
+            ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
+        
+        while (importDesc->Name) {
+            char* dllName = (char*)((BYTE*)hModule + importDesc->Name);
+            if (_stricmp(dllName, "kernel32.dll") == 0) {
+                PIMAGE_THUNK_DATA thunk = (PIMAGE_THUNK_DATA)((BYTE*)hModule + importDesc->FirstThunk);
+                
+                while (thunk->u1.Function) {
+                    PIMAGE_IMPORT_BY_NAME importByName = (PIMAGE_IMPORT_BY_NAME)((BYTE*)hModule + thunk->u1.AddressOfData);
+                    if (strcmp((char*)importByName->Name, "TerminateProcess") == 0) {
+                        DWORD oldProtect;
+                        if (VirtualProtect(&thunk->u1.Function, sizeof(DWORD_PTR), PAGE_READWRITE, &oldProtect)) {
+                            thunk->u1.Function = (DWORD_PTR)Hooked_TerminateProcess;
+                            VirtualProtect(&thunk->u1.Function, sizeof(DWORD_PTR), oldProtect, &oldProtect);
+                            g_logger->Log("SUCCESS: TerminateProcess hook installed via IAT");
+                            return;
+                        }
+                    }
+                    thunk++;
+                }
+            }
+            importDesc++;
+        }
+    }
+    
+    // Fallback: Inline hook
+    DWORD oldProtect;
+    if (VirtualProtect(g_origTerminateProcess, 16, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        unsigned char hookCode[] = {
+            0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0xFF, 0xE0
+        };
+        *(DWORD64*)&hookCode[2] = (DWORD64)Hooked_TerminateProcess;
+        
+        memcpy((void*)g_origTerminateProcess, hookCode, sizeof(hookCode));
+        VirtualProtect(g_origTerminateProcess, 16, oldProtect, &oldProtect);
+        
+        g_logger->Log("SUCCESS: TerminateProcess hook installed via inline patching");
+    } else {
+        g_logger->Log("ERROR: Failed to install TerminateProcess hook");
+    }
 }
 
 // ===================================================================================
@@ -235,6 +318,25 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved) {
             else {
                 g_logger->Log("WARNING: Original DLL not loaded - dynamic hooks will NOT work!");
             }
+
+            // Install TerminateProcess hook AFTER delay (so game can initialize first)
+            // Use a separate thread to avoid blocking DLL initialization
+            CreateThread(NULL, 0, [](LPVOID) -> DWORD {
+                // Wait 2 seconds for game to initialize
+                Sleep(2000);
+                
+                if (g_logger) {
+                    g_logger->Log("Installing TerminateProcess hook (delayed)...");
+                }
+                
+                InstallTerminateProcessHook();
+                
+                if (g_logger) {
+                    g_logger->Log("TerminateProcess hook installed successfully");
+                }
+                
+                return 0;
+            }, NULL, 0, NULL);
 
             break;
         }

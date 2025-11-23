@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <iomanip>
+#include <sstream>
 #include <intrin.h>
 
 #pragma comment(lib, "dbghelp.lib")
@@ -21,13 +22,25 @@ extern "C" {
 // ===================================================================================
 // EXE FUNCTION MAPPING STRUCTURES
 // ===================================================================================
+struct SourceCodeLine {
+    std::string filePath;
+    std::string fileName;
+    int lineNumber;
+    std::string sourceCode;  // Actual source code line
+    DWORD64 address;
+    
+    SourceCodeLine() : lineNumber(0), address(0) {}
+};
+
 struct CodeDump {
     DWORD64 address;
     std::vector<unsigned char> bytes;
     std::string assembly;  // Disassembled code
+    std::vector<SourceCodeLine> sourceLines;  // Actual source code lines from PDB
     size_t size;
+    bool hasSourceCode;
     
-    CodeDump() : address(0), size(0) {}
+    CodeDump() : address(0), size(0), hasSourceCode(false) {}
 };
 
 struct RegisterState {
@@ -305,12 +318,30 @@ private:
         return true;
     }
     
-    // Capture function code bytes
+    // Capture function code bytes - AGGRESSIVE WITH SOURCE CODE EXTRACTION
     inline CodeDump CaptureFunctionCode(DWORD64 address, size_t maxSize) {
         CodeDump dump;
         dump.address = address;
         dump.size = 0;
+        dump.hasSourceCode = false;
         
+        HANDLE process = GetCurrentProcess();
+        
+        // Get function size from symbols
+        DWORD64 funcEndAddr = address + maxSize;
+        char symBuffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
+        SYMBOL_INFO* symbol = (SYMBOL_INFO*)symBuffer;
+        symbol->MaxNameLen = MAX_SYM_NAME;
+        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+        
+        DWORD64 displacement = 0;
+        if (SymFromAddr(process, address, &displacement, symbol)) {
+            if (symbol->Size > 0 && symbol->Size < maxSize) {
+                funcEndAddr = address + symbol->Size;
+            }
+        }
+        
+        // Read memory
         unsigned char* buffer = new unsigned char[maxSize];
         if (ReadMemory(address, buffer, maxSize)) {
             dump.bytes.assign(buffer, buffer + maxSize);
@@ -318,10 +349,134 @@ private:
             
             // Disassemble
             dump.assembly = DisassembleCode(buffer, maxSize, address);
+            
+            // AGGRESSIVE: Extract ACTUAL SOURCE CODE from PDB files
+            dump.sourceLines = ExtractSourceCodeLines(address, funcEndAddr);
+            dump.hasSourceCode = !dump.sourceLines.empty();
         }
         delete[] buffer;
         
         return dump;
+    }
+    
+    // AGGRESSIVE: Extract source code lines from PDB - reads actual .cpp/.h files
+    inline std::vector<SourceCodeLine> ExtractSourceCodeLines(DWORD64 startAddr, DWORD64 endAddr) {
+        std::vector<SourceCodeLine> sourceLines;
+        HANDLE process = GetCurrentProcess();
+        
+        static bool symInitialized = false;
+        if (!symInitialized) {
+            SymInitialize(process, NULL, TRUE);
+            SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_INCLUDE_32BIT_MODULES);
+            symInitialized = true;
+        }
+        
+        IMAGEHLP_LINE64 line;
+        line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+        DWORD displacement = 0;
+        
+        DWORD64 currentAddr = startAddr;
+        std::set<std::pair<std::string, int>> seenLines;
+        
+        // Walk through every address in function range
+        while (currentAddr < endAddr && currentAddr < startAddr + 512) {
+            if (SymGetLineFromAddr64(process, currentAddr, &displacement, &line)) {
+                std::string filePath = line.FileName;
+                int lineNum = line.LineNumber;
+                
+                auto key = std::make_pair(filePath, lineNum);
+                if (seenLines.find(key) == seenLines.end()) {
+                    seenLines.insert(key);
+                    
+                    SourceCodeLine srcLine;
+                    srcLine.filePath = filePath;
+                    srcLine.lineNumber = lineNum;
+                    srcLine.address = line.Address;
+                    
+                    size_t pos = filePath.find_last_of("\\/");
+                    if (pos != std::string::npos) {
+                        srcLine.fileName = filePath.substr(pos + 1);
+                    } else {
+                        srcLine.fileName = filePath;
+                    }
+                    
+                    // AGGRESSIVE: Read ACTUAL source code line from file
+                    srcLine.sourceCode = ReadSourceFileLine(filePath, lineNum);
+                    
+                    sourceLines.push_back(srcLine);
+                }
+                
+                currentAddr += 1;
+            } else {
+                currentAddr += 1;
+            }
+            
+            if (currentAddr - startAddr > 512) break;
+        }
+        
+        return sourceLines;
+    }
+    
+    // AGGRESSIVE: Read actual source code line from .cpp/.h file
+    inline std::string ReadSourceFileLine(const std::string& filePath, int lineNumber) {
+        std::string sourceLine = "";
+        if (filePath.empty() || lineNumber <= 0) return sourceLine;
+        
+        // Try multiple paths
+        std::vector<std::string> searchPaths;
+        searchPaths.push_back(filePath);
+        
+        // Try relative to current directory
+        std::filesystem::path currentPath = std::filesystem::current_path();
+        searchPaths.push_back((currentPath / filePath).string());
+        
+        // Try just filename
+        size_t pos = filePath.find_last_of("\\/");
+        if (pos != std::string::npos) {
+            std::string fileName = filePath.substr(pos + 1);
+            searchPaths.push_back(fileName);
+            searchPaths.push_back((currentPath / fileName).string());
+        }
+        
+        // Try parent directories
+        for (int i = 0; i < 5; i++) {
+            std::filesystem::path parentPath = currentPath;
+            for (int j = 0; j < i; j++) {
+                parentPath = parentPath.parent_path();
+            }
+            searchPaths.push_back((parentPath / filePath).string());
+            if (pos != std::string::npos) {
+                searchPaths.push_back((parentPath / filePath.substr(pos + 1)).string());
+            }
+        }
+        
+        // Try reading from each path
+        for (const auto& path : searchPaths) {
+            std::ifstream file(path);
+            if (file.is_open()) {
+                std::string line;
+                int currentLine = 1;
+                
+                while (std::getline(file, line) && currentLine <= lineNumber + 10) {
+                    if (currentLine == lineNumber) {
+                        // Trim
+                        size_t start = line.find_first_not_of(" \t\r\n");
+                        size_t end = line.find_last_not_of(" \t\r\n");
+                        if (start != std::string::npos && end != std::string::npos) {
+                            sourceLine = line.substr(start, end - start + 1);
+                        } else {
+                            sourceLine = line;
+                        }
+                        file.close();
+                        return sourceLine;
+                    }
+                    currentLine++;
+                }
+                file.close();
+            }
+        }
+        
+        return sourceLine;
     }
     
     // Capture register state using context capture
@@ -590,7 +745,21 @@ private:
                 
                 // Dump actual code
                 if (func.codeCaptured && !func.codeDump.bytes.empty()) {
-                    mapStream << "\n    === ACTUAL CODE (Disassembly) ===\n";
+                    // AGGRESSIVE: Dump ACTUAL SOURCE CODE from PDB files
+                    if (func.codeDump.hasSourceCode && !func.codeDump.sourceLines.empty()) {
+                        mapStream << "\n    === ACTUAL C++ SOURCE CODE (from PDB) ===\n";
+                        for (const auto& srcLine : func.codeDump.sourceLines) {
+                            mapStream << "    " << srcLine.fileName << ":" << srcLine.lineNumber 
+                                      << " [0x" << std::hex << srcLine.address << std::dec << "]\n";
+                            if (!srcLine.sourceCode.empty()) {
+                                mapStream << "      " << srcLine.sourceCode << "\n";
+                            } else {
+                                mapStream << "      (source line not found in file)\n";
+                            }
+                        }
+                    }
+                    
+                    mapStream << "\n    === DISASSEMBLY (Assembly Code) ===\n";
                     mapStream << func.codeDump.assembly;
                     
                     mapStream << "\n    === CODE BYTES (Hex Dump) ===\n";
