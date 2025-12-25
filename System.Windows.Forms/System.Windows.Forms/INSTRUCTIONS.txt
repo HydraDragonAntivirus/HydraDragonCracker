@@ -1,0 +1,59 @@
+========================================
+HOW TO MAKE YOUR PROXY DLL LOAD
+========================================
+
+PROBLEM:
+--------
+The config file alone CANNOT force .NET to load your unsigned proxy DLL
+instead of the strong-named System.Windows.Forms.dll from the GAC.
+
+This is a .NET security feature - strong-named assemblies require
+verification, and your proxy DLL doesn't have Microsoft's signature.
+
+
+SOLUTION - Option 1 (RECOMMENDED):
+-----------------------------------
+Disable strong-name verification for System.Windows.Forms:
+
+1. Open PowerShell or CMD as Administrator
+2. Run this command:
+   reg import disable-strongname.reg
+
+3. Run RikaPy.exe - it will now load your proxy DLL
+
+
+SOLUTION - Option 2 (DEBUG):
+----------------------------
+Enable Fusion logging to see WHY the DLL isn't loading:
+
+1. Run as Administrator:
+   reg import enable-fusion-log.reg
+
+2. Create directory: mkdir C:\FusionLog
+
+3. Run RikaPy.exe
+
+4. Check C:\FusionLog for detailed assembly binding logs
+
+
+SOLUTION - Option 3 (CODE-BASED):
+----------------------------------
+Use the ProxyLoader.exe you already have - it uses
+AppDomain.AssemblyResolve which CAN override assembly loading.
+
+
+VERIFICATION:
+-------------
+To verify your proxy DLL is loading:
+1. Rename orig.dll temporarily
+2. Run RikaPy.exe
+3. If it crashes looking for orig.dll, your proxy IS loading (good!)
+4. If it runs fine, it's still using GAC (bad - apply Solution 1)
+
+
+WHY CONFIG FILES DON'T WORK:
+----------------------------
+- GAC assemblies have priority over local assemblies
+- Strong-named assemblies require signature verification
+- codeBase doesn't work for unsigned DLLs replacing signed ones
+- bindingRedirect only changes version, not the signature check
