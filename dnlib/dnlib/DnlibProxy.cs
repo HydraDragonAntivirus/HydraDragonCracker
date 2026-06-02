@@ -1,13 +1,16 @@
 extern alias real;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -577,8 +580,12 @@ internal static unsafe class AuthBypass
     private static int _patched;
     private static int _endpointGetterLogged;
     private static int _apiKeysGetterLogged;
+    private static int _currentLicenseGetterLogged;
     private static string _apiEndpoint = "https://pixeldrain.com/api";
     private static string[] _apiKeys = Array.Empty<string>();
+    private static string _currentLicense = "RIKA-0000-0000-0000";
+    private const string DefaultApiKeyBundle =
+        "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865|59a034ea-b784-49bb-a935-61e5d8aea8c6";
 
     // Tipleri statik alanlarda tut — GC koruma + hızlı erişim
     internal static Type? BootstrapStateType;
@@ -645,14 +652,19 @@ internal static unsafe class AuthBypass
             nameof(InitStub), BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo stubSignIn = typeof(AuthBypass).GetMethod(
             nameof(SignInStub), BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo stubCurrentLicense = typeof(AuthBypass).GetMethod(
+            nameof(CurrentLicenseGetterStub), BindingFlags.Static | BindingFlags.NonPublic)!;
 
         RuntimeHelpers.PrepareMethod(stubInit.MethodHandle);
         RuntimeHelpers.PrepareMethod(stubSignIn.MethodHandle);
+        RuntimeHelpers.PrepareMethod(stubCurrentLicense.MethodHandle);
 
         nint initPtr   = stubInit.MethodHandle.GetFunctionPointer();
         nint signInPtr = stubSignIn.MethodHandle.GetFunctionPointer();
+        nint currentLicensePtr = stubCurrentLicense.MethodHandle.GetFunctionPointer();
 
-        ProxyLog.Write($"[VTable] stubInit=0x{initPtr:X16} stubSignIn=0x{signInPtr:X16}");
+        ProxyLog.Write($"[VTable] stubInit=0x{initPtr:X16} stubSignIn=0x{signInPtr:X16} "
+            + $"stubCurrentLicense=0x{currentLicensePtr:X16}");
 
         // -----------------------------------------------------------------------
         // .NET 8 x64 MethodTable layout (coreclr/vm/methodtable.h):
@@ -726,6 +738,8 @@ internal static unsafe class AuthBypass
                 stubPtr = initPtr;
             else if (ifaceMethod.Name == "SignInAsync")
                 stubPtr = signInPtr;
+            else if (ifaceMethod.Name.IndexOf("CurrentLicense", StringComparison.OrdinalIgnoreCase) >= 0)
+                stubPtr = currentLicensePtr;
 
             if (stubPtr == 0)
             {
@@ -751,6 +765,9 @@ internal static unsafe class AuthBypass
         {
             ("InitializeAsync", initPtr),
             ("SignInAsync",     signInPtr),
+            ("get_FJp_003D",     currentLicensePtr),
+            ("get_FJp=",         currentLicensePtr),
+            ("get_CurrentLicense", currentLicensePtr),
         };
 
         foreach (var (mname, stubPtr) in implPatchTargets)
@@ -823,8 +840,9 @@ internal static unsafe class AuthBypass
             var type = BootstrapStateType;
             if (type == null) return Task.CompletedTask;
             var state = Activator.CreateInstance(type)!;
+            string license = GetConfiguredLicense();
             TrySet(state, type, "IsReady", true);
-            TrySet(state, type, "CachedLicense", "RIKA-0000-0000-0000");
+            TrySet(state, type, "CachedLicense", license);
             TrySet(state, type, "RequiresUpdate", false);
             TrySet(state, type, "Message", "");
             TrySet(state, type, "DownloadUrl", "");
@@ -845,10 +863,14 @@ internal static unsafe class AuthBypass
         try
         {
             ProxyLog.Write("[AuthBypass] SignInAsync stub çağrıldı ✓ license=" + (license ?? "(null)"));
+            _currentLicense = GetConfiguredLicense(license);
             var type = AuthResultType;
             if (type == null) return Task.CompletedTask;
             var result = Activator.CreateInstance(type)!;
             TrySet(result, type, "IsSuccess", true);
+            TrySet(result, type, "License", _currentLicense);
+            TrySet(result, type, "LicenseKey", _currentLicense);
+            TrySet(result, type, "CurrentLicense", _currentLicense);
             TrySet(result, type, "RemainingDays", 9999);
             TrySet(result, type, "PlanType", "Enterprise");
             TrySet(result, type, "ErrorMessage", (string?)null);
@@ -859,6 +881,15 @@ internal static unsafe class AuthBypass
             ProxyLog.Write("[AuthBypass] SignInStub hata: " + ex.Message);
             return Task.CompletedTask;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static string CurrentLicenseGetterStub(object self)
+    {
+        string license = GetConfiguredLicense();
+        if (Interlocked.Exchange(ref _currentLicenseGetterLogged, 1) == 0)
+            ProxyLog.Write("[AuthBypass] CurrentLicense getter stub -> len=" + license.Length);
+        return license;
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]
@@ -1076,10 +1107,14 @@ internal static unsafe class AuthBypass
             }
 
             object result = Activator.CreateInstance(resultType)!;
+            _currentLicense = GetConfiguredLicense(license);
             // IsSuccess / Success alanını true yap
             TrySet(result, resultType, "IsSuccess", true);
             TrySet(result, resultType, "Success",   true);
             TrySet(result, resultType, "Succeeded", true);
+            TrySet(result, resultType, "License", _currentLicense);
+            TrySet(result, resultType, "LicenseKey", _currentLicense);
+            TrySet(result, resultType, "CurrentLicense", _currentLicense);
             ProxyLog.Write($"[SignInHelperStub] AuthResult instance built: {resultType.FullName}");
 
             return MakeTask(resultType, result);
@@ -1184,6 +1219,8 @@ internal static unsafe class AuthBypass
             BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo apiKeysSetterStub = typeof(AuthBypass).GetMethod(nameof(ApiKeysSetterStub),
             BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo currentLicenseGetterStub = typeof(AuthBypass).GetMethod(nameof(CurrentLicenseGetterStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
 
         int patched = 0;
         foreach (Type type in GetLoadableTypes(winUiAsm))
@@ -1231,6 +1268,12 @@ internal static unsafe class AuthBypass
                         "ApiBootstrap:" + type.Name + "." + method.Name);
                     patched++;
                 }
+                else if (IsCurrentLicenseGetter(method))
+                {
+                    PatchOneStaticHelper(method, currentLicenseGetterStub,
+                        "ApiBootstrap:" + type.Name + "." + method.Name);
+                    patched++;
+                }
             }
         }
 
@@ -1269,6 +1312,13 @@ internal static unsafe class AuthBypass
                NameLooksLikeApiKeys(method.Name);
     }
 
+    private static bool IsCurrentLicenseGetter(MethodInfo method)
+    {
+        return method.ReturnType == typeof(string) &&
+               method.GetParameters().Length == 0 &&
+               NameLooksLikeCurrentLicense(method.Name);
+    }
+
     private static bool NameLooksLikeEndpoint(string name)
     {
         return name.IndexOf("Endpoint", StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -1281,6 +1331,13 @@ internal static unsafe class AuthBypass
         return name.IndexOf("ApiKeys", StringComparison.OrdinalIgnoreCase) >= 0 ||
                name.IndexOf("yVP_003D", StringComparison.OrdinalIgnoreCase) >= 0 ||
                name.IndexOf("yVP=", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static bool NameLooksLikeCurrentLicense(string name)
+    {
+        return name.IndexOf("CurrentLicense", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("FJp_003D", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("FJp=", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -1349,13 +1406,20 @@ internal static unsafe class AuthBypass
         string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_API_KEYS");
         if (!string.IsNullOrWhiteSpace(env))
         {
-            string[] fromEnv = CleanApiKeys(env.Split(new[] { ';', ',', '|', '\r', '\n', '\t', ' ' },
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            string[] fromEnv = CleanApiKeyText(env);
             if (fromEnv.Length > 0)
             {
                 source = "env";
                 return fromEnv;
             }
+        }
+
+        string[] fromRikaTxt = TryReadApiKeysFromRikaTxt(out string fileSource);
+        if (fromRikaTxt.Length > 0)
+        {
+            _apiKeys = fromRikaTxt;
+            source = fileSource;
+            return fromRikaTxt;
         }
 
         string[] fromInstance = TryReadApiKeysFromInstance(self);
@@ -1374,7 +1438,94 @@ internal static unsafe class AuthBypass
         }
 
         source = "hardcoded-real";
-        return new[] { "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865", "59a034ea-b784-49bb-a935-61e5d8aea8c6" };
+        return CleanApiKeyText(DefaultApiKeyBundle);
+    }
+
+    private static string[] TryReadApiKeysFromRikaTxt(out string source)
+    {
+        source = "rika.txt";
+
+        string? envPath = Environment.GetEnvironmentVariable("RIKA_PROXY_API_KEYS_FILE");
+        string[] candidates = new[]
+        {
+            envPath,
+            Path.Combine(AppContext.BaseDirectory, "rika.txt"),
+            Path.Combine(Path.GetDirectoryName(typeof(ProxyBootstrap).Assembly.Location) ?? "", "rika.txt"),
+            Path.Combine(Directory.GetCurrentDirectory(), "rika.txt")
+        }
+        .Where(path => !string.IsNullOrWhiteSpace(path))
+        .Select(path => Path.GetFullPath(path!))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+        foreach (string path in candidates)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    continue;
+
+                string[] keys = CleanApiKeyText(File.ReadAllText(path));
+                if (keys.Length > 0)
+                {
+                    source = "rika.txt";
+                    return keys;
+                }
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[ApiBootstrap] rika.txt read failed: "
+                    + Path.GetFileName(path) + " -> " + ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        return Array.Empty<string>();
+    }
+
+    internal static string GetConfiguredLicense(string? preferred = null)
+    {
+        string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_LICENSE");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env.Trim();
+
+        string[] candidates = new[]
+        {
+            Environment.GetEnvironmentVariable("RIKA_PROXY_LICENSE_FILE"),
+            Path.Combine(AppContext.BaseDirectory, "rika_license.txt"),
+            Path.Combine(Path.GetDirectoryName(typeof(ProxyBootstrap).Assembly.Location) ?? "", "rika_license.txt"),
+            Path.Combine(AppContext.BaseDirectory, "license.txt"),
+            Path.Combine(Path.GetDirectoryName(typeof(ProxyBootstrap).Assembly.Location) ?? "", "license.txt")
+        }
+        .Where(path => !string.IsNullOrWhiteSpace(path))
+        .Select(path => Path.GetFullPath(path!))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+        foreach (string path in candidates)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    continue;
+
+                string value = File.ReadAllText(path).Trim();
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[AuthBypass] license file read failed: "
+                    + Path.GetFileName(path) + " -> " + ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(preferred))
+            return preferred.Trim();
+
+        if (!string.IsNullOrWhiteSpace(_currentLicense))
+            return _currentLicense.Trim();
+
+        return "RIKA-0000-0000-0000";
     }
 
     private static string? TryReadEndpointFromInstance(object? self)
@@ -1565,6 +1716,15 @@ internal static unsafe class AuthBypass
             .ToArray();
     }
 
+    private static string[] CleanApiKeyText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Array.Empty<string>();
+
+        return CleanApiKeys(value.Split(new[] { ';', ',', '|', '\r', '\n', '\t', ' ' },
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+    }
+
     internal static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
     {
         if (target == null || stub == null)
@@ -1609,6 +1769,23 @@ internal static unsafe class AuthBypass
 internal static class ProtectionBypass
 {
     private static Type? _uploadTicketType;
+    private static readonly OpCode[] OneByteOpCodes = new OpCode[0x100];
+    private static readonly OpCode[] TwoByteOpCodes = new OpCode[0x100];
+
+    static ProtectionBypass()
+    {
+        foreach (var field in typeof(OpCodes).GetFields(BindingFlags.Public | BindingFlags.Static))
+        {
+            if (field.GetValue(null) is not OpCode op)
+                continue;
+
+            ushort value = unchecked((ushort)op.Value);
+            if (value < 0x100)
+                OneByteOpCodes[value] = op;
+            else if ((value & 0xFF00) == 0xFE00)
+                TwoByteOpCodes[value & 0xFF] = op;
+        }
+    }
 
     internal static void TryPatch(Assembly asm)
     {
@@ -1645,8 +1822,16 @@ internal static class ProtectionBypass
             var self = typeof(ProtectionBypass);
             AuthBypass.PatchOneStaticHelper(
                 uploadMethod,
-                self.GetMethod(nameof(UploadFileStub), BindingFlags.Static | BindingFlags.Public),
+                self.GetMethod(nameof(UploadFileStub), BindingFlags.Static | BindingFlags.Public)!,
                 "UploadFile");
+            PatchHttpDiagnostics(asm);
+            PatchHttpContentRequestDiagnostics(sEpType);
+
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("RIKA_PROXY_PATCH_PROTECTION_STAGES")))
+            {
+                ProxyLog.Write("[ProtBypass] TryPatch complete - UploadFileAsync only; StartJob/WaitForFile remain original");
+                return;
+            }
 
             // Patch StartJob (aYN=) — sEp= üzerindeki instance metot
             var startJobMethod = sEpType.GetMethod("aYN=", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1654,7 +1839,7 @@ internal static class ProtectionBypass
             {
                 AuthBypass.PatchOneStaticHelper(
                     startJobMethod,
-                    self.GetMethod(nameof(StartJobStub), BindingFlags.Static | BindingFlags.Public),
+                    self.GetMethod(nameof(StartJobStub), BindingFlags.Static | BindingFlags.Public)!,
                     "StartJob");
                 ProxyLog.Write("[ProtBypass] aYN= (StartJob) patched ✓");
             }
@@ -1669,7 +1854,7 @@ internal static class ProtectionBypass
             {
                 AuthBypass.PatchOneStaticHelper(
                     waitForFileMethod,
-                    self.GetMethod(nameof(WaitForFileStub), BindingFlags.Static | BindingFlags.Public),
+                    self.GetMethod(nameof(WaitForFileStub), BindingFlags.Static | BindingFlags.Public)!,
                     "WaitForFile");
                 ProxyLog.Write("[ProtBypass] blA= (WaitForFile) patched ✓");
             }
@@ -1693,7 +1878,7 @@ internal static class ProtectionBypass
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (moveNext != null)
                 {
-                    AuthBypass.PatchOneStaticHelper(moveNext, stubMethod, "ProtectAsync.MoveNext");
+                    AuthBypass.PatchOneStaticHelper(moveNext, stubMethod!, "ProtectAsync.MoveNext");
                     ProxyLog.Write("[ProtBypass] ProtectAsync.MoveNext (private) patched ✓");
                 }
                 else
@@ -1714,7 +1899,7 @@ internal static class ProtectionBypass
                         if (idx >= 0)
                         {
                             var ifaceTarget = map.TargetMethods[idx];
-                            AuthBypass.PatchOneStaticHelper(ifaceTarget, stubMethod, "ProtectAsync.IAsyncStateMachine.MoveNext");
+                            AuthBypass.PatchOneStaticHelper(ifaceTarget, stubMethod!, "ProtectAsync.IAsyncStateMachine.MoveNext");
                             ProxyLog.Write("[ProtBypass] ProtectAsync.IAsyncStateMachine.MoveNext (interface dispatch) patched ✓");
                         }
                         else
@@ -1747,12 +1932,414 @@ internal static class ProtectionBypass
         }
     }
 
+    private static void PatchHttpDiagnostics(Assembly asm)
+    {
+        try
+        {
+            var stub = typeof(ProtectionBypass).GetMethod(
+                nameof(EnsureSuccessStatusCodeStub),
+                BindingFlags.Static | BindingFlags.Public)!;
+            int patched = 0;
+
+            foreach (var type in SafeGetTypes(asm))
+            {
+                MethodInfo[] methods;
+                try
+                {
+                    methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                foreach (var method in methods)
+                {
+                    var parameters = method.GetParameters();
+                    if (method.ReturnType != typeof(System.Net.Http.HttpResponseMessage)
+                        || parameters.Length != 1
+                        || parameters[0].ParameterType != typeof(System.Net.Http.HttpResponseMessage)
+                        || !CallsEnsureSuccessStatusCode(method))
+                    {
+                        continue;
+                    }
+
+                    AuthBypass.PatchOneStaticHelper(method, stub, "HttpEnsure:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+            }
+
+            ProxyLog.Write("[ProtBypass] HTTP diagnostics patched wrappers=" + patched);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] HTTP diagnostics patch error: " + ex.Message);
+        }
+    }
+
+    private static void PatchHttpContentRequestDiagnostics(Type sEpType)
+    {
+        try
+        {
+            var stub = typeof(ProtectionBypass).GetMethod(
+                nameof(HttpContentRequestStub),
+                BindingFlags.Static | BindingFlags.Public)!;
+            int patched = 0;
+
+            var scanTypes = new[] { sEpType }
+                .Concat(sEpType.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic));
+
+            foreach (var type in scanTypes)
+            {
+                MethodInfo[] methods;
+                try
+                {
+                    methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                foreach (var method in methods)
+                {
+                    var parameters = method.GetParameters();
+                    if (!IsTaskOfHttpResponse(method.ReturnType)
+                        || parameters.Length != 4
+                        || parameters[0].ParameterType != typeof(System.Net.Http.HttpClient)
+                        || parameters[1].ParameterType != typeof(string)
+                        || parameters[2].ParameterType != typeof(System.Net.Http.HttpContent)
+                        || parameters[3].ParameterType != typeof(CancellationToken))
+                    {
+                        continue;
+                    }
+
+                    AuthBypass.PatchOneStaticHelper(method, stub, "HttpContent:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+            }
+
+            ProxyLog.Write("[ProtBypass] HTTP content request diagnostics patched wrappers=" + patched);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] HTTP content request diagnostics patch error: " + ex.Message);
+        }
+    }
+
+    public static Task<System.Net.Http.HttpResponseMessage> HttpContentRequestStub(
+        System.Net.Http.HttpClient client,
+        string url,
+        System.Net.Http.HttpContent content,
+        CancellationToken ct)
+    {
+        return SendHttpContentRequestWithLogAsync(client, url, content, ct);
+    }
+
+    private static async Task<System.Net.Http.HttpResponseMessage> SendHttpContentRequestWithLogAsync(
+        System.Net.Http.HttpClient client,
+        string url,
+        System.Net.Http.HttpContent content,
+        CancellationToken ct)
+    {
+        content = EnsureLicenseInMultipartContent(content);
+
+        ProxyLog.Write("[ProtBypass] HTTP content request url=" + RedactForLog(url, 300)
+            + " content=" + DescribeHttpContent(content));
+
+        var response = await client.PostAsync(url, content, ct).ConfigureAwait(false);
+        string body = "";
+        try
+        {
+            if (response.Content != null)
+                body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            body = "<read failed: " + ex.GetType().Name + ": " + ex.Message + ">";
+        }
+
+        ProxyLog.Write("[ProtBypass] HTTP content response status=" + (int)response.StatusCode
+            + " " + response.StatusCode + " body=" + RedactForLog(body, 1200));
+        return response;
+    }
+
+    private static bool IsTaskOfHttpResponse(Type type)
+    {
+        return type.IsGenericType
+            && type.GetGenericTypeDefinition() == typeof(Task<>)
+            && type.GetGenericArguments()[0] == typeof(System.Net.Http.HttpResponseMessage);
+    }
+
+    private static System.Net.Http.HttpContent EnsureLicenseInMultipartContent(
+        System.Net.Http.HttpContent content)
+    {
+        try
+        {
+            if (content.GetType().Name != "MultipartFormDataContent")
+                return content;
+
+            string body = content.ReadAsStringAsync()
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            if (string.IsNullOrEmpty(body) ||
+                !body.Contains("name=license", StringComparison.OrdinalIgnoreCase))
+            {
+                return content;
+            }
+
+            var fields = ParseMultipartTextFields(body).ToArray();
+            if (fields.Length == 0)
+                return content;
+
+            bool changed = false;
+            string license = AuthBypass.GetConfiguredLicense();
+            var rebuilt = new System.Net.Http.MultipartFormDataContent();
+            foreach (var (name, value) in fields)
+            {
+                string nextValue = value;
+                if (string.Equals(name, "license", StringComparison.OrdinalIgnoreCase) &&
+                    string.IsNullOrWhiteSpace(nextValue))
+                {
+                    nextValue = license;
+                    changed = true;
+                }
+
+                rebuilt.Add(new System.Net.Http.StringContent(nextValue), name);
+            }
+
+            if (!changed)
+                return content;
+
+            ProxyLog.Write("[ProtBypass] Multipart license field was empty; injected len=" + license.Length);
+            return rebuilt;
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] Multipart license injection failed: "
+                + ex.GetType().Name + ": " + ex.Message);
+            return content;
+        }
+    }
+
+    private static IEnumerable<(string Name, string Value)> ParseMultipartTextFields(string body)
+    {
+        var matches = Regex.Matches(body,
+            "Content-Disposition:\\s*form-data;\\s*name=\"?(?<name>[^\"\\r\\n]+)\"?\\r\\n\\r\\n(?<value>.*?)(?=\\r\\n--)",
+            RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+        foreach (Match match in matches)
+        {
+            string name = match.Groups["name"].Value.Trim();
+            string value = match.Groups["value"].Value;
+            if (!string.IsNullOrWhiteSpace(name))
+                yield return (name, value);
+        }
+    }
+
+    public static System.Net.Http.HttpResponseMessage EnsureSuccessStatusCodeStub(
+        System.Net.Http.HttpResponseMessage response)
+    {
+        try
+        {
+            string status = response == null
+                ? "null"
+                : ((int)response.StatusCode).ToString() + " " + response.StatusCode;
+            string body = "";
+            if (response?.Content != null)
+            {
+                body = response.Content.ReadAsStringAsync()
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+
+            ProxyLog.Write("[ProtBypass] HTTP EnsureSuccessStatusCode status=" + status
+                + " body=" + RedactForLog(body, 900));
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] HTTP diagnostic read failed: " + ex.GetType().Name + ": " + ex.Message);
+        }
+
+        if (response == null)
+            throw new NullReferenceException("HttpResponseMessage response was null.");
+
+        return response.EnsureSuccessStatusCode();
+    }
+
+    private static Type[] SafeGetTypes(Assembly asm)
+    {
+        try
+        {
+            return asm.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t != null).Cast<Type>().ToArray();
+        }
+        catch
+        {
+            return Array.Empty<Type>();
+        }
+    }
+
+    private static bool CallsEnsureSuccessStatusCode(MethodInfo method)
+    {
+        byte[]? il;
+        try
+        {
+            il = method.GetMethodBody()?.GetILAsByteArray();
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (il == null || il.Length == 0)
+            return false;
+
+        for (int i = 0; i < il.Length;)
+        {
+            OpCode op;
+            byte b = il[i++];
+            if (b == 0xFE)
+            {
+                if (i >= il.Length)
+                    return false;
+                op = TwoByteOpCodes[il[i++]];
+            }
+            else
+            {
+                op = OneByteOpCodes[b];
+            }
+
+            int operandStart = i;
+            int operandSize = GetOperandSize(op.OperandType, il, operandStart);
+            if (operandSize < 0 || operandStart + operandSize > il.Length)
+                return false;
+
+            if ((op == OpCodes.Call || op == OpCodes.Callvirt) && operandSize == 4)
+            {
+                int token = BitConverter.ToInt32(il, operandStart);
+                try
+                {
+                    var resolved = method.Module.ResolveMethod(token);
+                    if (resolved is MethodInfo called
+                        && called.Name == nameof(System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode)
+                        && called.DeclaringType == typeof(System.Net.Http.HttpResponseMessage))
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // Ignore tokens that cannot be resolved in the current module context.
+                }
+            }
+
+            i = operandStart + operandSize;
+        }
+
+        return false;
+    }
+
+    private static int GetOperandSize(OperandType operandType, byte[] il, int operandStart)
+    {
+        return operandType switch
+        {
+            OperandType.InlineNone => 0,
+            OperandType.ShortInlineBrTarget => 1,
+            OperandType.ShortInlineI => 1,
+            OperandType.ShortInlineVar => 1,
+            OperandType.InlineVar => 2,
+            OperandType.InlineI => 4,
+            OperandType.InlineBrTarget => 4,
+            OperandType.InlineField => 4,
+            OperandType.InlineMethod => 4,
+            OperandType.InlineSig => 4,
+            OperandType.InlineString => 4,
+            OperandType.InlineTok => 4,
+            OperandType.InlineType => 4,
+            OperandType.ShortInlineR => 4,
+            OperandType.InlineI8 => 8,
+            OperandType.InlineR => 8,
+            OperandType.InlineSwitch => ReadSwitchOperandSize(il, operandStart),
+            _ => -1
+        };
+    }
+
+    private static int ReadSwitchOperandSize(byte[] il, int operandStart)
+    {
+        if (operandStart + 4 > il.Length)
+            return -1;
+
+        int count = BitConverter.ToInt32(il, operandStart);
+        if (count < 0)
+            return -1;
+
+        long size = 4L + (4L * count);
+        return size > int.MaxValue ? -1 : (int)size;
+    }
+
+    private static string DescribeHttpContent(System.Net.Http.HttpContent? content)
+    {
+        if (content == null)
+            return "null";
+
+        string headers = "";
+        string body = "";
+        try
+        {
+            headers = content.Headers?.ToString() ?? "";
+        }
+        catch (Exception ex)
+        {
+            headers = "<headers read failed: " + ex.GetType().Name + ">";
+        }
+
+        try
+        {
+            body = content.ReadAsStringAsync()
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (Exception ex)
+        {
+            body = "<body read failed: " + ex.GetType().Name + ": " + ex.Message + ">";
+        }
+
+        return "type=" + content.GetType().Name
+            + " headers=" + RedactForLog(headers, 300)
+            + " body=" + RedactForLog(body, 1200);
+    }
+
+    private static string RedactForLog(string? value, int maxLength)
+    {
+        if (string.IsNullOrEmpty(value))
+            return "";
+
+        string cleaned = value.Replace("\r", "\\r").Replace("\n", "\\n");
+        cleaned = Regex.Replace(cleaned,
+            @"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b",
+            "[guid-redacted]");
+
+        if (cleaned.Length <= maxLength)
+            return cleaned;
+
+        return cleaned.Substring(0, maxLength) + "...<truncated>";
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static object UploadFileStub(byte[] fileBytes, string uploadKey, string[] apiKeys, CancellationToken ct)
     {
         ProxyLog.Write("[ProtBypass] UploadFileAsync stub called ✓ — performing real Pixeldrain upload");
 
-        const string RealApiKey = "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865";
+        const string FallbackPixeldrainApiKey = "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865";
+        const string RikaXorKey = "{C1B8DA14-46C7-45F6-95C2-EAB1146DF091}";
 
         var type = _uploadTicketType;
         if (type == null)
@@ -1768,15 +2355,38 @@ internal static class ProtectionBypass
         {
             try
             {
-                string fileId = PixeldrainUpload(fileBytes, RealApiKey, ct);
+                string pixeldrainApiKey = (apiKeys ?? Array.Empty<string>())
+                    .FirstOrDefault(k => !string.IsNullOrWhiteSpace(k))
+                    ?? FallbackPixeldrainApiKey;
+
+                string fileId = PixeldrainUpload(fileBytes, pixeldrainApiKey, ct);
                 ProxyLog.Write("[ProtBypass] Pixeldrain upload succeeded — file_id=" + fileId);
 
-                // XOR-encrypt the fileId with the uploadKey so the app can decrypt it later.
-                string encryptedRef = string.IsNullOrEmpty(uploadKey)
-                    ? fileId
-                    : XorToBase64(fileId, uploadKey);
+                string refMode = (Environment.GetEnvironmentVariable("RIKA_PROXY_REF_MODE") ?? "uploadkey").Trim();
+                string encryptedRef;
+                if (refMode.Equals("plain", StringComparison.OrdinalIgnoreCase))
+                {
+                    encryptedRef = fileId;
+                }
+                else if (refMode.Equals("uploadkey", StringComparison.OrdinalIgnoreCase))
+                {
+                    encryptedRef = string.IsNullOrEmpty(uploadKey)
+                        ? fileId
+                        : XorToBase64(fileId, uploadKey);
+                }
+                else
+                {
+                    refMode = "xorkey";
+                    encryptedRef = XorToBase64(fileId, RikaXorKey);
+                }
 
-                var ticket = Activator.CreateInstance(type, encryptedRef, fileId, RealApiKey)!;
+                ProxyLog.Write("[ProtBypass] Upload ticket built mode=" + refMode
+                    + " fileIdLen=" + fileId.Length
+                    + " uploadKeyLen=" + (uploadKey?.Length ?? 0)
+                    + " encryptedRefLen=" + encryptedRef.Length
+                    + " apiKeys=" + (apiKeys?.Length ?? 0));
+
+                var ticket = Activator.CreateInstance(type, encryptedRef, fileId, pixeldrainApiKey)!;
                 tcs.SetResult(ticket);
             }
             catch (Exception ex)
@@ -1786,7 +2396,7 @@ internal static class ProtectionBypass
                 // Fallback: build a ticket with the api key so the app at least has it.
                 try
                 {
-                    var ticket = Activator.CreateInstance(type, "upload-failed", "upload-failed", RealApiKey)!;
+                    var ticket = Activator.CreateInstance(type, "upload-failed", "upload-failed", FallbackPixeldrainApiKey)!;
                     tcs.SetResult(ticket);
                 }
                 catch
