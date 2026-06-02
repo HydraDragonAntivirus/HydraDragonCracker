@@ -812,6 +812,8 @@ internal static unsafe class AuthBypass
             TrySet(state, type, "IsReady", true);
             TrySet(state, type, "CachedLicense", "RIKA-0000-0000-0000");
             TrySet(state, type, "RequiresUpdate", false);
+            TrySet(state, type, "Message", "");
+            TrySet(state, type, "DownloadUrl", "");
             return MakeTask(type, state);
         }
         catch (Exception ex)
