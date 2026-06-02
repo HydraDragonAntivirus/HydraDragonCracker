@@ -17815,3 +17815,7 @@
 [2026-06-02 19:21:03.153] [ProtectionStub] Source bytes len=3266048 sha256=EF44322E4E9D74E5 features=AntiTamper,StringEncryption
 [2026-06-02 19:21:05.791] [ProtectionStub] Local dnlib transform -> C:\Users\semae\Downloads\Client-built.proxy-protected.exe len=3410944 sha256=F923D5CAA5316473 renamed=11413 changed=True
 [2026-06-02 19:21:05.980] [ProtectionStub] Returning success -> C:\Users\semae\Downloads\Client-built.proxy-protected.exe
+[2026-06-02 19:32:05.380] [ProtectionStub] ProtectAsync stub called
+[2026-06-02 19:32:05.506] [ProtectionStub] Source bytes len=5120 sha256=4F9C8F0F0AF278B6 features=AntiTamper,AntiVm,ControlFlowObfuscation,LibraryMode,ReferenceProxy,ResourceProtection,StringEncryption,SymbolRenaming
+[2026-06-02 19:32:05.510] [ProtectionStub] Local dnlib transform -> C:\Users\semae\OneDrive\Belgeler\GitHub\HydraDragonCracker\testapps\HelloWorld\bin\Release\net48\HelloWorld.proxy-protected.exe len=4608 sha256=154EB81821C51204 renamed=4 changed=True
+[2026-06-02 19:32:05.674] [ProtectionStub] Returning success -> C:\Users\semae\OneDrive\Belgeler\GitHub\HydraDragonCracker\testapps\HelloWorld\bin\Release\net48\HelloWorld.proxy-protected.exe
