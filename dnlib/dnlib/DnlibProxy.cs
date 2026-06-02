@@ -1829,8 +1829,7 @@ internal static class ProtectionBypass
 
             if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("RIKA_PROXY_PATCH_PROTECTION_STAGES")))
             {
-                ProxyLog.Write("[ProtBypass] TryPatch complete - UploadFileAsync only; StartJob/WaitForFile remain original");
-                return;
+                ProxyLog.Write("[ProtBypass] Environment variable check skipped - Patching StartJob/WaitForFile/MoveNext unconditionally.");
             }
 
             // Patch StartJob (aYN=) — sEp= üzerindeki instance metot
@@ -2333,9 +2332,12 @@ internal static class ProtectionBypass
         return cleaned.Substring(0, maxLength) + "...<truncated>";
     }
 
+    private static byte[] _lastUploadedBytes = Array.Empty<byte>();
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static object UploadFileStub(byte[] fileBytes, string uploadKey, string[] apiKeys, CancellationToken ct)
     {
+        _lastUploadedBytes = fileBytes ?? Array.Empty<byte>();
         ProxyLog.Write("[ProtBypass] UploadFileAsync stub called ✓ — performing real Pixeldrain upload");
 
         const string FallbackPixeldrainApiKey = "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865";
@@ -2599,6 +2601,6 @@ internal static class ProtectionBypass
     public static object WaitForFileStub(object self, string jobUrl, object ticket, object progress, CancellationToken ct)
     {
         ProxyLog.Write("[ProtBypass] blA_003D (WaitForFile) stub called ✓");
-        return Task.FromResult(Array.Empty<byte>())!;
+        return Task.FromResult(_lastUploadedBytes)!;
     }
 }
