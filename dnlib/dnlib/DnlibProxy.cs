@@ -1678,7 +1678,68 @@ internal static class ProtectionBypass
                 ProxyLog.Write("[ProtBypass] blA= method not found on sEp= type — skipped");
             }
 
-            ProxyLog.Write("[ProtBypass] TryPatch complete — UploadFileAsync + StartJob + WaitForFile patched");
+            // Patch ProtectAsync state machine MoveNext
+            // The TPL async continuation calls IAsyncStateMachine.MoveNext() via interface dispatch —
+            // a separate JIT entry point from the private void MoveNext() implementation.
+            // We must patch BOTH to intercept all call paths.
+            var protectSMType = sEpType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)
+                .FirstOrDefault(t => t.Name.Contains("ProtectAsync") || t.Name == "_003CProtectAsync_003Ed__2");
+            if (protectSMType != null)
+            {
+                var stubMethod = self.GetMethod(nameof(MoveNextStub), BindingFlags.Static | BindingFlags.Public);
+
+                // 1) Patch the private void MoveNext() direct implementation
+                var moveNext = protectSMType.GetMethod("MoveNext",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (moveNext != null)
+                {
+                    AuthBypass.PatchOneStaticHelper(moveNext, stubMethod, "ProtectAsync.MoveNext");
+                    ProxyLog.Write("[ProtBypass] ProtectAsync.MoveNext (private) patched ✓");
+                }
+                else
+                {
+                    ProxyLog.Write("[ProtBypass] ProtectAsync SM type found but private MoveNext not found");
+                }
+
+                // 2) Patch the IAsyncStateMachine.MoveNext() explicit interface implementation
+                //    This is the entry point the TPL actually calls via interface dispatch.
+                try
+                {
+                    var ifaceType = typeof(System.Runtime.CompilerServices.IAsyncStateMachine);
+                    var ifaceMoveNext = ifaceType.GetMethod("MoveNext");
+                    if (ifaceMoveNext != null)
+                    {
+                        var map = protectSMType.GetInterfaceMap(ifaceType);
+                        int idx = Array.IndexOf(map.InterfaceMethods, ifaceMoveNext);
+                        if (idx >= 0)
+                        {
+                            var ifaceTarget = map.TargetMethods[idx];
+                            AuthBypass.PatchOneStaticHelper(ifaceTarget, stubMethod, "ProtectAsync.IAsyncStateMachine.MoveNext");
+                            ProxyLog.Write("[ProtBypass] ProtectAsync.IAsyncStateMachine.MoveNext (interface dispatch) patched ✓");
+                        }
+                        else
+                        {
+                            ProxyLog.Write("[ProtBypass] IAsyncStateMachine.MoveNext not found in interface map");
+                        }
+                    }
+                    else
+                    {
+                        ProxyLog.Write("[ProtBypass] IAsyncStateMachine.MoveNext reflection lookup failed");
+                    }
+                }
+                catch (Exception ifaceEx)
+                {
+                    ProxyLog.Write("[ProtBypass] Interface map patch error: " + ifaceEx.Message);
+                }
+            }
+            else
+            {
+                ProxyLog.Write("[ProtBypass] ProtectAsync SM type not found — logging all nested types:");
+                foreach (var nt in sEpType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public))
+                    ProxyLog.Write("[ProtBypass]   nested: " + nt.Name);
+            }
+
+            ProxyLog.Write("[ProtBypass] TryPatch complete — UploadFileAsync + StartJob + WaitForFile + MoveNext (private+interface) patched");
         }
         catch (Exception ex)
         {
