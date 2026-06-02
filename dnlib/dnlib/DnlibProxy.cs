@@ -798,6 +798,7 @@ internal static unsafe class AuthBypass
         // Protection flow reads this config through Dhr/wgc accessors. In proxy
         // tests those values can remain empty even after auth is stubbed.
         PatchApiBootstrap(asm);
+        PatchProtectionService(asm);
     }
 
     // -----------------------------------------------------------------------
@@ -1322,6 +1323,188 @@ internal static unsafe class AuthBypass
             .Select(key => key.Trim())
             .Distinct(StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static void PatchProtectionService(Assembly winUiAsm)
+    {
+        ProxyLog.Write("[ProtectionStub] Searching for ProtectAsync targets...");
+
+        MethodInfo stub = typeof(AuthBypass).GetMethod(nameof(ProtectAsyncStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        int patched = 0;
+        foreach (Type type in GetLoadableTypes(winUiAsm))
+        {
+            MethodInfo[] methods;
+            try
+            {
+                methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static |
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            }
+            catch
+            {
+                continue;
+            }
+
+            foreach (MethodInfo method in methods)
+            {
+                if (method.IsAbstract || method.ContainsGenericParameters)
+                    continue;
+
+                bool target =
+                    (!method.IsStatic && method.Name == "ProtectAsync" && IsTaskOf(method.ReturnType, "ProtectionResult")) ||
+                    (method.IsStatic && IsProtectionServiceHelper(method));
+
+                if (!target)
+                    continue;
+
+                PatchOneStaticHelper(method, stub, "ProtectionStub:" + type.Name + "." + method.Name);
+                patched++;
+            }
+        }
+
+        ProxyLog.Write("[ProtectionStub] ProtectAsync patch count: " + patched);
+    }
+
+    private static bool IsProtectionServiceHelper(MethodInfo method)
+    {
+        if (!IsTaskOf(method.ReturnType, "ProtectionResult"))
+            return false;
+
+        var parameters = method.GetParameters();
+        return parameters.Length == 4 &&
+               parameters[0].ParameterType.Name.IndexOf("IProtectionService", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static bool IsTaskOf(Type type, string resultTypeName)
+    {
+        return type.IsGenericType &&
+               type.GetGenericTypeDefinition() == typeof(Task<>) &&
+               string.Equals(type.GetGenericArguments()[0].Name, resultTypeName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static object ProtectAsyncStub(object self, object request, object progress, CancellationToken ct)
+    {
+        try
+        {
+            ProxyLog.Write("[ProtectionStub] ProtectAsync stub called");
+            ReportProtectionProgress(progress, "Preparing", 5);
+
+            Type? resultType = FindTypeInLoadedAssemblies("ProtectionResult");
+            if (resultType == null)
+            {
+                ProxyLog.Write("[ProtectionStub] ProtectionResult type not found");
+                return Task.FromResult<object?>(null)!;
+            }
+
+            string? inputPath = TryGetValue(request, "FilePath") as string;
+            byte[]? inputBytes = TryGetValue(request, "InputBytes") as byte[];
+            string outputPath = BuildProxyOutputPath(inputPath);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath) ?? AppContext.BaseDirectory);
+
+            if (inputBytes != null && inputBytes.Length > 0)
+            {
+                File.WriteAllBytes(outputPath, inputBytes);
+                ProxyLog.Write("[ProtectionStub] Wrote InputBytes -> " + outputPath + " (" + inputBytes.Length + " bytes)");
+            }
+            else if (!string.IsNullOrWhiteSpace(inputPath) && File.Exists(inputPath))
+            {
+                File.Copy(inputPath, outputPath, true);
+                ProxyLog.Write("[ProtectionStub] Copied file -> " + outputPath);
+            }
+            else
+            {
+                File.WriteAllBytes(outputPath, Array.Empty<byte>());
+                ProxyLog.Write("[ProtectionStub] No input bytes/file found; wrote empty output -> " + outputPath);
+            }
+
+            ReportProtectionProgress(progress, "Finalizing", 95);
+
+            object result = Activator.CreateInstance(resultType)!;
+            TrySet(result, resultType, "IsSuccess", true);
+            TrySet(result, resultType, "OutputPath", outputPath);
+            TrySet(result, resultType, "ErrorMessage", (string?)null);
+            TrySet(result, resultType, "AppliedFeatures", Array.Empty<string>());
+
+            ReportProtectionProgress(progress, "Complete", 100);
+            ProxyLog.Write("[ProtectionStub] Returning success -> " + outputPath);
+            return MakeTask(resultType, result);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtectionStub] EXCEPTION: " + ex);
+            Type? resultType = FindTypeInLoadedAssemblies("ProtectionResult");
+            if (resultType == null)
+                return Task.FromResult<object?>(null)!;
+
+            object result = Activator.CreateInstance(resultType)!;
+            TrySet(result, resultType, "IsSuccess", false);
+            TrySet(result, resultType, "ErrorMessage", ex.Message);
+            return MakeTask(resultType, result);
+        }
+    }
+
+    private static void ReportProtectionProgress(object? progress, string step, double value)
+    {
+        if (progress == null)
+            return;
+
+        try
+        {
+            Type? progressType = FindTypeInLoadedAssemblies("ProtectionProgress");
+            if (progressType == null)
+                return;
+
+            object update = Activator.CreateInstance(progressType)!;
+            TrySet(update, progressType, "Step", step);
+            TrySet(update, progressType, "Value", value);
+            progress.GetType().GetMethod("Report")?.Invoke(progress, new[] { update });
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtectionStub] Progress report skipped: " + ex.Message);
+        }
+    }
+
+    private static object? TryGetValue(object? instance, string name)
+    {
+        if (instance == null)
+            return null;
+
+        try
+        {
+            Type type = instance.GetType();
+            var prop = type.GetProperty(name,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (prop?.CanRead == true)
+                return prop.GetValue(instance);
+
+            var field = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(f => string.Equals(f.Name, name, StringComparison.OrdinalIgnoreCase) ||
+                                     f.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
+            return field?.GetValue(instance);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string BuildProxyOutputPath(string? inputPath)
+    {
+        if (string.IsNullOrWhiteSpace(inputPath))
+            return Path.Combine(AppContext.BaseDirectory, "rika-proxy-output.bin");
+
+        string directory = Path.GetDirectoryName(inputPath) ?? AppContext.BaseDirectory;
+        string fileName = Path.GetFileNameWithoutExtension(inputPath);
+        string extension = Path.GetExtension(inputPath);
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = "rika-proxy-output";
+
+        return Path.Combine(directory, fileName + ".proxy-protected" + extension);
     }
 
     private static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
