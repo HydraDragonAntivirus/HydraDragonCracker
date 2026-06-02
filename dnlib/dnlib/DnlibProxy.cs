@@ -569,6 +569,10 @@ internal static class ProxyLog
 internal static unsafe class AuthBypass
 {
     private static int _patched;
+    private static int _endpointGetterLogged;
+    private static int _apiKeysGetterLogged;
+    private static string _apiEndpoint = "https://pixeldrain.com/api";
+    private static string[] _apiKeys = new[] { "proxy-api-key" };
 
     // Tipleri statik alanlarda tut — GC koruma + hızlı erişim
     internal static Type? BootstrapStateType;
@@ -790,6 +794,10 @@ internal static unsafe class AuthBypass
         // kullanır — VSD bypass'ı tamamen atlatır.
         // -----------------------------------------------------------------------
         PatchStaticHelpers(asm);
+
+        // Protection flow reads this config through Dhr/wgc accessors. In proxy
+        // tests those values can remain empty even after auth is stubbed.
+        PatchApiBootstrap(asm);
     }
 
     // -----------------------------------------------------------------------
@@ -909,6 +917,22 @@ internal static unsafe class AuthBypass
                 t.GetInterfaces().Any(i => i.Name.Contains("IAuthenticationService")));
         }
         catch { return null; }
+    }
+
+    private static Type[] GetLoadableTypes(Assembly asm)
+    {
+        try
+        {
+            return asm.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t != null).Cast<Type>().ToArray();
+        }
+        catch
+        {
+            return Array.Empty<Type>();
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -1118,6 +1142,186 @@ internal static unsafe class AuthBypass
 
         PatchOneStaticHelper(initTarget,   initStub,   "InitHelper");
         PatchOneStaticHelper(signInTarget, signInStub, "SignInHelper");
+    }
+
+    private static void PatchApiBootstrap(Assembly winUiAsm)
+    {
+        ProxyLog.Write("[ApiBootstrap] Searching for Endpoint/ApiKeys accessors...");
+
+        MethodInfo endpointGetterStub = typeof(AuthBypass).GetMethod(nameof(ApiEndpointGetterStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo endpointSetterStub = typeof(AuthBypass).GetMethod(nameof(ApiEndpointSetterStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo apiKeysGetterStub = typeof(AuthBypass).GetMethod(nameof(ApiKeysGetterStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo apiKeysSetterStub = typeof(AuthBypass).GetMethod(nameof(ApiKeysSetterStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        int patched = 0;
+        foreach (Type type in GetLoadableTypes(winUiAsm))
+        {
+            MethodInfo[] methods;
+            try
+            {
+                methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            }
+            catch
+            {
+                continue;
+            }
+
+            foreach (MethodInfo method in methods)
+            {
+                if (method.IsAbstract || method.ContainsGenericParameters)
+                    continue;
+
+                if (IsEndpointGetter(method))
+                {
+                    PatchOneStaticHelper(method, endpointGetterStub,
+                        "ApiBootstrap:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+                else if (IsEndpointSetter(method))
+                {
+                    PatchOneStaticHelper(method, endpointSetterStub,
+                        "ApiBootstrap:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+                else if (IsApiKeysGetter(method))
+                {
+                    PatchOneStaticHelper(method, apiKeysGetterStub,
+                        "ApiBootstrap:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+                else if (IsApiKeysSetter(method))
+                {
+                    PatchOneStaticHelper(method, apiKeysSetterStub,
+                        "ApiBootstrap:" + type.Name + "." + method.Name);
+                    patched++;
+                }
+            }
+        }
+
+        ProxyLog.Write("[ApiBootstrap] Accessor patch count: " + patched);
+    }
+
+    private static bool IsEndpointGetter(MethodInfo method)
+    {
+        return method.ReturnType == typeof(string) &&
+               method.GetParameters().Length == 0 &&
+               NameLooksLikeEndpoint(method.Name);
+    }
+
+    private static bool IsEndpointSetter(MethodInfo method)
+    {
+        var parameters = method.GetParameters();
+        return method.ReturnType == typeof(void) &&
+               parameters.Length == 1 &&
+               parameters[0].ParameterType == typeof(string) &&
+               NameLooksLikeEndpoint(method.Name);
+    }
+
+    private static bool IsApiKeysGetter(MethodInfo method)
+    {
+        return method.ReturnType == typeof(string[]) &&
+               method.GetParameters().Length == 0 &&
+               NameLooksLikeApiKeys(method.Name);
+    }
+
+    private static bool IsApiKeysSetter(MethodInfo method)
+    {
+        var parameters = method.GetParameters();
+        return method.ReturnType == typeof(void) &&
+               parameters.Length == 1 &&
+               parameters[0].ParameterType == typeof(string[]) &&
+               NameLooksLikeApiKeys(method.Name);
+    }
+
+    private static bool NameLooksLikeEndpoint(string name)
+    {
+        return name.IndexOf("Endpoint", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("ILZ_003D", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("ILZ=", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static bool NameLooksLikeApiKeys(string name)
+    {
+        return name.IndexOf("ApiKeys", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("yVP_003D", StringComparison.OrdinalIgnoreCase) >= 0 ||
+               name.IndexOf("yVP=", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static string ApiEndpointGetterStub(object self)
+    {
+        string endpoint = GetConfiguredEndpoint();
+        if (Interlocked.Exchange(ref _endpointGetterLogged, 1) == 0)
+            ProxyLog.Write("[ApiBootstrap] Endpoint getter stub -> " + endpoint);
+        return endpoint;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ApiEndpointSetterStub(object self, string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            _apiEndpoint = value.Trim();
+            ProxyLog.Write("[ApiBootstrap] Endpoint setter captured -> " + _apiEndpoint);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static string[] ApiKeysGetterStub(object self)
+    {
+        string[] keys = GetConfiguredApiKeys();
+        if (Interlocked.Exchange(ref _apiKeysGetterLogged, 1) == 0)
+            ProxyLog.Write("[ApiBootstrap] ApiKeys getter stub -> count=" + keys.Length);
+        return keys;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ApiKeysSetterStub(object self, string[] value)
+    {
+        string[] cleaned = CleanApiKeys(value);
+        if (cleaned.Length > 0)
+        {
+            _apiKeys = cleaned;
+            ProxyLog.Write("[ApiBootstrap] ApiKeys setter captured -> count=" + cleaned.Length);
+        }
+    }
+
+    private static string GetConfiguredEndpoint()
+    {
+        string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_ENDPOINT");
+        return string.IsNullOrWhiteSpace(env) ? _apiEndpoint : env.Trim();
+    }
+
+    private static string[] GetConfiguredApiKeys()
+    {
+        string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_API_KEYS");
+        if (!string.IsNullOrWhiteSpace(env))
+        {
+            string[] fromEnv = CleanApiKeys(env.Split(new[] { ';', ',', '|', '\r', '\n', '\t', ' ' },
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            if (fromEnv.Length > 0)
+                return fromEnv;
+        }
+
+        string[] keys = CleanApiKeys(_apiKeys);
+        return keys.Length > 0 ? keys : new[] { "proxy-api-key" };
+    }
+
+    private static string[] CleanApiKeys(string[]? keys)
+    {
+        if (keys == null)
+            return Array.Empty<string>();
+
+        return keys
+            .Where(key => !string.IsNullOrWhiteSpace(key))
+            .Select(key => key.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
