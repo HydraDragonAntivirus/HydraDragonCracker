@@ -572,7 +572,7 @@ internal static unsafe class AuthBypass
     private static int _endpointGetterLogged;
     private static int _apiKeysGetterLogged;
     private static string _apiEndpoint = "https://pixeldrain.com/api";
-    private static string[] _apiKeys = new[] { "proxy-api-key" };
+    private static string[] _apiKeys = Array.Empty<string>();
 
     // Tipleri statik alanlarda tut — GC koruma + hızlı erişim
     internal static Type? BootstrapStateType;
@@ -877,6 +877,19 @@ internal static unsafe class AuthBypass
 
     private static void TrySet(object instance, Type type, string name, object? value)
     {
+        // 1) C# 9 init-only property'lerin backing field'ını doğrudan dene.
+        //    prop.CanWrite init-only için true döner ama SetValue çalışma zamanında
+        //    InvalidOperationException fırlatır; catch sessizce yutar ve field
+        //    fallback'e hiç ulaşılmaz.  Backing field'ı önce deneyerek bunu atlatıyoruz.
+        var backingField = type.GetField(
+            $"<{name}>k__BackingField",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        if (backingField != null)
+        {
+            try { backingField.SetValue(instance, value); return; } catch { }
+        }
+
+        // 2) Normal yazılabilir property (init-only olmayan setter).
         try
         {
             var prop = type.GetProperty(name,
@@ -886,6 +899,8 @@ internal static unsafe class AuthBypass
                 prop.SetValue(instance, value);
                 return;
             }
+
+            // 3) İsim içeren herhangi bir field (son çare).
             var field = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .FirstOrDefault(f => f.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
             field?.SetValue(instance, value);
@@ -1148,6 +1163,13 @@ internal static unsafe class AuthBypass
     {
         ProxyLog.Write("[ApiBootstrap] Searching for Endpoint/ApiKeys accessors...");
 
+        Type? authImplType = FindAuthServiceImpl(winUiAsm);
+        if (authImplType == null)
+        {
+            ProxyLog.Write("[ApiBootstrap] Authentication implementation not found.");
+            return;
+        }
+
         MethodInfo endpointGetterStub = typeof(AuthBypass).GetMethod(nameof(ApiEndpointGetterStub),
             BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo endpointSetterStub = typeof(AuthBypass).GetMethod(nameof(ApiEndpointSetterStub),
@@ -1160,6 +1182,9 @@ internal static unsafe class AuthBypass
         int patched = 0;
         foreach (Type type in GetLoadableTypes(winUiAsm))
         {
+            if (type != authImplType)
+                continue;
+
             MethodInfo[] methods;
             try
             {
@@ -1255,9 +1280,9 @@ internal static unsafe class AuthBypass
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static string ApiEndpointGetterStub(object self)
     {
-        string endpoint = GetConfiguredEndpoint();
+        string endpoint = GetConfiguredEndpoint(self, out string source);
         if (Interlocked.Exchange(ref _endpointGetterLogged, 1) == 0)
-            ProxyLog.Write("[ApiBootstrap] Endpoint getter stub -> " + endpoint);
+            ProxyLog.Write("[ApiBootstrap] Endpoint getter stub -> " + endpoint + " source=" + source);
         return endpoint;
     }
 
@@ -1274,9 +1299,10 @@ internal static unsafe class AuthBypass
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static string[] ApiKeysGetterStub(object self)
     {
-        string[] keys = GetConfiguredApiKeys();
+        string[] keys = GetConfiguredApiKeys(self, out string source);
         if (Interlocked.Exchange(ref _apiKeysGetterLogged, 1) == 0)
-            ProxyLog.Write("[ApiBootstrap] ApiKeys getter stub -> count=" + keys.Length);
+            ProxyLog.Write("[ApiBootstrap] ApiKeys getter stub -> count=" + keys.Length
+                + " source=" + source + " " + DescribeKeys(keys));
         return keys;
     }
 
@@ -1291,13 +1317,28 @@ internal static unsafe class AuthBypass
         }
     }
 
-    private static string GetConfiguredEndpoint()
+    private static string GetConfiguredEndpoint(object? self, out string source)
     {
         string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_ENDPOINT");
-        return string.IsNullOrWhiteSpace(env) ? _apiEndpoint : env.Trim();
+        if (!string.IsNullOrWhiteSpace(env))
+        {
+            source = "env";
+            return env.Trim();
+        }
+
+        string? fromInstance = TryReadEndpointFromInstance(self);
+        if (!string.IsNullOrWhiteSpace(fromInstance))
+        {
+            _apiEndpoint = fromInstance.Trim();
+            source = "instance-field";
+            return _apiEndpoint;
+        }
+
+        source = "default";
+        return _apiEndpoint;
     }
 
-    private static string[] GetConfiguredApiKeys()
+    private static string[] GetConfiguredApiKeys(object? self, out string source)
     {
         string? env = Environment.GetEnvironmentVariable("RIKA_PROXY_API_KEYS");
         if (!string.IsNullOrWhiteSpace(env))
@@ -1305,11 +1346,205 @@ internal static unsafe class AuthBypass
             string[] fromEnv = CleanApiKeys(env.Split(new[] { ';', ',', '|', '\r', '\n', '\t', ' ' },
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
             if (fromEnv.Length > 0)
+            {
+                source = "env";
                 return fromEnv;
+            }
+        }
+
+        string[] fromInstance = TryReadApiKeysFromInstance(self);
+        if (fromInstance.Length > 0)
+        {
+            _apiKeys = fromInstance;
+            source = "instance-field";
+            return fromInstance;
         }
 
         string[] keys = CleanApiKeys(_apiKeys);
-        return keys.Length > 0 ? keys : new[] { "proxy-api-key" };
+        if (keys.Length > 0)
+        {
+            source = "captured-setter";
+            return keys;
+        }
+
+        source = "hardcoded-fake";
+        return new[] { "fake-pixeldrain-key-placeholder" };
+    }
+
+    private static string? TryReadEndpointFromInstance(object? self)
+    {
+        object[] candidates = EnumerateConfigCandidates(self);
+        foreach (object candidate in candidates)
+        {
+            string? value = ReadBestStringField(candidate, value => LooksLikeEndpointValue(value));
+            if (!string.IsNullOrWhiteSpace(value))
+                return value;
+        }
+
+        foreach (object candidate in candidates.Skip(1))
+        {
+            string? value = ReadBestStringProperty(candidate, value => LooksLikeEndpointValue(value));
+            if (!string.IsNullOrWhiteSpace(value))
+                return value;
+        }
+
+        return null;
+    }
+
+    private static string[] TryReadApiKeysFromInstance(object? self)
+    {
+        object[] candidates = EnumerateConfigCandidates(self);
+        foreach (object candidate in candidates)
+        {
+            string[] keys = ReadBestStringArrayField(candidate);
+            if (keys.Length > 0)
+                return keys;
+        }
+
+        foreach (object candidate in candidates.Skip(1))
+        {
+            string[] keys = ReadBestStringArrayProperty(candidate);
+            if (keys.Length > 0)
+                return keys;
+        }
+
+        return Array.Empty<string>();
+    }
+
+    private static object[] EnumerateConfigCandidates(object? self)
+    {
+        if (self == null)
+            return Array.Empty<object>();
+
+        object?[] candidates = new object?[8];
+        int count = 0;
+        candidates[count++] = self;
+
+        foreach (FieldInfo field in self.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (count >= candidates.Length)
+                break;
+
+            object? value = null;
+            try { value = field.GetValue(self); }
+            catch { }
+
+            if (value == null || value is string || value.GetType().IsValueType)
+                continue;
+
+            string typeName = value.GetType().Name;
+            if (typeName.IndexOf("wgc", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                field.Name.IndexOf("yGp", StringComparison.OrdinalIgnoreCase) >= 0)
+                candidates[count++] = value;
+        }
+
+        return candidates.Take(count).Where(candidate => candidate != null).Cast<object>().ToArray();
+    }
+
+    private static string? ReadBestStringField(object instance, Func<string, bool> predicate)
+    {
+        foreach (FieldInfo field in instance.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static |
+                     BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.FieldType != typeof(string))
+                continue;
+
+            object? raw = null;
+            try { raw = field.GetValue(field.IsStatic ? null : instance); }
+            catch { }
+
+            if (raw is string value && predicate(value))
+                return value.Trim();
+        }
+
+        return null;
+    }
+
+    private static string? ReadBestStringProperty(object instance, Func<string, bool> predicate)
+    {
+        foreach (PropertyInfo property in instance.GetType().GetProperties(BindingFlags.Instance |
+                     BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (property.PropertyType != typeof(string) || property.GetIndexParameters().Length != 0)
+                continue;
+
+            object? raw = null;
+            try { raw = property.GetValue(instance); }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[ApiBootstrap] Endpoint property read failed: "
+                    + instance.GetType().Name + "." + property.Name + " -> "
+                    + ex.GetType().Name + ": " + ex.Message);
+            }
+
+            if (raw is string value && predicate(value))
+                return value.Trim();
+        }
+
+        return null;
+    }
+
+    private static string[] ReadBestStringArrayField(object instance)
+    {
+        foreach (FieldInfo field in instance.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static |
+                     BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.FieldType != typeof(string[]))
+                continue;
+
+            object? raw = null;
+            try { raw = field.GetValue(field.IsStatic ? null : instance); }
+            catch { }
+
+            string[] keys = CleanApiKeys(raw as string[]);
+            if (keys.Length > 0 && keys.All(key => !LooksLikeEndpointValue(key)))
+                return keys;
+        }
+
+        return Array.Empty<string>();
+    }
+
+    private static string[] ReadBestStringArrayProperty(object instance)
+    {
+        foreach (PropertyInfo property in instance.GetType().GetProperties(BindingFlags.Instance |
+                     BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (property.PropertyType != typeof(string[]) || property.GetIndexParameters().Length != 0)
+                continue;
+
+            object? raw = null;
+            try { raw = property.GetValue(instance); }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[ApiBootstrap] ApiKeys property read failed: "
+                    + instance.GetType().Name + "." + property.Name + " -> "
+                    + ex.GetType().Name + ": " + ex.Message);
+            }
+
+            string[] keys = CleanApiKeys(raw as string[]);
+            if (keys.Length > 0 && keys.All(key => !LooksLikeEndpointValue(key)))
+                return keys;
+        }
+
+        return Array.Empty<string>();
+    }
+
+    private static bool LooksLikeEndpointValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        string trimmed = value.Trim();
+        return trimmed.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+               trimmed.StartsWith("http://", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string DescribeKeys(string[] keys)
+    {
+        if (keys.Length == 0)
+            return "(no keys)";
+
+        return "lengths=" + string.Join(",", keys.Select(key => key.Length.ToString()));
     }
 
     private static string[] CleanApiKeys(string[]? keys)
