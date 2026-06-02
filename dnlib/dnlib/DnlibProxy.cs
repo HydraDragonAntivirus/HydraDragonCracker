@@ -1685,10 +1685,7 @@ internal static class ProtectionBypass
                     ? fileId
                     : XorToBase64(fileId, uploadKey);
 
-                var ticket = Activator.CreateInstance(type)!;
-                AuthBypass.TrySet(ticket, type, "FileId",                 fileId);
-                AuthBypass.TrySet(ticket, type, "ApiKey",                 RealApiKey);
-                AuthBypass.TrySet(ticket, type, "EncryptedFileReference", encryptedRef);
+                var ticket = Activator.CreateInstance(type, encryptedRef, fileId, RealApiKey)!;
                 tcs.SetResult(ticket);
             }
             catch (Exception ex)
@@ -1698,10 +1695,7 @@ internal static class ProtectionBypass
                 // Fallback: build a ticket with the api key so the app at least has it.
                 try
                 {
-                    var ticket = Activator.CreateInstance(type)!;
-                    AuthBypass.TrySet(ticket, type, "FileId",                 "upload-failed");
-                    AuthBypass.TrySet(ticket, type, "ApiKey",                 RealApiKey);
-                    AuthBypass.TrySet(ticket, type, "EncryptedFileReference", "upload-failed");
+                    var ticket = Activator.CreateInstance(type, "upload-failed", "upload-failed", RealApiKey)!;
                     tcs.SetResult(ticket);
                 }
                 catch
