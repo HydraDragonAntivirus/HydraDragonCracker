@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>dnlib</AssemblyName>
+    <RootNamespace>DnlibProxy</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign>true</PublicSign>
+    <AssemblyOriginatorKeyFile>dnlib.public.snk</AssemblyOriginatorKeyFile>
+    <Deterministic>true</Deterministic>
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="DnlibProxy.cs" />
+    <Compile Include="TypeForwarders.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="dnlib.real">
+      <HintPath>dnlib.real.dll</HintPath>
+      <Aliases>real</Aliases>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <None Include="dnlib.real.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

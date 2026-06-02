@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <ProjectReference Include="..\dnlib\dnlib.csproj" ReferenceOutputAssembly="false" />
+    <Reference Include="dnlib">
+      <HintPath>..\..\dnlib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CopyProxyAndOriginal" AfterTargets="Build">
+    <Copy SourceFiles="..\dnlib\bin\$(Configuration)\net8.0\dnlib.dll" DestinationFiles="$(OutputPath)dnlib.dll" />
+    <Copy SourceFiles="..\dnlib\dnlib.real.dll" DestinationFiles="$(OutputPath)dnlib.real.dll" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;..\dnlib\tools\PatchDepsForDnlibProxy.ps1&quot; -DepsJsonPath &quot;$(OutputPath)SmokeTest.deps.json&quot;" />
+  </Target>
+</Project>
