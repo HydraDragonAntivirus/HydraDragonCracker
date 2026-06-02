@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -1400,14 +1401,31 @@ internal static unsafe class AuthBypass
 
             string? inputPath = TryGetValue(request, "FilePath") as string;
             byte[]? inputBytes = TryGetValue(request, "InputBytes") as byte[];
+            object? options = TryGetValue(request, "Options");
             string outputPath = BuildProxyOutputPath(inputPath);
+            string[] enabledFeatures = GetEnabledProtectionFeatures(options);
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath) ?? AppContext.BaseDirectory);
 
-            if (inputBytes != null && inputBytes.Length > 0)
+            byte[]? originalFileBytes = null;
+            if (!string.IsNullOrWhiteSpace(inputPath) && File.Exists(inputPath))
+                originalFileBytes = File.ReadAllBytes(inputPath);
+
+            byte[]? sourceBytes = (inputBytes != null && inputBytes.Length > 0)
+                ? inputBytes
+                : originalFileBytes;
+
+            if (sourceBytes != null && sourceBytes.Length > 0)
             {
-                File.WriteAllBytes(outputPath, inputBytes);
-                ProxyLog.Write("[ProtectionStub] Wrote InputBytes -> " + outputPath + " (" + inputBytes.Length + " bytes)");
+                ProxyLog.Write("[ProtectionStub] Source bytes len=" + sourceBytes.Length +
+                    " sha256=" + HashBytes(sourceBytes) +
+                    " features=" + (enabledFeatures.Length == 0 ? "(none)" : string.Join(",", enabledFeatures)));
+
+                if (!TryWriteProxyProtectedAssembly(sourceBytes, outputPath, options, enabledFeatures))
+                {
+                    File.WriteAllBytes(outputPath, sourceBytes);
+                    ProxyLog.Write("[ProtectionStub] Local dnlib transform failed; wrote source bytes fallback -> " + outputPath);
+                }
             }
             else if (!string.IsNullOrWhiteSpace(inputPath) && File.Exists(inputPath))
             {
@@ -1426,7 +1444,9 @@ internal static unsafe class AuthBypass
             TrySet(result, resultType, "IsSuccess", true);
             TrySet(result, resultType, "OutputPath", outputPath);
             TrySet(result, resultType, "ErrorMessage", (string?)null);
-            TrySet(result, resultType, "AppliedFeatures", Array.Empty<string>());
+            TrySet(result, resultType, "AppliedFeatures", enabledFeatures.Length == 0
+                ? new[] { "ProxyDnlibLocal" }
+                : enabledFeatures);
 
             ReportProtectionProgress(progress, "Complete", 100);
             ProxyLog.Write("[ProtectionStub] Returning success -> " + outputPath);
@@ -1466,6 +1486,143 @@ internal static unsafe class AuthBypass
         {
             ProxyLog.Write("[ProtectionStub] Progress report skipped: " + ex.Message);
         }
+    }
+
+    private static bool TryWriteProxyProtectedAssembly(
+        byte[] sourceBytes,
+        string outputPath,
+        object? options,
+        string[] enabledFeatures)
+    {
+        try
+        {
+            using var input = new MemoryStream(sourceBytes);
+            using var module = real::dnlib.DotNet.ModuleDefMD.Load(input);
+
+            int renamed = 0;
+            module.Mvid = Guid.NewGuid();
+
+            renamed = ApplyProxySymbolRenaming(module);
+
+            module.Write(outputPath);
+
+            byte[] outputBytes = File.ReadAllBytes(outputPath);
+            ProxyLog.Write("[ProtectionStub] Local dnlib transform -> " + outputPath +
+                " len=" + outputBytes.Length +
+                " sha256=" + HashBytes(outputBytes) +
+                " renamed=" + renamed +
+                " changed=" + !sourceBytes.SequenceEqual(outputBytes));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtectionStub] Local dnlib transform error: " + ex.GetType().Name + ": " + ex.Message);
+            return false;
+        }
+    }
+
+    private static int ApplyProxySymbolRenaming(real::dnlib.DotNet.ModuleDefMD module)
+    {
+        int renamed = 0;
+        string prefix = "_rp" + DateTime.UtcNow.Ticks.ToString("x");
+
+        foreach (var type in module.GetTypes().ToArray())
+        {
+            if (CanRenameType(type))
+            {
+                type.Namespace = "";
+                type.Name = prefix + "_T" + renamed.ToString("x");
+                renamed++;
+            }
+
+            foreach (var method in type.Methods)
+            {
+                if (!CanRenameMethod(method))
+                    continue;
+
+                method.Name = prefix + "_M" + renamed.ToString("x");
+                renamed++;
+            }
+
+            foreach (var field in type.Fields)
+            {
+                if (!CanRenameField(field))
+                    continue;
+
+                field.Name = prefix + "_F" + renamed.ToString("x");
+                renamed++;
+            }
+        }
+
+        return renamed;
+    }
+
+    private static bool CanRenameType(real::dnlib.DotNet.TypeDef type)
+    {
+        if (type.IsGlobalModuleType || type.IsSpecialName || type.IsRuntimeSpecialName)
+            return false;
+
+        if (type.IsPublic || type.IsNestedPublic || type.IsNestedFamily || type.IsNestedFamilyOrAssembly)
+            return false;
+
+        string baseName = type.BaseType?.FullName ?? "";
+        if (baseName == "System.MulticastDelegate" || baseName == "System.Delegate")
+            return false;
+
+        return true;
+    }
+
+    private static bool CanRenameMethod(real::dnlib.DotNet.MethodDef method)
+    {
+        if (method.IsConstructor || method.IsSpecialName || method.IsRuntimeSpecialName)
+            return false;
+
+        if (method.IsPublic || method.IsFamily || method.IsFamilyOrAssembly || method.IsVirtual || method.IsPinvokeImpl)
+            return false;
+
+        return method.DeclaringType == null || !method.DeclaringType.IsGlobalModuleType;
+    }
+
+    private static bool CanRenameField(real::dnlib.DotNet.FieldDef field)
+    {
+        if (field.IsSpecialName || field.IsRuntimeSpecialName || field.IsLiteral)
+            return false;
+
+        if (field.IsPublic || field.IsFamily || field.IsFamilyOrAssembly)
+            return false;
+
+        return field.DeclaringType == null || !field.DeclaringType.IsGlobalModuleType;
+    }
+
+    private static string[] GetEnabledProtectionFeatures(object? options)
+    {
+        if (options == null)
+            return Array.Empty<string>();
+
+        string[] featureNames =
+        {
+            "AntiTamper",
+            "AntiVm",
+            "CodeVirtualization",
+            "ControlFlowObfuscation",
+            "LibraryMode",
+            "ReferenceProxy",
+            "ResourceProtection",
+            "StringEncryption",
+            "SymbolRenaming"
+        };
+
+        return featureNames.Where(name => TryGetBool(options, name)).ToArray();
+    }
+
+    private static bool TryGetBool(object? instance, string name)
+    {
+        return TryGetValue(instance, name) is bool value && value;
+    }
+
+    private static string HashBytes(byte[] bytes)
+    {
+        return Convert.ToHexString(SHA256.HashData(bytes))[..16];
     }
 
     private static object? TryGetValue(object? instance, string name)
