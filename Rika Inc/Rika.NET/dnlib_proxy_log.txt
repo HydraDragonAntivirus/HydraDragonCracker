@@ -1472,3 +1472,1508 @@
    at DnlibProxy.ProxyBootstrap.AnalyzeAssemblyForDnlibUsage(Assembly assembly)
    at DnlibProxy.ProxyBootstrap.PerformAnalysis()
    at DnlibProxy.ProxyBootstrap.<>c.<StartAnalysisTimer>b__15_0(Object _)
+[dnlib.real] loaded through dnlib proxy
+[2026-06-02 16:55:12.229] === dnlib proxy loaded ===
+[2026-06-02 16:55:12.252] Proxy assembly: C:\Users\semae\OneDrive\Belgeler\GitHub\HydraDragonCracker\Rika Inc\Rika.NET\dnlib.dll
+[2026-06-02 16:55:12.253] Process: RikaNET.WinUI (12604)
+[2026-06-02 16:55:12.255] [AuthBypass] RikaNET.WinUI yüklendi, patch başlıyor...
+[2026-06-02 16:55:12.283] [AuthBypass] Hedef tip: wkj=.Dhr=
+[2026-06-02 16:55:13.726] [AuthBypass] AuthBootstrapState: RikaNET.Core.Models.AuthBootstrapState
+[2026-06-02 16:55:13.726] [AuthBypass] AuthResult: RikaNET.Core.Models.AuthResult
+[2026-06-02 16:55:13.727] [AuthBypass] Interface tipi: RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 16:55:13.737] [VTable] stubInit=0x00007FFC8BDD17D0 stubSignIn=0x00007FFC8BDD17E8
+[2026-06-02 16:55:13.743] [VTable] mt=0x00007FFC8B783688 numVirtuals=9 numIfaces=1
+[2026-06-02 16:55:13.744] [VTable] ifaceMapPtr=0x00007FFC8B7836E8 ifaceMT=0x00007FFC8B7831B8
+[2026-06-02 16:55:13.744] [VTable] IfaceMap[0] mt=0x00007FFC8B7831B8 startSlot=72
+[2026-06-02 16:55:13.745] [VTable] IAuthenticationService startSlot=72
+[2026-06-02 16:55:13.745] [VTable] slot[72] method=get_CurrentLicense addr=0x00007FFC8B783908 current=0x00007FFC8A877FD8
+[2026-06-02 16:55:13.746] [VTable] get_CurrentLicense için stub yok, atlanıyor.
+[2026-06-02 16:55:13.746] [VTable] slot[73] method=InitializeAsync addr=0x00007FFC8B783910 current=0x00007FFC8AE626F0
+[2026-06-02 16:55:13.747] [VTable] InitializeAsync vtable slot patch'lendi → 0x00007FFC8BDD17D0 ✓
+[2026-06-02 16:55:13.748] [VTable] slot[74] method=SignInAsync addr=0x00007FFC8B783918 current=0x0000000000000000
+[2026-06-02 16:55:13.748] [VTable] SignInAsync vtable slot patch'lendi → 0x00007FFC8BDD17E8 ✓
+[2026-06-02 16:55:13.749] [VTable] slot[75] method=ResetHardwareIdAsync addr=0x00007FFC8B783920 current=0x00007FFC8A7C9360
+[2026-06-02 16:55:13.749] [VTable] ResetHardwareIdAsync için stub yok, atlanıyor.
+[2026-06-02 16:55:13.749] [VTable] slot[76] method=SignOut addr=0x00007FFC8B783928 current=0x00007FFC8A874018
+[2026-06-02 16:55:13.750] [VTable] SignOut için stub yok, atlanıyor.
+[2026-06-02 16:55:13.751] [JIT] Prolog patch başlıyor...
+[2026-06-02 16:55:13.752] [JIT] InitializeAsync native ptr=0x00007FFC8E9896F8
+[2026-06-02 16:55:13.753] [JIT] InitializeAsync prolog patch'lendi → 0x00007FFC8BDD17D0 ✓
+[2026-06-02 16:55:13.754] [JIT] SignInAsync native ptr=0x00007FFC8E989710
+[2026-06-02 16:55:13.755] [JIT] SignInAsync prolog patch'lendi → 0x00007FFC8BDD17E8 ✓
+[2026-06-02 16:55:13.758] Real dnlib already loaded: dnlib.real, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999
+[2026-06-02 16:55:16.279] === dnlib proxy analysis ===
+[2026-06-02 16:55:16.280] Loaded assemblies: 60
+[2026-06-02 16:55:16.282] Assembly: CommunityToolkit.Mvvm, Version=8.2.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2
+[2026-06-02 16:55:16.296]   Field: ThisAssembly.AssemblyConfiguration : System.String
+[2026-06-02 16:55:16.298]   Const string: ThisAssembly.AssemblyConfiguration = <len=7>
+[2026-06-02 16:55:16.299]   Field: ThisAssembly.AssemblyFileVersion : System.String
+[2026-06-02 16:55:16.299]   Const string: ThisAssembly.AssemblyFileVersion = <len=7>
+[2026-06-02 16:55:16.299]   Field: ThisAssembly.AssemblyInformationalVersion : System.String
+[2026-06-02 16:55:16.300]   Const string: ThisAssembly.AssemblyInformationalVersion = 8.2.2....e0294b <len=18>
+[2026-06-02 16:55:16.300]   Field: ThisAssembly.AssemblyName : System.String
+[2026-06-02 16:55:16.301]   Const string: ThisAssembly.AssemblyName = Commun...t.Mvvm <len=21>
+[2026-06-02 16:55:16.301]   Field: ThisAssembly.AssemblyTitle : System.String
+[2026-06-02 16:55:16.301]   Const string: ThisAssembly.AssemblyTitle = Commun...t.Mvvm <len=21>
+[2026-06-02 16:55:16.302]   Field: ThisAssembly.AssemblyVersion : System.String
+[2026-06-02 16:55:16.302]   Const string: ThisAssembly.AssemblyVersion = <len=7>
+[2026-06-02 16:55:16.303]   Field: ThisAssembly.PublicKey : System.String
+[2026-06-02 16:55:16.304]   Const string: ThisAssembly.PublicKey = 002400...d129e2 <len=320>
+[2026-06-02 16:55:16.304]   Field: ThisAssembly.PublicKeyToken : System.String
+[2026-06-02 16:55:16.304]   Const string: ThisAssembly.PublicKeyToken = 4aff67...548ee2 <len=16>
+[2026-06-02 16:55:16.307]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 16:55:16.307]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd(TKey key, TValue value) -> System.Boolean
+[2026-06-02 16:55:16.308]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.308]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue(TKey key, CreateValueCallback createValueCallback) -> TValue
+[2026-06-02 16:55:16.309]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked(TKey key, CreateValueCallback createValueCallback) -> TValue
+[2026-06-02 16:55:16.309]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry(TKey key, TValue value) -> System.Void
+[2026-06-02 16:55:16.310]   Method: System.Collections.Generic.Dictionary2`2.get_Item(TKey key) -> TValue
+[2026-06-02 16:55:16.310]   Method: System.Collections.Generic.Dictionary2`2.ContainsKey(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.311]   Method: System.Collections.Generic.Dictionary2`2.TryGetValue(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 16:55:16.311]   Method: System.Collections.Generic.Dictionary2`2.TryRemove(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.312]   Method: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef(TKey key) -> TValue&
+[2026-06-02 16:55:16.312]   Method: System.Collections.Generic.Dictionary2`2.FindValue(TKey key) -> TValue&
+[2026-06-02 16:55:16.312]   Method: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound(TKey key) -> System.Void
+[2026-06-02 16:55:16.313]   Method: System.Collections.Generic.IDictionary2`2.get_Item(TKey key) -> TValue
+[2026-06-02 16:55:16.314]   Method: System.Collections.Generic.IDictionary2`1.TryRemove(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.314]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 16:55:16.315]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 16:55:16.315]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.315]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.316]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 16:55:16.316]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.317]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.317]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, System.Object recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 16:55:16.318]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, TToken token) -> TMessage
+[2026-06-02 16:55:16.318]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, TToken token) -> IObservable`1
+[2026-06-02 16:55:16.319]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 16:55:16.320]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 16:55:16.321]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.322]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(System.Object recipient, TToken token, CommunityToolkit.Mvvm.Messaging.Internals.MessageHandlerDispatcher dispatcher) -> System.Void
+[2026-06-02 16:55:16.323]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.323]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.324]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 16:55:16.325]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 16:55:16.325]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 16:55:16.326]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.326]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(System.Object recipient, TToken token, CommunityToolkit.Mvvm.Messaging.Internals.MessageHandlerDispatcher dispatcher) -> System.Void
+[2026-06-02 16:55:16.327]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.327]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 16:55:16.327]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 16:55:16.329]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.329]   Property: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.CancellationToken : System.Threading.CancellationToken
+[2026-06-02 16:55:16.330]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.get_CancellationToken() -> System.Threading.CancellationToken
+[2026-06-02 16:55:16.331]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync(System.Threading.CancellationToken cancellationToken) -> Task`1
+[2026-06-02 16:55:16.331]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator(System.Threading.CancellationToken cancellationToken) -> IAsyncEnumerator`1
+[2026-06-02 16:55:16.333]   Field: CommunityToolkit.Mvvm.Messaging.Internals.Type2.TToken : System.Type
+[2026-06-02 16:55:16.334]   Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.335]   Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.339]   Property: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 16:55:16.340]   Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 16:55:16.341]   Property: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.Key : TKey
+[2026-06-02 16:55:16.341]   Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.get_Key() -> TKey
+[2026-06-02 16:55:16.342]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.343]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.344]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.346]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 16:55:16.347]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.348]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 16:55:16.349]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer) -> ObservableGroup`2
+[2026-06-02 16:55:16.350]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 16:55:16.352]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem(ObservableGroupedCollection`2 source, TKey key, TElement item) -> ObservableGroup`2
+[2026-06-02 16:55:16.353]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem(ObservableGroupedCollection`2 source, TKey key, TElement item) -> ObservableGroup`2
+[2026-06-02 16:55:16.354]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem(ObservableGroupedCollection`2 source, TKey key, IComparer`1 keyComparer, TElement item, IComparer`1 itemComparer) -> ObservableGroup`2
+[2026-06-02 16:55:16.355]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup(ObservableGroupedCollection`2 source, TKey key) -> System.Void
+[2026-06-02 16:55:16.356]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem(ObservableGroupedCollection`2 source, TKey key, TValue item, System.Boolean removeGroupIfEmpty) -> System.Void
+[2026-06-02 16:55:16.357]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKey>g__ThrowArgumentExceptionForKeyNotFound|0_0() -> System.Void
+[2026-06-02 16:55:16.358]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.359]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 16:55:16.361]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 16:55:16.362]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer) -> ObservableGroup`2
+[2026-06-02 16:55:16.364]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 16:55:16.365]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0(ObservableGroupedCollection`2 source, TKey key) -> System.Void
+[2026-06-02 16:55:16.366]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0(ObservableGroupedCollection`2 source, TKey key, TValue item, System.Boolean removeGroupIfEmpty) -> System.Void
+[2026-06-02 16:55:16.366]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Item : IEnumerable`1
+[2026-06-02 16:55:16.367]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item(TKey key) -> IEnumerable`1
+[2026-06-02 16:55:16.367]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.368]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator() -> IEnumerator`1
+[2026-06-02 16:55:16.369]   Field: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.key : TKey
+[2026-06-02 16:55:16.369]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.Key : TKey
+[2026-06-02 16:55:16.370]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 16:55:16.371]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.get_Key() -> TKey
+[2026-06-02 16:55:16.371]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.set_Key(TKey value) -> System.Void
+[2026-06-02 16:55:16.372]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 16:55:16.373]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Item : IEnumerable`1
+[2026-06-02 16:55:16.374]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item(TKey key) -> IEnumerable`1
+[2026-06-02 16:55:16.374]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.375]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator() -> IEnumerator`1
+[2026-06-02 16:55:16.375]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault(TKey key) -> IEnumerable`1
+[2026-06-02 16:55:16.375]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0(CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2 source, TKey key) -> IEnumerable`1
+[2026-06-02 16:55:16.376]   Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.<Key>k__BackingField : TKey
+[2026-06-02 16:55:16.377]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.Key : TKey
+[2026-06-02 16:55:16.377]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 16:55:16.378]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.get_Key() -> TKey
+[2026-06-02 16:55:16.378]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 16:55:16.379]   Field: CommunityToolkit.Mvvm.Collections.Internals.ObservableGroupHelper.KeyChangedEventArgs : System.ComponentModel.PropertyChangedEventArgs
+[2026-06-02 16:55:16.379]   Field: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Enumerator.key : TKey
+[2026-06-02 16:55:16.380]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Enumerator.GetKey() -> TKey
+[2026-06-02 16:55:16.380]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.CreateEntryNoResize(TKey key, TValue value) -> System.Void
+[2026-06-02 16:55:16.381]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.TryGetValueWorker(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 16:55:16.381]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.FindEntry(TKey key, System.Object& value) -> System.Int32
+[2026-06-02 16:55:16.381]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.TryGetEntry(System.Int32 index, TKey& key, TValue& value) -> System.Boolean
+[2026-06-02 16:55:16.382]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.Remove(TKey key) -> System.Boolean
+[2026-06-02 16:55:16.382]   Method: System.Collections.Generic.Dictionary2`2+Enumerator.GetKey() -> TKey
+[2026-06-02 16:55:16.383]   Field: System.Collections.Generic.Dictionary2`2+Entry.Key : TKey
+[2026-06-02 16:55:16.384]   Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions+Observable`2.token : TToken
+[2026-06-02 16:55:16.385]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 16:55:16.386]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult(System.Int16 token) -> System.Boolean
+[2026-06-02 16:55:16.387]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus(System.Int16 token) -> System.Threading.Tasks.Sources.ValueTaskSourceStatus
+[2026-06-02 16:55:16.387]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted(System.Action`1[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] continuation, System.Object state, System.Int16 token, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags flags) -> System.Void
+[2026-06-02 16:55:16.388]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(System.Int16 token) -> System.Void
+[2026-06-02 16:55:16.389]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus(System.Int16 token) -> System.Threading.Tasks.Sources.ValueTaskSourceStatus
+[2026-06-02 16:55:16.389]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted(System.Action`1[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] continuation, System.Object state, System.Int16 token, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags flags) -> System.Void
+[2026-06-02 16:55:16.390]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetResponsesAsync>d__7.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 16:55:16.392]   Field: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions+<>c__DisplayClass1_0`2.key : TKey
+[2026-06-02 16:55:16.393]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions+<>c__DisplayClass1_0`2.<FirstGroupByKeyOrDefault>b__1(ObservableGroup`2 group) -> System.Boolean
+[2026-06-02 16:55:16.395]   Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2+<>c__DisplayClass7_0.key : TKey
+[2026-06-02 16:55:16.396]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2+<>c__DisplayClass7_0.<FirstGroupByKeyOrDefault>b__1(ReadOnlyObservableGroup`2 group) -> System.Boolean
+[2026-06-02 16:55:16.396]   Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions+Observable`2+Recipient.token : TToken
+[2026-06-02 16:55:16.587]   [metadata] Type: <Module>
+[2026-06-02 16:55:16.679]   [metadata] Type: ThisAssembly
+[2026-06-02 16:55:16.691]   [metadata] Field: ThisAssembly.AssemblyConfiguration : System.String
+[2026-06-02 16:55:16.694]   [metadata] Const: ThisAssembly.AssemblyConfiguration = <len=7>
+[2026-06-02 16:55:16.695]   [metadata] Field: ThisAssembly.AssemblyFileVersion : System.String
+[2026-06-02 16:55:16.695]   [metadata] Const: ThisAssembly.AssemblyFileVersion = <len=7>
+[2026-06-02 16:55:16.695]   [metadata] Field: ThisAssembly.AssemblyInformationalVersion : System.String
+[2026-06-02 16:55:16.696]   [metadata] Const: ThisAssembly.AssemblyInformationalVersion = 8.2.2....e0294b <len=18>
+[2026-06-02 16:55:16.696]   [metadata] Field: ThisAssembly.AssemblyName : System.String
+[2026-06-02 16:55:16.697]   [metadata] Const: ThisAssembly.AssemblyName = Commun...t.Mvvm <len=21>
+[2026-06-02 16:55:16.697]   [metadata] Field: ThisAssembly.AssemblyTitle : System.String
+[2026-06-02 16:55:16.697]   [metadata] Const: ThisAssembly.AssemblyTitle = Commun...t.Mvvm <len=21>
+[2026-06-02 16:55:16.698]   [metadata] Field: ThisAssembly.AssemblyVersion : System.String
+[2026-06-02 16:55:16.698]   [metadata] Const: ThisAssembly.AssemblyVersion = <len=7>
+[2026-06-02 16:55:16.701]   [metadata] Const: ThisAssembly.GitCommitId = 4c21e0...5086ce <len=40>
+[2026-06-02 16:55:16.701]   [metadata] Field: ThisAssembly.PublicKey : System.String
+[2026-06-02 16:55:16.702]   [metadata] Const: ThisAssembly.PublicKey = 002400...d129e2 <len=320>
+[2026-06-02 16:55:16.702]   [metadata] Field: ThisAssembly.PublicKeyToken : System.String
+[2026-06-02 16:55:16.702]   [metadata] Const: ThisAssembly.PublicKeyToken = 4aff67...548ee2 <len=16>
+[2026-06-02 16:55:16.703]   [metadata] Const: ThisAssembly.RootNamespace = Commun...t.Mvvm <len=21>
+[2026-06-02 16:55:16.703]   [metadata] Method: ThisAssembly..cctor
+[2026-06-02 16:55:16.705]   [metadata] Const: Configuration.DisableINotifyPropertyChangingSupport = MVVMTO...ANGING <len=43>
+[2026-06-02 16:55:16.708]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue -> key
+[2026-06-02 16:55:16.708]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue
+[2026-06-02 16:55:16.709]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd -> key
+[2026-06-02 16:55:16.710]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd
+[2026-06-02 16:55:16.710]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove -> key
+[2026-06-02 16:55:16.711]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove
+[2026-06-02 16:55:16.711]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue -> key
+[2026-06-02 16:55:16.712]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue
+[2026-06-02 16:55:16.712]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked -> key
+[2026-06-02 16:55:16.712]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked
+[2026-06-02 16:55:16.713]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry -> key
+[2026-06-02 16:55:16.713]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry
+[2026-06-02 16:55:16.724]   [metadata] Field: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Enumerator.key : TKey
+[2026-06-02 16:55:16.725]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Enumerator.GetKey
+[2026-06-02 16:55:16.727]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.CreateEntryNoResize -> key
+[2026-06-02 16:55:16.727]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.CreateEntryNoResize
+[2026-06-02 16:55:16.728]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetValueWorker -> key
+[2026-06-02 16:55:16.728]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetValueWorker
+[2026-06-02 16:55:16.731]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.FindEntry -> key
+[2026-06-02 16:55:16.732]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.FindEntry
+[2026-06-02 16:55:16.732]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetEntry -> key
+[2026-06-02 16:55:16.733]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetEntry
+[2026-06-02 16:55:16.733]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.Remove -> key
+[2026-06-02 16:55:16.734]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.Remove
+[2026-06-02 16:55:16.735]   [metadata] Param: System.Collections.Generic.Dictionary2`2.get_Item -> key
+[2026-06-02 16:55:16.736]   [metadata] Method: System.Collections.Generic.Dictionary2`2.get_Item
+[2026-06-02 16:55:16.736]   [metadata] Param: System.Collections.Generic.Dictionary2`2.ContainsKey -> key
+[2026-06-02 16:55:16.737]   [metadata] Method: System.Collections.Generic.Dictionary2`2.ContainsKey
+[2026-06-02 16:55:16.738]   [metadata] Param: System.Collections.Generic.Dictionary2`2.TryGetValue -> key
+[2026-06-02 16:55:16.738]   [metadata] Method: System.Collections.Generic.Dictionary2`2.TryGetValue
+[2026-06-02 16:55:16.739]   [metadata] Param: System.Collections.Generic.Dictionary2`2.TryRemove -> key
+[2026-06-02 16:55:16.739]   [metadata] Method: System.Collections.Generic.Dictionary2`2.TryRemove
+[2026-06-02 16:55:16.741]   [metadata] Param: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef -> key
+[2026-06-02 16:55:16.742]   [metadata] Method: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef
+[2026-06-02 16:55:16.743]   [metadata] Param: System.Collections.Generic.Dictionary2`2.FindValue -> key
+[2026-06-02 16:55:16.743]   [metadata] Method: System.Collections.Generic.Dictionary2`2.FindValue
+[2026-06-02 16:55:16.744]   [metadata] Param: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound -> key
+[2026-06-02 16:55:16.744]   [metadata] Method: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound
+[2026-06-02 16:55:16.745]   [metadata] Method: System.Collections.Generic.Dictionary2`2/Enumerator.GetKey
+[2026-06-02 16:55:16.745]   [metadata] Field: System.Collections.Generic.Dictionary2`2/Entry.Key : TKey
+[2026-06-02 16:55:16.747]   [metadata] Param: System.Collections.Generic.IDictionary2`2.get_Item -> key
+[2026-06-02 16:55:16.747]   [metadata] Method: System.Collections.Generic.IDictionary2`2.get_Item
+[2026-06-02 16:55:16.748]   [metadata] Param: System.Collections.Generic.IDictionary2`1.TryRemove -> key
+[2026-06-02 16:55:16.748]   [metadata] Method: System.Collections.Generic.IDictionary2`1.TryRemove
+[2026-06-02 16:55:16.749]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered -> token
+[2026-06-02 16:55:16.749]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered
+[2026-06-02 16:55:16.750]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Register -> token
+[2026-06-02 16:55:16.750]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Register
+[2026-06-02 16:55:16.751]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll -> token
+[2026-06-02 16:55:16.751]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll
+[2026-06-02 16:55:16.752]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister -> token
+[2026-06-02 16:55:16.753]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister
+[2026-06-02 16:55:16.753]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Send -> token
+[2026-06-02 16:55:16.754]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Send
+[2026-06-02 16:55:16.755]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll -> token
+[2026-06-02 16:55:16.756]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll
+[2026-06-02 16:55:16.756]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll -> <len=5>
+[2026-06-02 16:55:16.757]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> token
+[2026-06-02 16:55:16.757]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register
+[2026-06-02 16:55:16.758]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> <len=5>
+[2026-06-02 16:55:16.758]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> token
+[2026-06-02 16:55:16.759]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register
+[2026-06-02 16:55:16.759]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> <len=5>
+[2026-06-02 16:55:16.760]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send -> token
+[2026-06-02 16:55:16.760]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send
+[2026-06-02 16:55:16.761]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send -> <len=5>
+[2026-06-02 16:55:16.761]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable -> token
+[2026-06-02 16:55:16.762]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable
+[2026-06-02 16:55:16.762]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable -> <len=5>
+[2026-06-02 16:55:16.763]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2.token : TToken
+[2026-06-02 16:55:16.763]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2..ctor -> token
+[2026-06-02 16:55:16.764]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2..ctor
+[2026-06-02 16:55:16.764]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient.token : TToken
+[2026-06-02 16:55:16.765]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient..ctor -> token
+[2026-06-02 16:55:16.765]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient..ctor
+[2026-06-02 16:55:16.765]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered -> token
+[2026-06-02 16:55:16.766]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered
+[2026-06-02 16:55:16.766]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered -> <len=5>
+[2026-06-02 16:55:16.767]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.767]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 16:55:16.768]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> <len=5>
+[2026-06-02 16:55:16.768]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.769]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 16:55:16.770]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.770]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 16:55:16.771]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll -> token
+[2026-06-02 16:55:16.771]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll
+[2026-06-02 16:55:16.774]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll -> <len=5>
+[2026-06-02 16:55:16.774]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister -> token
+[2026-06-02 16:55:16.775]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister
+[2026-06-02 16:55:16.777]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister -> <len=5>
+[2026-06-02 16:55:16.777]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send -> token
+[2026-06-02 16:55:16.778]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send
+[2026-06-02 16:55:16.778]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send -> <len=5>
+[2026-06-02 16:55:16.780]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered -> token
+[2026-06-02 16:55:16.781]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered
+[2026-06-02 16:55:16.781]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered -> <len=5>
+[2026-06-02 16:55:16.782]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.783]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 16:55:16.783]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> <len=5>
+[2026-06-02 16:55:16.783]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.784]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 16:55:16.784]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 16:55:16.785]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 16:55:16.785]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll -> token
+[2026-06-02 16:55:16.785]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll
+[2026-06-02 16:55:16.786]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll -> <len=5>
+[2026-06-02 16:55:16.786]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister -> token
+[2026-06-02 16:55:16.787]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister
+[2026-06-02 16:55:16.788]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister -> <len=5>
+[2026-06-02 16:55:16.788]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send -> token
+[2026-06-02 16:55:16.789]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send
+[2026-06-02 16:55:16.790]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send -> <len=5>
+[2026-06-02 16:55:16.790]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.791]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.get_CancellationToken
+[2026-06-02 16:55:16.792]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync -> cancellationToken
+[2026-06-02 16:55:16.792]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync
+[2026-06-02 16:55:16.792]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator -> cancellationToken
+[2026-06-02 16:55:16.793]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator
+[2026-06-02 16:55:16.793]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 16:55:16.796]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult -> token
+[2026-06-02 16:55:16.796]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult
+[2026-06-02 16:55:16.797]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus -> token
+[2026-06-02 16:55:16.797]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus
+[2026-06-02 16:55:16.798]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted -> token
+[2026-06-02 16:55:16.798]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted
+[2026-06-02 16:55:16.799]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult -> token
+[2026-06-02 16:55:16.799]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult
+[2026-06-02 16:55:16.800]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus -> token
+[2026-06-02 16:55:16.800]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus
+[2026-06-02 16:55:16.801]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted -> token
+[2026-06-02 16:55:16.801]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted
+[2026-06-02 16:55:16.802]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetResponsesAsync>d__7.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 16:55:16.803]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Internals.Type2.TToken : System.Type
+[2026-06-02 16:55:16.804]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Internals.Type2..ctor -> tToken
+[2026-06-02 16:55:16.804]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Internals.Type2..ctor
+[2026-06-02 16:55:16.805]   [metadata] Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.806]   [metadata] Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 16:55:16.809]   [metadata] Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 16:55:16.809]   [metadata] Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.get_Key
+[2026-06-02 16:55:16.809]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey -> key
+[2026-06-02 16:55:16.810]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey
+[2026-06-02 16:55:16.810]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault -> key
+[2026-06-02 16:55:16.811]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault
+[2026-06-02 16:55:16.811]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup -> key
+[2026-06-02 16:55:16.812]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup
+[2026-06-02 16:55:16.812]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup -> key
+[2026-06-02 16:55:16.813]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup
+[2026-06-02 16:55:16.814]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 16:55:16.814]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 16:55:16.814]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 16:55:16.815]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 16:55:16.815]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 16:55:16.816]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 16:55:16.816]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 16:55:16.817]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 16:55:16.817]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem -> key
+[2026-06-02 16:55:16.818]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem
+[2026-06-02 16:55:16.818]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> key
+[2026-06-02 16:55:16.819]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem
+[2026-06-02 16:55:16.819]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> key
+[2026-06-02 16:55:16.820]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> keyComparer
+[2026-06-02 16:55:16.820]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem
+[2026-06-02 16:55:16.821]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup -> key
+[2026-06-02 16:55:16.821]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup
+[2026-06-02 16:55:16.822]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem -> key
+[2026-06-02 16:55:16.822]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem
+[2026-06-02 16:55:16.823]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKey>g__ThrowArgumentExceptionForKeyNotFound|0_0
+[2026-06-02 16:55:16.823]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0 -> key
+[2026-06-02 16:55:16.824]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0
+[2026-06-02 16:55:16.824]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0 -> key
+[2026-06-02 16:55:16.824]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0
+[2026-06-02 16:55:16.825]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0 -> key
+[2026-06-02 16:55:16.825]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0
+[2026-06-02 16:55:16.826]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0 -> key
+[2026-06-02 16:55:16.826]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0
+[2026-06-02 16:55:16.827]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0 -> key
+[2026-06-02 16:55:16.827]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0
+[2026-06-02 16:55:16.827]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0 -> key
+[2026-06-02 16:55:16.828]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0
+[2026-06-02 16:55:16.829]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0 -> key
+[2026-06-02 16:55:16.829]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0
+[2026-06-02 16:55:16.830]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions/<>c__DisplayClass1_0`2.key : TKey
+[2026-06-02 16:55:16.830]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions/<>c__DisplayClass1_0`2.<FirstGroupByKeyOrDefault>b__1
+[2026-06-02 16:55:16.831]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item -> key
+[2026-06-02 16:55:16.832]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item
+[2026-06-02 16:55:16.832]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains -> key
+[2026-06-02 16:55:16.833]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains
+[2026-06-02 16:55:16.833]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator
+[2026-06-02 16:55:16.833]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.key : TKey
+[2026-06-02 16:55:16.834]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor -> key
+[2026-06-02 16:55:16.834]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor
+[2026-06-02 16:55:16.835]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor -> key
+[2026-06-02 16:55:16.835]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor
+[2026-06-02 16:55:16.836]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.get_Key
+[2026-06-02 16:55:16.836]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.set_Key
+[2026-06-02 16:55:16.837]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 16:55:16.837]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item -> key
+[2026-06-02 16:55:16.838]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item
+[2026-06-02 16:55:16.838]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains -> key
+[2026-06-02 16:55:16.838]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains
+[2026-06-02 16:55:16.839]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator
+[2026-06-02 16:55:16.839]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault -> key
+[2026-06-02 16:55:16.840]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault
+[2026-06-02 16:55:16.840]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0 -> key
+[2026-06-02 16:55:16.841]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0
+[2026-06-02 16:55:16.841]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2/<>c__DisplayClass7_0.key : TKey
+[2026-06-02 16:55:16.842]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2/<>c__DisplayClass7_0.<FirstGroupByKeyOrDefault>b__1
+[2026-06-02 16:55:16.842]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.<Key>k__BackingField : TKey
+[2026-06-02 16:55:16.843]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2..ctor -> key
+[2026-06-02 16:55:16.843]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2..ctor
+[2026-06-02 16:55:16.843]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.get_Key
+[2026-06-02 16:55:16.844]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 16:55:16.844]   [metadata] Field: CommunityToolkit.Mvvm.Collections.Internals.ObservableGroupHelper.KeyChangedEventArgs : System.ComponentModel.PropertyChangedEventArgs
+[2026-06-02 16:55:16.849] Assembly: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+[2026-06-02 16:55:16.866]   [metadata] Type: <Module>
+[2026-06-02 16:55:16.867] Assembly: RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[2026-06-02 16:55:16.868]   Property: RikaNET.Core.Services.IAssemblyWorkspaceService.HasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:16.868]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 16:55:16.869]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync(System.String filePath, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AssemblyProfile, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:16.869]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection(System.Int32 token, System.Boolean isSelected) -> System.Void
+[2026-06-02 16:55:16.870]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.PrepareAssemblyForProtection(System.Boolean applyVirtualization) -> System.Byte[]
+[2026-06-02 16:55:16.870]   Property: RikaNET.Core.Services.IAuthenticationService.CurrentLicense : System.String
+[2026-06-02 16:55:16.871]   Method: RikaNET.Core.Services.IAuthenticationService.get_CurrentLicense() -> System.String
+[2026-06-02 16:55:16.871]   Method: RikaNET.Core.Services.IAuthenticationService.InitializeAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthBootstrapState, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:16.872]   Method: RikaNET.Core.Services.IAuthenticationService.SignInAsync(System.String license, System.Boolean rememberLicense, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:16.872]   Method: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync(System.String license, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:16.873]   Method: RikaNET.Core.Services.IFilePickerService.PickAssemblyAsync() -> System.Threading.Tasks.Task`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 16:55:16.873]   Method: RikaNET.Core.Services.IProtectionService.ProtectAsync(RikaNET.Core.Models.ProtectionRequest request, System.IProgress`1[[RikaNET.Core.Models.ProtectionProgress, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] progress, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.ProtectionResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:16.874]   Method: RikaNET.Core.Services.ISettingsStore.GetString(System.String key) -> System.String
+[2026-06-02 16:55:16.874]   Method: RikaNET.Core.Services.ISettingsStore.GetBoolean(System.String key, System.Boolean defaultValue) -> System.Boolean
+[2026-06-02 16:55:16.874]   Method: RikaNET.Core.Services.ISettingsStore.SetString(System.String key, System.String value) -> System.Void
+[2026-06-02 16:55:16.875]   Method: RikaNET.Core.Services.ISettingsStore.SetBoolean(System.String key, System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.875]   Method: RikaNET.Core.Services.ISettingsStore.Remove(System.String key) -> System.Void
+[2026-06-02 16:55:16.876]   Method: RikaNET.Core.Services.IStringResourceService.GetString(System.String key) -> System.String
+[2026-06-02 16:55:16.876]   Method: RikaNET.Core.Services.IStringResourceService.GetString(System.String key, System.Object[] arguments) -> System.String
+[2026-06-02 16:55:16.877]   Field: RikaNET.Core.Models.AssemblyProfile.<AssemblyName>k__BackingField : System.String
+[2026-06-02 16:55:16.877]   Property: RikaNET.Core.Models.AssemblyProfile.AssemblyName : System.String
+[2026-06-02 16:55:16.877]   Method: RikaNET.Core.Models.AssemblyProfile.get_AssemblyName() -> System.String
+[2026-06-02 16:55:16.878]   Method: RikaNET.Core.Models.AssemblyProfile.set_AssemblyName(System.String value) -> System.Void
+[2026-06-02 16:55:16.878]   Field: RikaNET.Core.Models.AuthBootstrapState.<CachedLicense>k__BackingField : System.String
+[2026-06-02 16:55:16.879]   Property: RikaNET.Core.Models.AuthBootstrapState.CachedLicense : System.String
+[2026-06-02 16:55:16.879]   Method: RikaNET.Core.Models.AuthBootstrapState.get_CachedLicense() -> System.String
+[2026-06-02 16:55:16.880]   Method: RikaNET.Core.Models.AuthBootstrapState.set_CachedLicense(System.String value) -> System.Void
+[2026-06-02 16:55:16.880]   Field: RikaNET.Core.Models.MethodItem.<Token>k__BackingField : System.Int32
+[2026-06-02 16:55:16.880]   Property: RikaNET.Core.Models.MethodItem.Token : System.Int32
+[2026-06-02 16:55:16.881]   Method: RikaNET.Core.Models.MethodItem.get_Token() -> System.Int32
+[2026-06-02 16:55:16.881]   Method: RikaNET.Core.Models.MethodItem.set_Token(System.Int32 value) -> System.Void
+[2026-06-02 16:55:16.882]   Field: RikaNET.Core.Models.ProtectionFeature.StringEncryption : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.883]   Field: RikaNET.Core.Models.ProtectionFeature.ControlFlowObfuscation : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.883]   Field: RikaNET.Core.Models.ProtectionFeature.ResourceProtection : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.884]   Field: RikaNET.Core.Models.ProtectionOptions.<StringEncryption>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.884]   Field: RikaNET.Core.Models.ProtectionOptions.<ControlFlowObfuscation>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.884]   Field: RikaNET.Core.Models.ProtectionOptions.<ResourceProtection>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.884]   Property: RikaNET.Core.Models.ProtectionOptions.StringEncryption : System.Boolean
+[2026-06-02 16:55:16.885]   Property: RikaNET.Core.Models.ProtectionOptions.ControlFlowObfuscation : System.Boolean
+[2026-06-02 16:55:16.885]   Property: RikaNET.Core.Models.ProtectionOptions.ResourceProtection : System.Boolean
+[2026-06-02 16:55:16.886]   Method: RikaNET.Core.Models.ProtectionOptions.get_StringEncryption() -> System.Boolean
+[2026-06-02 16:55:16.886]   Method: RikaNET.Core.Models.ProtectionOptions.set_StringEncryption(System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.887]   Method: RikaNET.Core.Models.ProtectionOptions.get_ControlFlowObfuscation() -> System.Boolean
+[2026-06-02 16:55:16.887]   Method: RikaNET.Core.Models.ProtectionOptions.set_ControlFlowObfuscation(System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.888]   Method: RikaNET.Core.Models.ProtectionOptions.get_ResourceProtection() -> System.Boolean
+[2026-06-02 16:55:16.888]   Method: RikaNET.Core.Models.ProtectionOptions.set_ResourceProtection(System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.889]   Field: RikaNET.Core.Models.ProtectionRequest.<License>k__BackingField : System.String
+[2026-06-02 16:55:16.890]   Property: RikaNET.Core.Models.ProtectionRequest.License : System.String
+[2026-06-02 16:55:16.890]   Method: RikaNET.Core.Models.ProtectionRequest.get_License() -> System.String
+[2026-06-02 16:55:16.890]   Method: RikaNET.Core.Models.ProtectionRequest.set_License(System.String value) -> System.Void
+[2026-06-02 16:55:16.891]   [metadata] Type: <Module>
+[2026-06-02 16:55:16.892]   [metadata] Type: RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 16:55:16.892]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_CurrentProfile
+[2026-06-02 16:55:16.893]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_HasLoadedAssembly
+[2026-06-02 16:55:16.893]   [metadata] Param: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync -> cancellationToken
+[2026-06-02 16:55:16.893]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync
+[2026-06-02 16:55:16.893]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.GetMethodsForType
+[2026-06-02 16:55:16.894]   [metadata] Param: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection -> token
+[2026-06-02 16:55:16.894]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection
+[2026-06-02 16:55:16.895]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.PrepareAssemblyForProtection
+[2026-06-02 16:55:16.895]   [metadata] Type: RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 16:55:16.895]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.get_CurrentLicense
+[2026-06-02 16:55:16.896]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.InitializeAsync -> cancellationToken
+[2026-06-02 16:55:16.896]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.InitializeAsync
+[2026-06-02 16:55:16.896]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> license
+[2026-06-02 16:55:16.897]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> rememberLicense
+[2026-06-02 16:55:16.897]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> cancellationToken
+[2026-06-02 16:55:16.897]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.SignInAsync
+[2026-06-02 16:55:16.898]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync -> license
+[2026-06-02 16:55:16.898]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync -> cancellationToken
+[2026-06-02 16:55:16.898]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync
+[2026-06-02 16:55:16.899]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.SignOut
+[2026-06-02 16:55:16.899]   [metadata] Method: RikaNET.Core.Services.IFilePickerService.PickAssemblyAsync
+[2026-06-02 16:55:16.900]   [metadata] Type: RikaNET.Core.Services.IProtectionService
+[2026-06-02 16:55:16.900]   [metadata] Param: RikaNET.Core.Services.IProtectionService.ProtectAsync -> cancellationToken
+[2026-06-02 16:55:16.900]   [metadata] Method: RikaNET.Core.Services.IProtectionService.ProtectAsync
+[2026-06-02 16:55:16.901]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.GetString -> key
+[2026-06-02 16:55:16.901]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.GetString
+[2026-06-02 16:55:16.902]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.GetBoolean -> key
+[2026-06-02 16:55:16.902]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.GetBoolean
+[2026-06-02 16:55:16.903]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.SetString -> key
+[2026-06-02 16:55:16.904]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.SetString
+[2026-06-02 16:55:16.904]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.SetBoolean -> key
+[2026-06-02 16:55:16.904]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.SetBoolean
+[2026-06-02 16:55:16.905]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.Remove -> key
+[2026-06-02 16:55:16.905]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.Remove
+[2026-06-02 16:55:16.905]   [metadata] Param: RikaNET.Core.Services.IStringResourceService.GetString -> key
+[2026-06-02 16:55:16.906]   [metadata] Method: RikaNET.Core.Services.IStringResourceService.GetString
+[2026-06-02 16:55:16.906]   [metadata] Param: RikaNET.Core.Services.IStringResourceService.GetString -> key
+[2026-06-02 16:55:16.906]   [metadata] Method: RikaNET.Core.Services.IStringResourceService.GetString
+[2026-06-02 16:55:16.907]   [metadata] Type: RikaNET.Core.Models.AssemblyProfile
+[2026-06-02 16:55:16.907]   [metadata] Field: RikaNET.Core.Models.AssemblyProfile.<AssemblyName>k__BackingField : System.String
+[2026-06-02 16:55:16.908]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FilePath
+[2026-06-02 16:55:16.908]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FilePath
+[2026-06-02 16:55:16.908]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileName
+[2026-06-02 16:55:16.909]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileName
+[2026-06-02 16:55:16.909]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileExtension
+[2026-06-02 16:55:16.909]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileExtension
+[2026-06-02 16:55:16.910]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileSizeBytes
+[2026-06-02 16:55:16.910]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileSizeBytes
+[2026-06-02 16:55:16.911]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileSizeDisplay
+[2026-06-02 16:55:16.911]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileSizeDisplay
+[2026-06-02 16:55:16.911]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_AssemblyName
+[2026-06-02 16:55:16.912]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_AssemblyName
+[2026-06-02 16:55:16.912]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_RuntimeDisplay
+[2026-06-02 16:55:16.913]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_RuntimeDisplay
+[2026-06-02 16:55:16.913]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_HasSdkReference
+[2026-06-02 16:55:16.913]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_HasSdkReference
+[2026-06-02 16:55:16.914]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_TypeCount
+[2026-06-02 16:55:16.914]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_TypeCount
+[2026-06-02 16:55:16.914]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_MethodCount
+[2026-06-02 16:55:16.915]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_MethodCount
+[2026-06-02 16:55:16.915]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_Namespaces
+[2026-06-02 16:55:16.915]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_Namespaces
+[2026-06-02 16:55:16.916]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile..ctor
+[2026-06-02 16:55:16.916]   [metadata] Type: RikaNET.Core.Models.AuthBootstrapState
+[2026-06-02 16:55:16.917]   [metadata] Field: RikaNET.Core.Models.AuthBootstrapState.<CachedLicense>k__BackingField : System.String
+[2026-06-02 16:55:16.917]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_IsReady
+[2026-06-02 16:55:16.917]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_IsReady
+[2026-06-02 16:55:16.918]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_RequiresUpdate
+[2026-06-02 16:55:16.918]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_RequiresUpdate
+[2026-06-02 16:55:16.918]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_Message
+[2026-06-02 16:55:16.919]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_Message
+[2026-06-02 16:55:16.919]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_DownloadUrl
+[2026-06-02 16:55:16.920]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_DownloadUrl
+[2026-06-02 16:55:16.920]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_CachedLicense
+[2026-06-02 16:55:16.921]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_CachedLicense
+[2026-06-02 16:55:16.921]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState..ctor
+[2026-06-02 16:55:16.922]   [metadata] Type: RikaNET.Core.Models.AuthResult
+[2026-06-02 16:55:16.923]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_IsSuccess
+[2026-06-02 16:55:16.923]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_IsSuccess
+[2026-06-02 16:55:16.923]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_ErrorMessage
+[2026-06-02 16:55:16.924]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_ErrorMessage
+[2026-06-02 16:55:16.924]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_RemainingDays
+[2026-06-02 16:55:16.924]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_RemainingDays
+[2026-06-02 16:55:16.925]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_PlanType
+[2026-06-02 16:55:16.925]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_PlanType
+[2026-06-02 16:55:16.926]   [metadata] Method: RikaNET.Core.Models.AuthResult..ctor
+[2026-06-02 16:55:16.926]   [metadata] Field: RikaNET.Core.Models.MethodItem.<Token>k__BackingField : System.Int32
+[2026-06-02 16:55:16.927]   [metadata] Method: RikaNET.Core.Models.MethodItem.get_Token
+[2026-06-02 16:55:16.927]   [metadata] Method: RikaNET.Core.Models.MethodItem.set_Token
+[2026-06-02 16:55:16.928]   [metadata] Type: RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.928]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.StringEncryption : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.934]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.ControlFlowObfuscation : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.934]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.ResourceProtection : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 16:55:16.935]   [metadata] Type: RikaNET.Core.Models.ProtectionOptions
+[2026-06-02 16:55:16.935]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<StringEncryption>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.936]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<ControlFlowObfuscation>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.936]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<ResourceProtection>k__BackingField : System.Boolean
+[2026-06-02 16:55:16.937]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_StringEncryption
+[2026-06-02 16:55:16.937]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_StringEncryption
+[2026-06-02 16:55:16.938]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiTamper
+[2026-06-02 16:55:16.938]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiTamper
+[2026-06-02 16:55:16.938]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiTamperMode
+[2026-06-02 16:55:16.939]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiTamperMode
+[2026-06-02 16:55:16.939]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ControlFlowObfuscation
+[2026-06-02 16:55:16.940]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ControlFlowObfuscation
+[2026-06-02 16:55:16.940]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_SymbolRenaming
+[2026-06-02 16:55:16.940]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_SymbolRenaming
+[2026-06-02 16:55:16.941]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_CodeVirtualization
+[2026-06-02 16:55:16.941]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_CodeVirtualization
+[2026-06-02 16:55:16.942]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_LibraryMode
+[2026-06-02 16:55:16.942]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_LibraryMode
+[2026-06-02 16:55:16.942]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ResourceProtection
+[2026-06-02 16:55:16.943]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ResourceProtection
+[2026-06-02 16:55:16.943]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ReferenceProxy
+[2026-06-02 16:55:16.943]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ReferenceProxy
+[2026-06-02 16:55:16.944]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiVm
+[2026-06-02 16:55:16.944]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiVm
+[2026-06-02 16:55:16.944]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_HasAnyEnabled
+[2026-06-02 16:55:16.945]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_SelectedCount
+[2026-06-02 16:55:16.945]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.ToFeatureList
+[2026-06-02 16:55:16.945]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions..ctor
+[2026-06-02 16:55:16.946]   [metadata] Type: RikaNET.Core.Models.ProtectionProgress
+[2026-06-02 16:55:16.946]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.get_Step
+[2026-06-02 16:55:16.946]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.set_Step
+[2026-06-02 16:55:16.947]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.get_Value
+[2026-06-02 16:55:16.947]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.set_Value
+[2026-06-02 16:55:16.948]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress..ctor
+[2026-06-02 16:55:16.948]   [metadata] Type: RikaNET.Core.Models.ProtectionRequest
+[2026-06-02 16:55:16.949]   [metadata] Field: RikaNET.Core.Models.ProtectionRequest.<License>k__BackingField : System.String
+[2026-06-02 16:55:16.949]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_FilePath
+[2026-06-02 16:55:16.949]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_FilePath
+[2026-06-02 16:55:16.950]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_InputBytes
+[2026-06-02 16:55:16.950]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_InputBytes
+[2026-06-02 16:55:16.951]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_License
+[2026-06-02 16:55:16.951]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_License
+[2026-06-02 16:55:16.951]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_FileType
+[2026-06-02 16:55:16.952]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_FileType
+[2026-06-02 16:55:16.952]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_Options
+[2026-06-02 16:55:16.953]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_Options
+[2026-06-02 16:55:16.953]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest..ctor
+[2026-06-02 16:55:16.954]   [metadata] Type: RikaNET.Core.Models.ProtectionResult
+[2026-06-02 16:55:16.954]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_IsSuccess
+[2026-06-02 16:55:16.955]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_IsSuccess
+[2026-06-02 16:55:16.955]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_OutputPath
+[2026-06-02 16:55:16.955]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_OutputPath
+[2026-06-02 16:55:16.956]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_ErrorMessage
+[2026-06-02 16:55:16.956]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_ErrorMessage
+[2026-06-02 16:55:16.957]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_AppliedFeatures
+[2026-06-02 16:55:16.957]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_AppliedFeatures
+[2026-06-02 16:55:16.958]   [metadata] Method: RikaNET.Core.Models.ProtectionResult..ctor
+[2026-06-02 16:55:16.958] Assembly: RikaNET.WinUI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[2026-06-02 16:55:16.960]   Field: Pbt=.AVZ=+<RedirectActivationToAsync>d__15.keyInstance : Microsoft.Windows.AppLifecycle.AppInstance
+[2026-06-02 16:55:16.961]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlTypeInfoProvider.MapAdd_0_XamlControlsResources(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 16:55:16.962]   Property: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.KeyType : Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 16:55:16.963]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.get_KeyType() -> Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 16:55:16.963]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.AddToMap(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 16:55:16.964]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.AddToDictionary.Invoke(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 16:55:16.964]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.AddToDictionary.BeginInvoke(System.Object instance, System.Object key, System.Object item, System.AsyncCallback callback, System.Object object) -> System.IAsyncResult
+[2026-06-02 16:55:16.965]   Field: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType._keyTypeName : System.String
+[2026-06-02 16:55:16.965]   Property: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.KeyType : Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 16:55:16.966]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.get_KeyType() -> Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 16:55:16.966]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.AddToMap(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 16:55:16.967]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.SetKeyTypeName(System.String keyTypeName) -> System.Void
+[2026-06-02 16:55:16.967]   Field: RikaNET.WinUI.Views.LoginView.LicensePasswordBox : Microsoft.UI.Xaml.Controls.PasswordBox
+[2026-06-02 16:55:16.973]   Field: RikaNET.WinUI.Views.SettingsView.LicenseTextBlockVisible : Microsoft.UI.Xaml.Controls.TextBlock
+[2026-06-02 16:55:16.974]   Field: RikaNET.WinUI.Views.SettingsView.LicenseBlurOverlay : Microsoft.UI.Xaml.Controls.Border
+[2026-06-02 16:55:16.976]   Method: RikaNET.WinUI.Views.SettingsView.LicenseBorder_PointerEntered(System.Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) -> System.Void
+[2026-06-02 16:55:16.977]   Method: RikaNET.WinUI.Views.SettingsView.LicenseBorder_PointerExited(System.Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) -> System.Void
+[2026-06-02 16:55:16.977]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone : Microsoft.UI.Xaml.Controls.Grid
+[2026-06-02 16:55:16.977]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropSurface : Microsoft.UI.Xaml.Controls.Border
+[2026-06-02 16:55:16.978]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropOutline : Microsoft.UI.Xaml.Shapes.Rectangle
+[2026-06-02 16:55:16.980]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragOver(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 16:55:16.981]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragEnter(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 16:55:16.981]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragLeave(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 16:55:16.982]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_Drop(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 16:55:16.983]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentAssemblyName : System.String
+[2026-06-02 16:55:16.983]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentLicenseDisplay : System.String
+[2026-06-02 16:55:16.984]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentLicenseFull : System.String
+[2026-06-02 16:55:16.984]   Field: RikaNET.WinUI.ViewModels.AppViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:16.984]   Field: RikaNET.WinUI.ViewModels.AppViewModel._isAuthenticated : System.Boolean
+[2026-06-02 16:55:16.985]   Field: RikaNET.WinUI.ViewModels.AppViewModel._licenseRemainingDays : System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 16:55:16.985]   Field: RikaNET.WinUI.ViewModels.AppViewModel._licensePlanType : System.String
+[2026-06-02 16:55:16.985]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentAssemblyName : System.String
+[2026-06-02 16:55:16.986]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentLicenseDisplay : System.String
+[2026-06-02 16:55:16.986]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentLicenseFull : System.String
+[2026-06-02 16:55:16.987]   Property: RikaNET.WinUI.ViewModels.AppViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:16.987]   Property: RikaNET.WinUI.ViewModels.AppViewModel.IsAuthenticated : System.Boolean
+[2026-06-02 16:55:16.988]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicenseRemainingDays : System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 16:55:16.988]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicensePlanType : System.String
+[2026-06-02 16:55:16.988]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicenseExpiryDisplay : System.String
+[2026-06-02 16:55:16.989]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicensePlanDisplay : System.String
+[2026-06-02 16:55:16.989]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentAssemblyName() -> System.String
+[2026-06-02 16:55:16.990]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentAssemblyName(System.String value) -> System.Void
+[2026-06-02 16:55:16.990]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentLicenseDisplay() -> System.String
+[2026-06-02 16:55:16.990]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentLicenseDisplay(System.String value) -> System.Void
+[2026-06-02 16:55:16.991]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentLicenseFull() -> System.String
+[2026-06-02 16:55:16.991]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentLicenseFull(System.String value) -> System.Void
+[2026-06-02 16:55:16.991]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 16:55:16.992]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.992]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_IsAuthenticated() -> System.Boolean
+[2026-06-02 16:55:16.992]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_IsAuthenticated(System.Boolean value) -> System.Void
+[2026-06-02 16:55:16.993]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicenseRemainingDays() -> System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 16:55:16.993]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_LicenseRemainingDays(System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] value) -> System.Void
+[2026-06-02 16:55:16.994]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicensePlanType() -> System.String
+[2026-06-02 16:55:16.994]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_LicensePlanType(System.String value) -> System.Void
+[2026-06-02 16:55:16.995]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicenseExpiryDisplay() -> System.String
+[2026-06-02 16:55:16.995]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicensePlanDisplay() -> System.String
+[2026-06-02 16:55:16.996]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetAuthenticated(System.String license) -> System.Void
+[2026-06-02 16:55:16.996]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetAuthenticated(System.String license, System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] remainingDays, System.String planType) -> System.Void
+[2026-06-02 16:55:16.996]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetWorkspaceSummary(System.String assemblyName, System.Boolean isLoaded) -> System.Void
+[2026-06-02 16:55:16.997]   Method: RikaNET.WinUI.ViewModels.AppViewModel.BuildMaskedLicense(System.String license) -> System.String
+[2026-06-02 16:55:16.998]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 16:55:16.998]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._licenseKey : System.String
+[2026-06-02 16:55:16.998]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._rememberLicense : System.Boolean
+[2026-06-02 16:55:16.999]   Property: RikaNET.WinUI.ViewModels.LoginViewModel.LicenseKey : System.String
+[2026-06-02 16:55:16.999]   Property: RikaNET.WinUI.ViewModels.LoginViewModel.RememberLicense : System.Boolean
+[2026-06-02 16:55:16.999]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.get_LicenseKey() -> System.String
+[2026-06-02 16:55:17.000]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.set_LicenseKey(System.String value) -> System.Void
+[2026-06-02 16:55:17.000]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.get_RememberLicense() -> System.Boolean
+[2026-06-02 16:55:17.001]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.set_RememberLicense(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.002]   Field: RikaNET.WinUI.ViewModels.MethodsViewModel._assemblyWorkspaceService : RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 16:55:17.002]   Field: RikaNET.WinUI.ViewModels.MethodsViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:17.003]   Property: RikaNET.WinUI.ViewModels.MethodsViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:17.003]   Property: RikaNET.WinUI.ViewModels.MethodsViewModel.HasNoAssembly : System.Boolean
+[2026-06-02 16:55:17.003]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 16:55:17.004]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.004]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.get_HasNoAssembly() -> System.Boolean
+[2026-06-02 16:55:17.005]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.OnSelectionChanged(System.Int32 token, System.Boolean isSelected) -> System.Void
+[2026-06-02 16:55:17.006]   Field: RikaNET.WinUI.ViewModels.SettingsViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 16:55:17.006]   Field: RikaNET.WinUI.ViewModels.SettingsViewModel.<ClearStoredLicenseCommand>k__BackingField : CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 16:55:17.007]   Property: RikaNET.WinUI.ViewModels.SettingsViewModel.ClearStoredLicenseCommand : CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 16:55:17.007]   Property: RikaNET.WinUI.ViewModels.SettingsViewModel.CurrentLicenseDisplay : System.String
+[2026-06-02 16:55:17.008]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.get_ClearStoredLicenseCommand() -> CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 16:55:17.008]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.get_CurrentLicenseDisplay() -> System.String
+[2026-06-02 16:55:17.008]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.ClearStoredLicense() -> System.Void
+[2026-06-02 16:55:17.009]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyWorkspaceService : RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 16:55:17.010]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 16:55:17.010]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._protectionService : RikaNET.Core.Services.IProtectionService
+[2026-06-02 16:55:17.011]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyName : System.String
+[2026-06-02 16:55:17.011]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyPath : System.String
+[2026-06-02 16:55:17.011]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._controlFlowObfuscation : System.Boolean
+[2026-06-02 16:55:17.012]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:17.012]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._resourceProtection : System.Boolean
+[2026-06-02 16:55:17.013]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._stringEncryption : System.Boolean
+[2026-06-02 16:55:17.013]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<BrowseAssemblyCommand>k__BackingField : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.014]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<ProtectAsyncCommand>k__BackingField : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.014]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.AssemblyName : System.String
+[2026-06-02 16:55:17.015]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.AssemblyPath : System.String
+[2026-06-02 16:55:17.015]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.BrowseAssemblyCommand : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.015]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ControlFlowObfuscation : System.Boolean
+[2026-06-02 16:55:17.016]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 16:55:17.016]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ProtectAsyncCommand : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.016]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ResourceProtection : System.Boolean
+[2026-06-02 16:55:17.017]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.StringEncryption : System.Boolean
+[2026-06-02 16:55:17.017]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_AssemblyName() -> System.String
+[2026-06-02 16:55:17.018]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_AssemblyName(System.String value) -> System.Void
+[2026-06-02 16:55:17.018]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_AssemblyPath() -> System.String
+[2026-06-02 16:55:17.018]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_AssemblyPath(System.String value) -> System.Void
+[2026-06-02 16:55:17.019]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_BrowseAssemblyCommand() -> CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.019]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ControlFlowObfuscation() -> System.Boolean
+[2026-06-02 16:55:17.019]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_ControlFlowObfuscation(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.020]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 16:55:17.020]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.021]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ProtectAsyncCommand() -> CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 16:55:17.021]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ResourceProtection() -> System.Boolean
+[2026-06-02 16:55:17.022]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_ResourceProtection(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.022]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_StringEncryption() -> System.Boolean
+[2026-06-02 16:55:17.022]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_StringEncryption(System.Boolean value) -> System.Void
+[2026-06-02 16:55:17.023]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.LoadAssemblyAsync(System.String filePath) -> System.Threading.Tasks.Task
+[2026-06-02 16:55:17.023]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.BrowseAssemblyAsync() -> System.Threading.Tasks.Task
+[2026-06-02 16:55:17.024]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.CanProtect() -> System.Boolean
+[2026-06-02 16:55:17.024]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ProtectAsync() -> System.Threading.Tasks.Task
+[2026-06-02 16:55:17.024]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<ProtectAsync>b__126_0(RikaNET.Core.Models.ProtectionProgress value) -> System.Void
+[2026-06-02 16:55:17.025]   Field: wkj=.cma=.RyF= : System.Collections.Generic.Dictionary`2[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[dnlib.DotNet.MethodDef, dnlib.real, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999]]
+[2026-06-02 16:55:17.026]   Field: wkj=.cma=.BAB= : dnlib.DotNet.ModuleDefMD
+[2026-06-02 16:55:17.026]   Method: wkj=.cma=.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 16:55:17.026]   Method: wkj=.cma=.LoadAssemblyAsync(System.String voa=, System.Threading.CancellationToken UsV=) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AssemblyProfile, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 16:55:17.027]   Method: wkj=.cma=.jUf=(System.String XDR=, System.Byte[] qKn=) -> dnlib.DotNet.ModuleDefMD
+[2026-06-02 16:55:17.027]   Method: wkj=.cma=.Fre=(System.String cqh=, dnlib.DotNet.ModuleDefMD JtE=) -> RikaNET.Core.Models.AssemblyProfile
+[2026-06-02 16:55:17.027]   Method: wkj=.cma=.PrepareAssemblyForProtection(System.Boolean IGZ=) -> System.Byte[]
+[2026-06-02 16:55:17.028]   Method: wkj=.cma=.VCT=(dnlib.DotNet.MethodDef Zna=) -> System.String
+[2026-06-02 16:55:17.028]   Method: wkj=.cma=.idi=(dnlib.DotNet.TypeSig xUT=) -> System.String
+[2026-06-02 16:55:17.030] Analysis error: System.TypeLoadException: Could not load type 'dnlib.DotNet.IHasCustomAttribute' from assembly 'dnlib, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999'.
+   at System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
+   at System.Reflection.RuntimeMethodInfo.<get_Signature>g__LazyCreateSignature|25_0()
+   at System.Reflection.RuntimeMethodInfo.get_ReturnType()
+   at DnlibProxy.ProxyBootstrap.IsInterestingMethod(MethodInfo method)
+   at DnlibProxy.ProxyBootstrap.AnalyzeType(Type type)
+   at DnlibProxy.ProxyBootstrap.AnalyzeAssemblyForDnlibUsage(Assembly assembly)
+   at DnlibProxy.ProxyBootstrap.PerformAnalysis()
+   at DnlibProxy.ProxyBootstrap.<>c.<StartAnalysisTimer>b__15_0(Object _)
+[dnlib.real] loaded through dnlib proxy
+[2026-06-02 17:37:26.136] === dnlib proxy loaded ===
+[2026-06-02 17:37:26.168] Proxy assembly: C:\Users\semae\OneDrive\Belgeler\GitHub\HydraDragonCracker\Rika Inc\Rika.NET\dnlib.dll
+[2026-06-02 17:37:26.169] Process: RikaNET.WinUI (1792)
+[2026-06-02 17:37:26.173] [AuthBypass] RikaNET.WinUI yüklendi, patch başlıyor...
+[2026-06-02 17:37:26.212] [AuthBypass] Hedef tip: wkj=.Dhr=
+[2026-06-02 17:37:28.284] [AuthBypass] AuthBootstrapState: RikaNET.Core.Models.AuthBootstrapState
+[2026-06-02 17:37:28.285] [AuthBypass] AuthResult: RikaNET.Core.Models.AuthResult
+[2026-06-02 17:37:28.286] [AuthBypass] Interface tipi: RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 17:37:28.301] [VTable] stubInit=0x00007FFC88B217D0 stubSignIn=0x00007FFC88B217E8
+[2026-06-02 17:37:28.307] [VTable] mt=0x00007FFC884D3688 numVirtuals=9 numIfaces=1
+[2026-06-02 17:37:28.308] [VTable] ifaceMapPtr=0x00007FFC884D36E8 ifaceMT=0x00007FFC884D31B8
+[2026-06-02 17:37:28.309] [VTable] IfaceMap[0] mt=0x00007FFC884D31B8 startSlot=72
+[2026-06-02 17:37:28.310] [VTable] IAuthenticationService startSlot=72
+[2026-06-02 17:37:28.311] [VTable] slot[72] method=get_CurrentLicense addr=0x00007FFC884D3908 current=0x00007FFC875C7FD8
+[2026-06-02 17:37:28.311] [VTable] get_CurrentLicense için stub yok, atlanıyor.
+[2026-06-02 17:37:28.312] [VTable] slot[73] method=InitializeAsync addr=0x00007FFC884D3910 current=0x00007FFC87BB26F0
+[2026-06-02 17:37:28.313] [VTable] InitializeAsync vtable slot patch'lendi → 0x00007FFC88B217D0 ✓
+[2026-06-02 17:37:28.314] [VTable] slot[74] method=SignInAsync addr=0x00007FFC884D3918 current=0x0000000000000000
+[2026-06-02 17:37:28.315] [VTable] SignInAsync vtable slot patch'lendi → 0x00007FFC88B217E8 ✓
+[2026-06-02 17:37:28.315] [VTable] slot[75] method=ResetHardwareIdAsync addr=0x00007FFC884D3920 current=0x00007FFC87519360
+[2026-06-02 17:37:28.316] [VTable] ResetHardwareIdAsync için stub yok, atlanıyor.
+[2026-06-02 17:37:28.317] [VTable] slot[76] method=SignOut addr=0x00007FFC884D3928 current=0x00007FFC875C4018
+[2026-06-02 17:37:28.317] [VTable] SignOut için stub yok, atlanıyor.
+[2026-06-02 17:37:28.318] [JIT] Prolog patch başlıyor...
+[2026-06-02 17:37:28.327] [Resolve] hop=0 FF25 0x00007FFC8B6D96F8 → slot=0x00007FFC8B6DD6F8 → 0x00007FFC88878640
+[2026-06-02 17:37:28.328] [JIT] InitializeAsync precode=0x00007FFC8B6D96F8 real=0x00007FFC88878640
+[2026-06-02 17:37:28.329] [JIT] InitializeAsync prolog patch'lendi → 0x00007FFC88B217D0 ✓
+[2026-06-02 17:37:28.330] [Resolve] hop=0 FF25 0x00007FFC8B6D9710 → slot=0x00007FFC8B6DD710 → 0x00007FFC88879010
+[2026-06-02 17:37:28.331] [JIT] SignInAsync precode=0x00007FFC8B6D9710 real=0x00007FFC88879010
+[2026-06-02 17:37:28.332] [JIT] SignInAsync prolog patch'lendi → 0x00007FFC88B217E8 ✓
+[2026-06-02 17:37:28.335] [PatchStaticHelpers] Searching for obfuscated static helper methods...
+[2026-06-02 17:37:28.347] [PatchStaticHelpers] WARNING: init helper NOT found (_003C_0025_0021_002D_003F_002F_0026_0021)
+[2026-06-02 17:37:28.348] [PatchStaticHelpers] WARNING: signIn helper NOT found (_0023_002B_005E_0026_005E_0040_002B_005E)
+[2026-06-02 17:37:28.357] [InitHelper] Skipped — target or stub is null
+[2026-06-02 17:37:28.357] [SignInHelper] Skipped — target or stub is null
+[2026-06-02 17:37:28.362] Real dnlib already loaded: dnlib.real, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999
+[2026-06-02 17:37:29.162] [AuthBypass] InitializeAsync stub çağrıldı ✓
+[2026-06-02 17:37:30.880] === dnlib proxy analysis ===
+[2026-06-02 17:37:30.882] Loaded assemblies: 51
+[2026-06-02 17:37:30.887] Assembly: CommunityToolkit.Mvvm, Version=8.2.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2
+[2026-06-02 17:37:30.904]   Field: ThisAssembly.AssemblyConfiguration : System.String
+[2026-06-02 17:37:30.908]   Const string: ThisAssembly.AssemblyConfiguration = <len=7>
+[2026-06-02 17:37:30.909]   Field: ThisAssembly.AssemblyFileVersion : System.String
+[2026-06-02 17:37:30.909]   Const string: ThisAssembly.AssemblyFileVersion = <len=7>
+[2026-06-02 17:37:30.910]   Field: ThisAssembly.AssemblyInformationalVersion : System.String
+[2026-06-02 17:37:30.910]   Const string: ThisAssembly.AssemblyInformationalVersion = 8.2.2....e0294b <len=18>
+[2026-06-02 17:37:30.911]   Field: ThisAssembly.AssemblyName : System.String
+[2026-06-02 17:37:30.912]   Const string: ThisAssembly.AssemblyName = Commun...t.Mvvm <len=21>
+[2026-06-02 17:37:30.912]   Field: ThisAssembly.AssemblyTitle : System.String
+[2026-06-02 17:37:30.913]   Const string: ThisAssembly.AssemblyTitle = Commun...t.Mvvm <len=21>
+[2026-06-02 17:37:30.913]   Field: ThisAssembly.AssemblyVersion : System.String
+[2026-06-02 17:37:30.914]   Const string: ThisAssembly.AssemblyVersion = <len=7>
+[2026-06-02 17:37:30.915]   Field: ThisAssembly.PublicKey : System.String
+[2026-06-02 17:37:30.915]   Const string: ThisAssembly.PublicKey = 002400...d129e2 <len=320>
+[2026-06-02 17:37:30.916]   Field: ThisAssembly.PublicKeyToken : System.String
+[2026-06-02 17:37:30.916]   Const string: ThisAssembly.PublicKeyToken = 4aff67...548ee2 <len=16>
+[2026-06-02 17:37:30.919]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 17:37:30.919]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd(TKey key, TValue value) -> System.Boolean
+[2026-06-02 17:37:30.920]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove(TKey key) -> System.Boolean
+[2026-06-02 17:37:30.921]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue(TKey key, CreateValueCallback createValueCallback) -> TValue
+[2026-06-02 17:37:30.921]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked(TKey key, CreateValueCallback createValueCallback) -> TValue
+[2026-06-02 17:37:30.922]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry(TKey key, TValue value) -> System.Void
+[2026-06-02 17:37:30.922]   Method: System.Collections.Generic.Dictionary2`2.get_Item(TKey key) -> TValue
+[2026-06-02 17:37:30.923]   Method: System.Collections.Generic.Dictionary2`2.ContainsKey(TKey key) -> System.Boolean
+[2026-06-02 17:37:30.923]   Method: System.Collections.Generic.Dictionary2`2.TryGetValue(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 17:37:30.924]   Method: System.Collections.Generic.Dictionary2`2.TryRemove(TKey key) -> System.Boolean
+[2026-06-02 17:37:30.924]   Method: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef(TKey key) -> TValue&
+[2026-06-02 17:37:30.925]   Method: System.Collections.Generic.Dictionary2`2.FindValue(TKey key) -> TValue&
+[2026-06-02 17:37:30.926]   Method: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound(TKey key) -> System.Void
+[2026-06-02 17:37:30.926]   Method: System.Collections.Generic.IDictionary2`2.get_Item(TKey key) -> TValue
+[2026-06-02 17:37:30.927]   Method: System.Collections.Generic.IDictionary2`1.TryRemove(TKey key) -> System.Boolean
+[2026-06-02 17:37:30.927]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 17:37:30.928]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 17:37:30.929]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.929]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.930]   Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 17:37:30.930]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.931]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.932]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, System.Object recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 17:37:30.932]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, TToken token) -> TMessage
+[2026-06-02 17:37:30.933]   Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable(CommunityToolkit.Mvvm.Messaging.IMessenger messenger, TToken token) -> IObservable`1
+[2026-06-02 17:37:30.934]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 17:37:30.935]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 17:37:30.935]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.936]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register(System.Object recipient, TToken token, CommunityToolkit.Mvvm.Messaging.Internals.MessageHandlerDispatcher dispatcher) -> System.Void
+[2026-06-02 17:37:30.936]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.937]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.937]   Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 17:37:30.938]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered(System.Object recipient, TToken token) -> System.Boolean
+[2026-06-02 17:37:30.939]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(TRecipient recipient, TToken token, MessageHandler`2 handler) -> System.Void
+[2026-06-02 17:37:30.940]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(IRecipient`1 recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.940]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register(System.Object recipient, TToken token, CommunityToolkit.Mvvm.Messaging.Internals.MessageHandlerDispatcher dispatcher) -> System.Void
+[2026-06-02 17:37:30.941]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.941]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister(System.Object recipient, TToken token) -> System.Void
+[2026-06-02 17:37:30.942]   Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send(TMessage message, TToken token) -> TMessage
+[2026-06-02 17:37:30.943]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:30.944]   Property: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.CancellationToken : System.Threading.CancellationToken
+[2026-06-02 17:37:30.945]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.get_CancellationToken() -> System.Threading.CancellationToken
+[2026-06-02 17:37:30.946]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync(System.Threading.CancellationToken cancellationToken) -> Task`1
+[2026-06-02 17:37:30.946]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator(System.Threading.CancellationToken cancellationToken) -> IAsyncEnumerator`1
+[2026-06-02 17:37:30.948]   Field: CommunityToolkit.Mvvm.Messaging.Internals.Type2.TToken : System.Type
+[2026-06-02 17:37:30.949]   Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:30.950]   Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:30.959]   Property: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 17:37:30.960]   Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 17:37:30.961]   Property: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.Key : TKey
+[2026-06-02 17:37:30.961]   Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.get_Key() -> TKey
+[2026-06-02 17:37:30.963]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.965]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.966]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.969]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 17:37:30.971]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.973]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 17:37:30.976]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer) -> ObservableGroup`2
+[2026-06-02 17:37:30.979]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 17:37:30.980]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem(ObservableGroupedCollection`2 source, TKey key, TElement item) -> ObservableGroup`2
+[2026-06-02 17:37:30.981]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem(ObservableGroupedCollection`2 source, TKey key, TElement item) -> ObservableGroup`2
+[2026-06-02 17:37:30.983]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem(ObservableGroupedCollection`2 source, TKey key, IComparer`1 keyComparer, TElement item, IComparer`1 itemComparer) -> ObservableGroup`2
+[2026-06-02 17:37:30.984]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup(ObservableGroupedCollection`2 source, TKey key) -> System.Void
+[2026-06-02 17:37:30.985]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem(ObservableGroupedCollection`2 source, TKey key, TValue item, System.Boolean removeGroupIfEmpty) -> System.Void
+[2026-06-02 17:37:30.986]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKey>g__ThrowArgumentExceptionForKeyNotFound|0_0() -> System.Void
+[2026-06-02 17:37:30.987]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.989]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0(ObservableGroupedCollection`2 source, TKey key) -> ObservableGroup`2
+[2026-06-02 17:37:30.992]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0(ObservableGroupedCollection`2 source, TKey key, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 17:37:30.993]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer) -> ObservableGroup`2
+[2026-06-02 17:37:30.996]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0(ObservableGroupedCollection`2 source, TKey key, IComparer`1 comparer, IEnumerable`1 collection) -> ObservableGroup`2
+[2026-06-02 17:37:30.997]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0(ObservableGroupedCollection`2 source, TKey key) -> System.Void
+[2026-06-02 17:37:30.999]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0(ObservableGroupedCollection`2 source, TKey key, TValue item, System.Boolean removeGroupIfEmpty) -> System.Void
+[2026-06-02 17:37:31.000]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Item : IEnumerable`1
+[2026-06-02 17:37:31.001]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item(TKey key) -> IEnumerable`1
+[2026-06-02 17:37:31.002]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains(TKey key) -> System.Boolean
+[2026-06-02 17:37:31.002]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator() -> IEnumerator`1
+[2026-06-02 17:37:31.003]   Field: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.key : TKey
+[2026-06-02 17:37:31.003]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.Key : TKey
+[2026-06-02 17:37:31.004]   Property: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 17:37:31.005]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.get_Key() -> TKey
+[2026-06-02 17:37:31.005]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.set_Key(TKey value) -> System.Void
+[2026-06-02 17:37:31.006]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 17:37:31.007]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Item : IEnumerable`1
+[2026-06-02 17:37:31.008]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item(TKey key) -> IEnumerable`1
+[2026-06-02 17:37:31.008]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains(TKey key) -> System.Boolean
+[2026-06-02 17:37:31.009]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator() -> IEnumerator`1
+[2026-06-02 17:37:31.010]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault(TKey key) -> IEnumerable`1
+[2026-06-02 17:37:31.010]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0(CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2 source, TKey key) -> IEnumerable`1
+[2026-06-02 17:37:31.011]   Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.<Key>k__BackingField : TKey
+[2026-06-02 17:37:31.011]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.Key : TKey
+[2026-06-02 17:37:31.012]   Property: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.Key : System.Object
+[2026-06-02 17:37:31.013]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.get_Key() -> TKey
+[2026-06-02 17:37:31.013]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key() -> System.Object
+[2026-06-02 17:37:31.014]   Field: CommunityToolkit.Mvvm.Collections.Internals.ObservableGroupHelper.KeyChangedEventArgs : System.ComponentModel.PropertyChangedEventArgs
+[2026-06-02 17:37:31.015]   Field: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Enumerator.key : TKey
+[2026-06-02 17:37:31.015]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Enumerator.GetKey() -> TKey
+[2026-06-02 17:37:31.016]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.CreateEntryNoResize(TKey key, TValue value) -> System.Void
+[2026-06-02 17:37:31.017]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.TryGetValueWorker(TKey key, TValue& value) -> System.Boolean
+[2026-06-02 17:37:31.017]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.FindEntry(TKey key, System.Object& value) -> System.Int32
+[2026-06-02 17:37:31.018]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.TryGetEntry(System.Int32 index, TKey& key, TValue& value) -> System.Boolean
+[2026-06-02 17:37:31.019]   Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2+Container.Remove(TKey key) -> System.Boolean
+[2026-06-02 17:37:31.019]   Method: System.Collections.Generic.Dictionary2`2+Enumerator.GetKey() -> TKey
+[2026-06-02 17:37:31.020]   Field: System.Collections.Generic.Dictionary2`2+Entry.Key : TKey
+[2026-06-02 17:37:31.021]   Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions+Observable`2.token : TToken
+[2026-06-02 17:37:31.024]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 17:37:31.025]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult(System.Int16 token) -> System.Boolean
+[2026-06-02 17:37:31.025]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus(System.Int16 token) -> System.Threading.Tasks.Sources.ValueTaskSourceStatus
+[2026-06-02 17:37:31.026]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted(System.Action`1[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] continuation, System.Object state, System.Int16 token, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags flags) -> System.Void
+[2026-06-02 17:37:31.027]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(System.Int16 token) -> System.Void
+[2026-06-02 17:37:31.027]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus(System.Int16 token) -> System.Threading.Tasks.Sources.ValueTaskSourceStatus
+[2026-06-02 17:37:31.028]   Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted(System.Action`1[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] continuation, System.Object state, System.Int16 token, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags flags) -> System.Void
+[2026-06-02 17:37:31.028]   Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1+<GetResponsesAsync>d__7.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 17:37:31.031]   Field: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions+<>c__DisplayClass1_0`2.key : TKey
+[2026-06-02 17:37:31.032]   Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions+<>c__DisplayClass1_0`2.<FirstGroupByKeyOrDefault>b__1(ObservableGroup`2 group) -> System.Boolean
+[2026-06-02 17:37:31.035]   Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2+<>c__DisplayClass7_0.key : TKey
+[2026-06-02 17:37:31.036]   Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2+<>c__DisplayClass7_0.<FirstGroupByKeyOrDefault>b__1(ReadOnlyObservableGroup`2 group) -> System.Boolean
+[2026-06-02 17:37:31.036]   Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions+Observable`2+Recipient.token : TToken
+[2026-06-02 17:37:31.258]   [metadata] Type: <Module>
+[2026-06-02 17:37:31.321] [AuthBypass] SignInAsync stub çağrıldı ✓ license=RIKA-0000-0000-0000
+[2026-06-02 17:37:31.358]   [metadata] Type: ThisAssembly
+[2026-06-02 17:37:31.371]   [metadata] Field: ThisAssembly.AssemblyConfiguration : System.String
+[2026-06-02 17:37:31.376]   [metadata] Const: ThisAssembly.AssemblyConfiguration = <len=7>
+[2026-06-02 17:37:31.377]   [metadata] Field: ThisAssembly.AssemblyFileVersion : System.String
+[2026-06-02 17:37:31.378]   [metadata] Const: ThisAssembly.AssemblyFileVersion = <len=7>
+[2026-06-02 17:37:31.378]   [metadata] Field: ThisAssembly.AssemblyInformationalVersion : System.String
+[2026-06-02 17:37:31.379]   [metadata] Const: ThisAssembly.AssemblyInformationalVersion = 8.2.2....e0294b <len=18>
+[2026-06-02 17:37:31.380]   [metadata] Field: ThisAssembly.AssemblyName : System.String
+[2026-06-02 17:37:31.380]   [metadata] Const: ThisAssembly.AssemblyName = Commun...t.Mvvm <len=21>
+[2026-06-02 17:37:31.381]   [metadata] Field: ThisAssembly.AssemblyTitle : System.String
+[2026-06-02 17:37:31.381]   [metadata] Const: ThisAssembly.AssemblyTitle = Commun...t.Mvvm <len=21>
+[2026-06-02 17:37:31.382]   [metadata] Field: ThisAssembly.AssemblyVersion : System.String
+[2026-06-02 17:37:31.382]   [metadata] Const: ThisAssembly.AssemblyVersion = <len=7>
+[2026-06-02 17:37:31.386]   [metadata] Const: ThisAssembly.GitCommitId = 4c21e0...5086ce <len=40>
+[2026-06-02 17:37:31.387]   [metadata] Field: ThisAssembly.PublicKey : System.String
+[2026-06-02 17:37:31.388]   [metadata] Const: ThisAssembly.PublicKey = 002400...d129e2 <len=320>
+[2026-06-02 17:37:31.388]   [metadata] Field: ThisAssembly.PublicKeyToken : System.String
+[2026-06-02 17:37:31.389]   [metadata] Const: ThisAssembly.PublicKeyToken = 4aff67...548ee2 <len=16>
+[2026-06-02 17:37:31.389]   [metadata] Const: ThisAssembly.RootNamespace = Commun...t.Mvvm <len=21>
+[2026-06-02 17:37:31.390]   [metadata] Method: ThisAssembly..cctor
+[2026-06-02 17:37:31.391]   [metadata] Const: Configuration.DisableINotifyPropertyChangingSupport = MVVMTO...ANGING <len=43>
+[2026-06-02 17:37:31.396]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue -> key
+[2026-06-02 17:37:31.396]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryGetValue
+[2026-06-02 17:37:31.397]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd -> key
+[2026-06-02 17:37:31.397]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.TryAdd
+[2026-06-02 17:37:31.398]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove -> key
+[2026-06-02 17:37:31.399]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.Remove
+[2026-06-02 17:37:31.399]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue -> key
+[2026-06-02 17:37:31.400]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValue
+[2026-06-02 17:37:31.401]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked -> key
+[2026-06-02 17:37:31.401]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.GetValueLocked
+[2026-06-02 17:37:31.402]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry -> key
+[2026-06-02 17:37:31.402]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2.CreateEntry
+[2026-06-02 17:37:31.414]   [metadata] Field: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Enumerator.key : TKey
+[2026-06-02 17:37:31.415]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Enumerator.GetKey
+[2026-06-02 17:37:31.417]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.CreateEntryNoResize -> key
+[2026-06-02 17:37:31.418]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.CreateEntryNoResize
+[2026-06-02 17:37:31.419]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetValueWorker -> key
+[2026-06-02 17:37:31.420]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetValueWorker
+[2026-06-02 17:37:31.423]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.FindEntry -> key
+[2026-06-02 17:37:31.424]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.FindEntry
+[2026-06-02 17:37:31.425]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetEntry -> key
+[2026-06-02 17:37:31.425]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.TryGetEntry
+[2026-06-02 17:37:31.426]   [metadata] Param: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.Remove -> key
+[2026-06-02 17:37:31.426]   [metadata] Method: System.Runtime.CompilerServices.ConditionalWeakTable2`2/Container.Remove
+[2026-06-02 17:37:31.427]   [metadata] Param: System.Collections.Generic.Dictionary2`2.get_Item -> key
+[2026-06-02 17:37:31.428]   [metadata] Method: System.Collections.Generic.Dictionary2`2.get_Item
+[2026-06-02 17:37:31.428]   [metadata] Param: System.Collections.Generic.Dictionary2`2.ContainsKey -> key
+[2026-06-02 17:37:31.429]   [metadata] Method: System.Collections.Generic.Dictionary2`2.ContainsKey
+[2026-06-02 17:37:31.429]   [metadata] Param: System.Collections.Generic.Dictionary2`2.TryGetValue -> key
+[2026-06-02 17:37:31.430]   [metadata] Method: System.Collections.Generic.Dictionary2`2.TryGetValue
+[2026-06-02 17:37:31.430]   [metadata] Param: System.Collections.Generic.Dictionary2`2.TryRemove -> key
+[2026-06-02 17:37:31.431]   [metadata] Method: System.Collections.Generic.Dictionary2`2.TryRemove
+[2026-06-02 17:37:31.432]   [metadata] Param: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef -> key
+[2026-06-02 17:37:31.433]   [metadata] Method: System.Collections.Generic.Dictionary2`2.GetOrAddValueRef
+[2026-06-02 17:37:31.433]   [metadata] Param: System.Collections.Generic.Dictionary2`2.FindValue -> key
+[2026-06-02 17:37:31.434]   [metadata] Method: System.Collections.Generic.Dictionary2`2.FindValue
+[2026-06-02 17:37:31.434]   [metadata] Param: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound -> key
+[2026-06-02 17:37:31.435]   [metadata] Method: System.Collections.Generic.Dictionary2`2.ThrowArgumentExceptionForKeyNotFound
+[2026-06-02 17:37:31.435]   [metadata] Method: System.Collections.Generic.Dictionary2`2/Enumerator.GetKey
+[2026-06-02 17:37:31.436]   [metadata] Field: System.Collections.Generic.Dictionary2`2/Entry.Key : TKey
+[2026-06-02 17:37:31.437]   [metadata] Param: System.Collections.Generic.IDictionary2`2.get_Item -> key
+[2026-06-02 17:37:31.438]   [metadata] Method: System.Collections.Generic.IDictionary2`2.get_Item
+[2026-06-02 17:37:31.438]   [metadata] Param: System.Collections.Generic.IDictionary2`1.TryRemove -> key
+[2026-06-02 17:37:31.439]   [metadata] Method: System.Collections.Generic.IDictionary2`1.TryRemove
+[2026-06-02 17:37:31.439]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered -> token
+[2026-06-02 17:37:31.440]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.IsRegistered
+[2026-06-02 17:37:31.441]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Register -> token
+[2026-06-02 17:37:31.441]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Register
+[2026-06-02 17:37:31.442]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll -> token
+[2026-06-02 17:37:31.443]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.UnregisterAll
+[2026-06-02 17:37:31.444]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister -> token
+[2026-06-02 17:37:31.444]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Unregister
+[2026-06-02 17:37:31.445]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessenger.Send -> token
+[2026-06-02 17:37:31.445]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessenger.Send
+[2026-06-02 17:37:31.446]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll -> token
+[2026-06-02 17:37:31.447]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll
+[2026-06-02 17:37:31.447]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.RegisterAll -> <len=5>
+[2026-06-02 17:37:31.448]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> token
+[2026-06-02 17:37:31.448]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register
+[2026-06-02 17:37:31.449]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> <len=5>
+[2026-06-02 17:37:31.449]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> token
+[2026-06-02 17:37:31.450]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register
+[2026-06-02 17:37:31.450]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Register -> <len=5>
+[2026-06-02 17:37:31.451]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send -> token
+[2026-06-02 17:37:31.452]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send
+[2026-06-02 17:37:31.452]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.Send -> <len=5>
+[2026-06-02 17:37:31.453]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable -> token
+[2026-06-02 17:37:31.453]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable
+[2026-06-02 17:37:31.454]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions.CreateObservable -> <len=5>
+[2026-06-02 17:37:31.455]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2.token : TToken
+[2026-06-02 17:37:31.456]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2..ctor -> token
+[2026-06-02 17:37:31.456]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2..ctor
+[2026-06-02 17:37:31.457]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient.token : TToken
+[2026-06-02 17:37:31.457]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient..ctor -> token
+[2026-06-02 17:37:31.458]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.IMessengerExtensions/Observable`2/Recipient..ctor
+[2026-06-02 17:37:31.459]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered -> token
+[2026-06-02 17:37:31.459]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered
+[2026-06-02 17:37:31.460]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.IsRegistered -> <len=5>
+[2026-06-02 17:37:31.460]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.461]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 17:37:31.461]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> <len=5>
+[2026-06-02 17:37:31.462]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.462]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 17:37:31.463]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.463]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Register
+[2026-06-02 17:37:31.464]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll -> token
+[2026-06-02 17:37:31.464]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll
+[2026-06-02 17:37:31.466]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.UnregisterAll -> <len=5>
+[2026-06-02 17:37:31.467]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister -> token
+[2026-06-02 17:37:31.467]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister
+[2026-06-02 17:37:31.469]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Unregister -> <len=5>
+[2026-06-02 17:37:31.470]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send -> token
+[2026-06-02 17:37:31.471]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send
+[2026-06-02 17:37:31.472]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.StrongReferenceMessenger.Send -> <len=5>
+[2026-06-02 17:37:31.474]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered -> token
+[2026-06-02 17:37:31.474]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered
+[2026-06-02 17:37:31.475]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.IsRegistered -> <len=5>
+[2026-06-02 17:37:31.476]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.476]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 17:37:31.477]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> <len=5>
+[2026-06-02 17:37:31.477]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.478]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 17:37:31.479]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register -> token
+[2026-06-02 17:37:31.479]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Register
+[2026-06-02 17:37:31.480]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll -> token
+[2026-06-02 17:37:31.481]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll
+[2026-06-02 17:37:31.481]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.UnregisterAll -> <len=5>
+[2026-06-02 17:37:31.482]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister -> token
+[2026-06-02 17:37:31.483]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister
+[2026-06-02 17:37:31.483]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Unregister -> <len=5>
+[2026-06-02 17:37:31.484]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send -> token
+[2026-06-02 17:37:31.484]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send
+[2026-06-02 17:37:31.485]   [metadata] ldstr: CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Send -> <len=5>
+[2026-06-02 17:37:31.485]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:31.486]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.get_CancellationToken
+[2026-06-02 17:37:31.486]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync -> cancellationToken
+[2026-06-02 17:37:31.487]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetResponsesAsync
+[2026-06-02 17:37:31.487]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator -> cancellationToken
+[2026-06-02 17:37:31.488]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1.GetAsyncEnumerator
+[2026-06-02 17:37:31.489]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 17:37:31.492]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult -> token
+[2026-06-02 17:37:31.492]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetResult
+[2026-06-02 17:37:31.493]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus -> token
+[2026-06-02 17:37:31.494]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.GetStatus
+[2026-06-02 17:37:31.494]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted -> token
+[2026-06-02 17:37:31.494]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource<System.Boolean>.OnCompleted
+[2026-06-02 17:37:31.495]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult -> token
+[2026-06-02 17:37:31.495]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetResult
+[2026-06-02 17:37:31.496]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus -> token
+[2026-06-02 17:37:31.496]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.GetStatus
+[2026-06-02 17:37:31.497]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted -> token
+[2026-06-02 17:37:31.497]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetAsyncEnumerator>d__8.System.Threading.Tasks.Sources.IValueTaskSource.OnCompleted
+[2026-06-02 17:37:31.498]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Messages.AsyncCollectionRequestMessage`1/<GetResponsesAsync>d__7.cancellationToken : System.Threading.CancellationToken
+[2026-06-02 17:37:31.499]   [metadata] Field: CommunityToolkit.Mvvm.Messaging.Internals.Type2.TToken : System.Type
+[2026-06-02 17:37:31.500]   [metadata] Param: CommunityToolkit.Mvvm.Messaging.Internals.Type2..ctor -> tToken
+[2026-06-02 17:37:31.500]   [metadata] Method: CommunityToolkit.Mvvm.Messaging.Internals.Type2..ctor
+[2026-06-02 17:37:31.501]   [metadata] Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:31.503]   [metadata] Field: CommunityToolkit.Mvvm.Input.AsyncRelayCommand`1.cancellationTokenSource : System.Threading.CancellationTokenSource
+[2026-06-02 17:37:31.506]   [metadata] Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 17:37:31.507]   [metadata] Method: CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup`1.get_Key
+[2026-06-02 17:37:31.507]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey -> key
+[2026-06-02 17:37:31.508]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKey
+[2026-06-02 17:37:31.508]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault -> key
+[2026-06-02 17:37:31.509]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.FirstGroupByKeyOrDefault
+[2026-06-02 17:37:31.510]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup -> key
+[2026-06-02 17:37:31.510]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup
+[2026-06-02 17:37:31.511]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup -> key
+[2026-06-02 17:37:31.511]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddGroup
+[2026-06-02 17:37:31.512]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 17:37:31.513]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 17:37:31.513]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 17:37:31.514]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 17:37:31.514]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 17:37:31.514]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 17:37:31.515]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup -> key
+[2026-06-02 17:37:31.515]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertGroup
+[2026-06-02 17:37:31.516]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem -> key
+[2026-06-02 17:37:31.516]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.AddItem
+[2026-06-02 17:37:31.517]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> key
+[2026-06-02 17:37:31.517]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem
+[2026-06-02 17:37:31.518]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> key
+[2026-06-02 17:37:31.518]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem -> keyComparer
+[2026-06-02 17:37:31.519]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.InsertItem
+[2026-06-02 17:37:31.537]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup -> key
+[2026-06-02 17:37:31.537]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveGroup
+[2026-06-02 17:37:31.538]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem -> key
+[2026-06-02 17:37:31.538]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.RemoveItem
+[2026-06-02 17:37:31.539]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKey>g__ThrowArgumentExceptionForKeyNotFound|0_0
+[2026-06-02 17:37:31.540]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0 -> key
+[2026-06-02 17:37:31.540]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|1_0
+[2026-06-02 17:37:31.541]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0 -> key
+[2026-06-02 17:37:31.542]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|5_0
+[2026-06-02 17:37:31.542]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0 -> key
+[2026-06-02 17:37:31.543]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|7_0
+[2026-06-02 17:37:31.544]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0 -> key
+[2026-06-02 17:37:31.544]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|8_0
+[2026-06-02 17:37:31.545]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0 -> key
+[2026-06-02 17:37:31.545]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<InsertGroup>g__InsertGroupFallback|10_0
+[2026-06-02 17:37:31.546]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0 -> key
+[2026-06-02 17:37:31.546]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveGroup>g__RemoveGroupFallback|14_0
+[2026-06-02 17:37:31.547]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0 -> key
+[2026-06-02 17:37:31.547]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions.<RemoveItem>g__RemoveItemFallback|15_0
+[2026-06-02 17:37:31.548]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions/<>c__DisplayClass1_0`2.key : TKey
+[2026-06-02 17:37:31.548]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollectionExtensions/<>c__DisplayClass1_0`2.<FirstGroupByKeyOrDefault>b__1
+[2026-06-02 17:37:31.548]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item -> key
+[2026-06-02 17:37:31.549]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item
+[2026-06-02 17:37:31.549]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains -> key
+[2026-06-02 17:37:31.550]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains
+[2026-06-02 17:37:31.551]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator
+[2026-06-02 17:37:31.551]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.key : TKey
+[2026-06-02 17:37:31.552]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor -> key
+[2026-06-02 17:37:31.553]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor
+[2026-06-02 17:37:31.553]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor -> key
+[2026-06-02 17:37:31.554]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2..ctor
+[2026-06-02 17:37:31.554]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.get_Key
+[2026-06-02 17:37:31.554]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.set_Key
+[2026-06-02 17:37:31.555]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 17:37:31.556]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item -> key
+[2026-06-02 17:37:31.556]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.get_Item
+[2026-06-02 17:37:31.557]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains -> key
+[2026-06-02 17:37:31.557]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Linq.ILookup<TKey,TElement>.Contains
+[2026-06-02 17:37:31.558]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.System.Collections.Generic.IEnumerable<System.Linq.IGrouping<TKey,TElement>>.GetEnumerator
+[2026-06-02 17:37:31.558]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault -> key
+[2026-06-02 17:37:31.558]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.FirstGroupByKeyOrDefault
+[2026-06-02 17:37:31.559]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0 -> key
+[2026-06-02 17:37:31.559]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2.<FirstGroupByKeyOrDefault>g__FirstGroupByKeyOrDefaultFallback|7_0
+[2026-06-02 17:37:31.560]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2/<>c__DisplayClass7_0.key : TKey
+[2026-06-02 17:37:31.561]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroupedCollection`2/<>c__DisplayClass7_0.<FirstGroupByKeyOrDefault>b__1
+[2026-06-02 17:37:31.561]   [metadata] Field: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.<Key>k__BackingField : TKey
+[2026-06-02 17:37:31.562]   [metadata] Param: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2..ctor -> key
+[2026-06-02 17:37:31.562]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2..ctor
+[2026-06-02 17:37:31.563]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.get_Key
+[2026-06-02 17:37:31.563]   [metadata] Method: CommunityToolkit.Mvvm.Collections.ReadOnlyObservableGroup`2.CommunityToolkit.Mvvm.Collections.IReadOnlyObservableGroup.get_Key
+[2026-06-02 17:37:31.564]   [metadata] Field: CommunityToolkit.Mvvm.Collections.Internals.ObservableGroupHelper.KeyChangedEventArgs : System.ComponentModel.PropertyChangedEventArgs
+[2026-06-02 17:37:31.570] Assembly: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+[2026-06-02 17:37:31.589]   [metadata] Type: <Module>
+[2026-06-02 17:37:31.590] Assembly: RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[2026-06-02 17:37:31.591]   Property: RikaNET.Core.Services.IAssemblyWorkspaceService.HasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.591]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 17:37:31.592]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync(System.String filePath, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AssemblyProfile, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.593]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection(System.Int32 token, System.Boolean isSelected) -> System.Void
+[2026-06-02 17:37:31.593]   Method: RikaNET.Core.Services.IAssemblyWorkspaceService.PrepareAssemblyForProtection(System.Boolean applyVirtualization) -> System.Byte[]
+[2026-06-02 17:37:31.594]   Property: RikaNET.Core.Services.IAuthenticationService.CurrentLicense : System.String
+[2026-06-02 17:37:31.594]   Method: RikaNET.Core.Services.IAuthenticationService.get_CurrentLicense() -> System.String
+[2026-06-02 17:37:31.595]   Method: RikaNET.Core.Services.IAuthenticationService.InitializeAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthBootstrapState, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.595]   Method: RikaNET.Core.Services.IAuthenticationService.SignInAsync(System.String license, System.Boolean rememberLicense, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.596]   Method: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync(System.String license, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AuthResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.596]   Method: RikaNET.Core.Services.IFilePickerService.PickAssemblyAsync() -> System.Threading.Tasks.Task`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 17:37:31.597]   Method: RikaNET.Core.Services.IProtectionService.ProtectAsync(RikaNET.Core.Models.ProtectionRequest request, System.IProgress`1[[RikaNET.Core.Models.ProtectionProgress, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] progress, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.ProtectionResult, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.598]   Method: RikaNET.Core.Services.ISettingsStore.GetString(System.String key) -> System.String
+[2026-06-02 17:37:31.598]   Method: RikaNET.Core.Services.ISettingsStore.GetBoolean(System.String key, System.Boolean defaultValue) -> System.Boolean
+[2026-06-02 17:37:31.598]   Method: RikaNET.Core.Services.ISettingsStore.SetString(System.String key, System.String value) -> System.Void
+[2026-06-02 17:37:31.599]   Method: RikaNET.Core.Services.ISettingsStore.SetBoolean(System.String key, System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.600]   Method: RikaNET.Core.Services.ISettingsStore.Remove(System.String key) -> System.Void
+[2026-06-02 17:37:31.600]   Method: RikaNET.Core.Services.IStringResourceService.GetString(System.String key) -> System.String
+[2026-06-02 17:37:31.601]   Method: RikaNET.Core.Services.IStringResourceService.GetString(System.String key, System.Object[] arguments) -> System.String
+[2026-06-02 17:37:31.601]   Field: RikaNET.Core.Models.AssemblyProfile.<AssemblyName>k__BackingField : System.String
+[2026-06-02 17:37:31.602]   Property: RikaNET.Core.Models.AssemblyProfile.AssemblyName : System.String
+[2026-06-02 17:37:31.602]   Method: RikaNET.Core.Models.AssemblyProfile.get_AssemblyName() -> System.String
+[2026-06-02 17:37:31.603]   Method: RikaNET.Core.Models.AssemblyProfile.set_AssemblyName(System.String value) -> System.Void
+[2026-06-02 17:37:31.604]   Field: RikaNET.Core.Models.AuthBootstrapState.<CachedLicense>k__BackingField : System.String
+[2026-06-02 17:37:31.604]   Property: RikaNET.Core.Models.AuthBootstrapState.CachedLicense : System.String
+[2026-06-02 17:37:31.605]   Method: RikaNET.Core.Models.AuthBootstrapState.get_CachedLicense() -> System.String
+[2026-06-02 17:37:31.605]   Method: RikaNET.Core.Models.AuthBootstrapState.set_CachedLicense(System.String value) -> System.Void
+[2026-06-02 17:37:31.606]   Field: RikaNET.Core.Models.MethodItem.<Token>k__BackingField : System.Int32
+[2026-06-02 17:37:31.607]   Property: RikaNET.Core.Models.MethodItem.Token : System.Int32
+[2026-06-02 17:37:31.607]   Method: RikaNET.Core.Models.MethodItem.get_Token() -> System.Int32
+[2026-06-02 17:37:31.608]   Method: RikaNET.Core.Models.MethodItem.set_Token(System.Int32 value) -> System.Void
+[2026-06-02 17:37:31.609]   Field: RikaNET.Core.Models.ProtectionFeature.StringEncryption : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.609]   Field: RikaNET.Core.Models.ProtectionFeature.ControlFlowObfuscation : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.610]   Field: RikaNET.Core.Models.ProtectionFeature.ResourceProtection : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.611]   Field: RikaNET.Core.Models.ProtectionOptions.<StringEncryption>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.611]   Field: RikaNET.Core.Models.ProtectionOptions.<ControlFlowObfuscation>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.612]   Field: RikaNET.Core.Models.ProtectionOptions.<ResourceProtection>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.613]   Property: RikaNET.Core.Models.ProtectionOptions.StringEncryption : System.Boolean
+[2026-06-02 17:37:31.613]   Property: RikaNET.Core.Models.ProtectionOptions.ControlFlowObfuscation : System.Boolean
+[2026-06-02 17:37:31.614]   Property: RikaNET.Core.Models.ProtectionOptions.ResourceProtection : System.Boolean
+[2026-06-02 17:37:31.615]   Method: RikaNET.Core.Models.ProtectionOptions.get_StringEncryption() -> System.Boolean
+[2026-06-02 17:37:31.615]   Method: RikaNET.Core.Models.ProtectionOptions.set_StringEncryption(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.616]   Method: RikaNET.Core.Models.ProtectionOptions.get_ControlFlowObfuscation() -> System.Boolean
+[2026-06-02 17:37:31.617]   Method: RikaNET.Core.Models.ProtectionOptions.set_ControlFlowObfuscation(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.617]   Method: RikaNET.Core.Models.ProtectionOptions.get_ResourceProtection() -> System.Boolean
+[2026-06-02 17:37:31.618]   Method: RikaNET.Core.Models.ProtectionOptions.set_ResourceProtection(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.619]   Field: RikaNET.Core.Models.ProtectionRequest.<License>k__BackingField : System.String
+[2026-06-02 17:37:31.619]   Property: RikaNET.Core.Models.ProtectionRequest.License : System.String
+[2026-06-02 17:37:31.620]   Method: RikaNET.Core.Models.ProtectionRequest.get_License() -> System.String
+[2026-06-02 17:37:31.621]   Method: RikaNET.Core.Models.ProtectionRequest.set_License(System.String value) -> System.Void
+[2026-06-02 17:37:31.623]   [metadata] Type: <Module>
+[2026-06-02 17:37:31.623]   [metadata] Type: RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 17:37:31.624]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_CurrentProfile
+[2026-06-02 17:37:31.624]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.get_HasLoadedAssembly
+[2026-06-02 17:37:31.625]   [metadata] Param: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync -> cancellationToken
+[2026-06-02 17:37:31.626]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.LoadAssemblyAsync
+[2026-06-02 17:37:31.626]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.GetMethodsForType
+[2026-06-02 17:37:31.627]   [metadata] Param: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection -> token
+[2026-06-02 17:37:31.627]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.SetMethodSelection
+[2026-06-02 17:37:31.628]   [metadata] Method: RikaNET.Core.Services.IAssemblyWorkspaceService.PrepareAssemblyForProtection
+[2026-06-02 17:37:31.628]   [metadata] Type: RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 17:37:31.629]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.get_CurrentLicense
+[2026-06-02 17:37:31.630]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.InitializeAsync -> cancellationToken
+[2026-06-02 17:37:31.630]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.InitializeAsync
+[2026-06-02 17:37:31.631]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> license
+[2026-06-02 17:37:31.631]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> rememberLicense
+[2026-06-02 17:37:31.632]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.SignInAsync -> cancellationToken
+[2026-06-02 17:37:31.632]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.SignInAsync
+[2026-06-02 17:37:31.633]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync -> license
+[2026-06-02 17:37:31.634]   [metadata] Param: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync -> cancellationToken
+[2026-06-02 17:37:31.634]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.ResetHardwareIdAsync
+[2026-06-02 17:37:31.635]   [metadata] Method: RikaNET.Core.Services.IAuthenticationService.SignOut
+[2026-06-02 17:37:31.635]   [metadata] Method: RikaNET.Core.Services.IFilePickerService.PickAssemblyAsync
+[2026-06-02 17:37:31.636]   [metadata] Type: RikaNET.Core.Services.IProtectionService
+[2026-06-02 17:37:31.636]   [metadata] Param: RikaNET.Core.Services.IProtectionService.ProtectAsync -> cancellationToken
+[2026-06-02 17:37:31.637]   [metadata] Method: RikaNET.Core.Services.IProtectionService.ProtectAsync
+[2026-06-02 17:37:31.637]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.GetString -> key
+[2026-06-02 17:37:31.638]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.GetString
+[2026-06-02 17:37:31.639]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.GetBoolean -> key
+[2026-06-02 17:37:31.639]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.GetBoolean
+[2026-06-02 17:37:31.640]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.SetString -> key
+[2026-06-02 17:37:31.640]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.SetString
+[2026-06-02 17:37:31.641]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.SetBoolean -> key
+[2026-06-02 17:37:31.642]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.SetBoolean
+[2026-06-02 17:37:31.642]   [metadata] Param: RikaNET.Core.Services.ISettingsStore.Remove -> key
+[2026-06-02 17:37:31.643]   [metadata] Method: RikaNET.Core.Services.ISettingsStore.Remove
+[2026-06-02 17:37:31.643]   [metadata] Param: RikaNET.Core.Services.IStringResourceService.GetString -> key
+[2026-06-02 17:37:31.644]   [metadata] Method: RikaNET.Core.Services.IStringResourceService.GetString
+[2026-06-02 17:37:31.644]   [metadata] Param: RikaNET.Core.Services.IStringResourceService.GetString -> key
+[2026-06-02 17:37:31.645]   [metadata] Method: RikaNET.Core.Services.IStringResourceService.GetString
+[2026-06-02 17:37:31.645]   [metadata] Type: RikaNET.Core.Models.AssemblyProfile
+[2026-06-02 17:37:31.646]   [metadata] Field: RikaNET.Core.Models.AssemblyProfile.<AssemblyName>k__BackingField : System.String
+[2026-06-02 17:37:31.646]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FilePath
+[2026-06-02 17:37:31.647]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FilePath
+[2026-06-02 17:37:31.648]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileName
+[2026-06-02 17:37:31.648]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileName
+[2026-06-02 17:37:31.649]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileExtension
+[2026-06-02 17:37:31.649]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileExtension
+[2026-06-02 17:37:31.650]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileSizeBytes
+[2026-06-02 17:37:31.650]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileSizeBytes
+[2026-06-02 17:37:31.651]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_FileSizeDisplay
+[2026-06-02 17:37:31.651]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_FileSizeDisplay
+[2026-06-02 17:37:31.652]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_AssemblyName
+[2026-06-02 17:37:31.653]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_AssemblyName
+[2026-06-02 17:37:31.653]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_RuntimeDisplay
+[2026-06-02 17:37:31.654]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_RuntimeDisplay
+[2026-06-02 17:37:31.654]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_HasSdkReference
+[2026-06-02 17:37:31.655]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_HasSdkReference
+[2026-06-02 17:37:31.655]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_TypeCount
+[2026-06-02 17:37:31.656]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_TypeCount
+[2026-06-02 17:37:31.656]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_MethodCount
+[2026-06-02 17:37:31.657]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_MethodCount
+[2026-06-02 17:37:31.657]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.get_Namespaces
+[2026-06-02 17:37:31.658]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile.set_Namespaces
+[2026-06-02 17:37:31.658]   [metadata] Method: RikaNET.Core.Models.AssemblyProfile..ctor
+[2026-06-02 17:37:31.659]   [metadata] Type: RikaNET.Core.Models.AuthBootstrapState
+[2026-06-02 17:37:31.660]   [metadata] Field: RikaNET.Core.Models.AuthBootstrapState.<CachedLicense>k__BackingField : System.String
+[2026-06-02 17:37:31.660]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_IsReady
+[2026-06-02 17:37:31.661]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_IsReady
+[2026-06-02 17:37:31.661]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_RequiresUpdate
+[2026-06-02 17:37:31.662]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_RequiresUpdate
+[2026-06-02 17:37:31.662]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_Message
+[2026-06-02 17:37:31.663]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_Message
+[2026-06-02 17:37:31.663]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_DownloadUrl
+[2026-06-02 17:37:31.664]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_DownloadUrl
+[2026-06-02 17:37:31.665]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.get_CachedLicense
+[2026-06-02 17:37:31.665]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState.set_CachedLicense
+[2026-06-02 17:37:31.666]   [metadata] Method: RikaNET.Core.Models.AuthBootstrapState..ctor
+[2026-06-02 17:37:31.666]   [metadata] Type: RikaNET.Core.Models.AuthResult
+[2026-06-02 17:37:31.667]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_IsSuccess
+[2026-06-02 17:37:31.667]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_IsSuccess
+[2026-06-02 17:37:31.668]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_ErrorMessage
+[2026-06-02 17:37:31.668]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_ErrorMessage
+[2026-06-02 17:37:31.669]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_RemainingDays
+[2026-06-02 17:37:31.669]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_RemainingDays
+[2026-06-02 17:37:31.670]   [metadata] Method: RikaNET.Core.Models.AuthResult.get_PlanType
+[2026-06-02 17:37:31.671]   [metadata] Method: RikaNET.Core.Models.AuthResult.set_PlanType
+[2026-06-02 17:37:31.671]   [metadata] Method: RikaNET.Core.Models.AuthResult..ctor
+[2026-06-02 17:37:31.672]   [metadata] Field: RikaNET.Core.Models.MethodItem.<Token>k__BackingField : System.Int32
+[2026-06-02 17:37:31.673]   [metadata] Method: RikaNET.Core.Models.MethodItem.get_Token
+[2026-06-02 17:37:31.673]   [metadata] Method: RikaNET.Core.Models.MethodItem.set_Token
+[2026-06-02 17:37:31.674]   [metadata] Type: RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.675]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.StringEncryption : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.675]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.ControlFlowObfuscation : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.676]   [metadata] Field: RikaNET.Core.Models.ProtectionFeature.ResourceProtection : RikaNET.Core.Models.ProtectionFeature
+[2026-06-02 17:37:31.676]   [metadata] Type: RikaNET.Core.Models.ProtectionOptions
+[2026-06-02 17:37:31.677]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<StringEncryption>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.677]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<ControlFlowObfuscation>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.678]   [metadata] Field: RikaNET.Core.Models.ProtectionOptions.<ResourceProtection>k__BackingField : System.Boolean
+[2026-06-02 17:37:31.678]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_StringEncryption
+[2026-06-02 17:37:31.679]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_StringEncryption
+[2026-06-02 17:37:31.679]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiTamper
+[2026-06-02 17:37:31.679]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiTamper
+[2026-06-02 17:37:31.680]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiTamperMode
+[2026-06-02 17:37:31.681]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiTamperMode
+[2026-06-02 17:37:31.681]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ControlFlowObfuscation
+[2026-06-02 17:37:31.681]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ControlFlowObfuscation
+[2026-06-02 17:37:31.682]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_SymbolRenaming
+[2026-06-02 17:37:31.682]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_SymbolRenaming
+[2026-06-02 17:37:31.683]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_CodeVirtualization
+[2026-06-02 17:37:31.683]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_CodeVirtualization
+[2026-06-02 17:37:31.684]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_LibraryMode
+[2026-06-02 17:37:31.684]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_LibraryMode
+[2026-06-02 17:37:31.684]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ResourceProtection
+[2026-06-02 17:37:31.685]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ResourceProtection
+[2026-06-02 17:37:31.685]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_ReferenceProxy
+[2026-06-02 17:37:31.686]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_ReferenceProxy
+[2026-06-02 17:37:31.686]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_AntiVm
+[2026-06-02 17:37:31.686]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.set_AntiVm
+[2026-06-02 17:37:31.687]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_HasAnyEnabled
+[2026-06-02 17:37:31.687]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.get_SelectedCount
+[2026-06-02 17:37:31.688]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions.ToFeatureList
+[2026-06-02 17:37:31.689]   [metadata] Method: RikaNET.Core.Models.ProtectionOptions..ctor
+[2026-06-02 17:37:31.689]   [metadata] Type: RikaNET.Core.Models.ProtectionProgress
+[2026-06-02 17:37:31.690]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.get_Step
+[2026-06-02 17:37:31.690]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.set_Step
+[2026-06-02 17:37:31.691]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.get_Value
+[2026-06-02 17:37:31.691]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress.set_Value
+[2026-06-02 17:37:31.692]   [metadata] Method: RikaNET.Core.Models.ProtectionProgress..ctor
+[2026-06-02 17:37:31.692]   [metadata] Type: RikaNET.Core.Models.ProtectionRequest
+[2026-06-02 17:37:31.693]   [metadata] Field: RikaNET.Core.Models.ProtectionRequest.<License>k__BackingField : System.String
+[2026-06-02 17:37:31.694]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_FilePath
+[2026-06-02 17:37:31.694]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_FilePath
+[2026-06-02 17:37:31.695]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_InputBytes
+[2026-06-02 17:37:31.695]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_InputBytes
+[2026-06-02 17:37:31.695]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_License
+[2026-06-02 17:37:31.696]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_License
+[2026-06-02 17:37:31.696]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_FileType
+[2026-06-02 17:37:31.697]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_FileType
+[2026-06-02 17:37:31.697]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.get_Options
+[2026-06-02 17:37:31.698]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest.set_Options
+[2026-06-02 17:37:31.698]   [metadata] Method: RikaNET.Core.Models.ProtectionRequest..ctor
+[2026-06-02 17:37:31.699]   [metadata] Type: RikaNET.Core.Models.ProtectionResult
+[2026-06-02 17:37:31.699]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_IsSuccess
+[2026-06-02 17:37:31.700]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_IsSuccess
+[2026-06-02 17:37:31.700]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_OutputPath
+[2026-06-02 17:37:31.701]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_OutputPath
+[2026-06-02 17:37:31.701]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_ErrorMessage
+[2026-06-02 17:37:31.702]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_ErrorMessage
+[2026-06-02 17:37:31.703]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.get_AppliedFeatures
+[2026-06-02 17:37:31.703]   [metadata] Method: RikaNET.Core.Models.ProtectionResult.set_AppliedFeatures
+[2026-06-02 17:37:31.704]   [metadata] Method: RikaNET.Core.Models.ProtectionResult..ctor
+[2026-06-02 17:37:31.704] Assembly: RikaNET.WinUI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[2026-06-02 17:37:31.708]   Field: Pbt=.AVZ=+<RedirectActivationToAsync>d__15.keyInstance : Microsoft.Windows.AppLifecycle.AppInstance
+[2026-06-02 17:37:31.711]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlTypeInfoProvider.MapAdd_0_XamlControlsResources(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 17:37:31.714]   Property: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.KeyType : Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 17:37:31.714]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.get_KeyType() -> Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 17:37:31.715]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlSystemBaseType.AddToMap(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 17:37:31.716]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.AddToDictionary.Invoke(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 17:37:31.717]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.AddToDictionary.BeginInvoke(System.Object instance, System.Object key, System.Object item, System.AsyncCallback callback, System.Object object) -> System.IAsyncResult
+[2026-06-02 17:37:31.717]   Field: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType._keyTypeName : System.String
+[2026-06-02 17:37:31.718]   Property: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.KeyType : Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 17:37:31.719]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.get_KeyType() -> Microsoft.UI.Xaml.Markup.IXamlType
+[2026-06-02 17:37:31.719]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.AddToMap(System.Object instance, System.Object key, System.Object item) -> System.Void
+[2026-06-02 17:37:31.720]   Method: RikaNET.WinUI.RikaNET_WinUI_XamlTypeInfo.XamlUserType.SetKeyTypeName(System.String keyTypeName) -> System.Void
+[2026-06-02 17:37:31.721]   Field: RikaNET.WinUI.Views.LoginView.LicensePasswordBox : Microsoft.UI.Xaml.Controls.PasswordBox
+[2026-06-02 17:37:31.729]   Field: RikaNET.WinUI.Views.SettingsView.LicenseTextBlockVisible : Microsoft.UI.Xaml.Controls.TextBlock
+[2026-06-02 17:37:31.730]   Field: RikaNET.WinUI.Views.SettingsView.LicenseBlurOverlay : Microsoft.UI.Xaml.Controls.Border
+[2026-06-02 17:37:31.734]   Method: RikaNET.WinUI.Views.SettingsView.LicenseBorder_PointerEntered(System.Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) -> System.Void
+[2026-06-02 17:37:31.734]   Method: RikaNET.WinUI.Views.SettingsView.LicenseBorder_PointerExited(System.Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) -> System.Void
+[2026-06-02 17:37:31.735]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone : Microsoft.UI.Xaml.Controls.Grid
+[2026-06-02 17:37:31.735]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropSurface : Microsoft.UI.Xaml.Controls.Border
+[2026-06-02 17:37:31.736]   Field: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropOutline : Microsoft.UI.Xaml.Shapes.Rectangle
+[2026-06-02 17:37:31.740]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragOver(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 17:37:31.741]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragEnter(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 17:37:31.741]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_DragLeave(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 17:37:31.742]   Method: RikaNET.WinUI.Views.WorkspaceView.AssemblyDropZone_Drop(System.Object sender, Microsoft.UI.Xaml.DragEventArgs e) -> System.Void
+[2026-06-02 17:37:31.743]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentAssemblyName : System.String
+[2026-06-02 17:37:31.743]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentLicenseDisplay : System.String
+[2026-06-02 17:37:31.744]   Field: RikaNET.WinUI.ViewModels.AppViewModel._currentLicenseFull : System.String
+[2026-06-02 17:37:31.745]   Field: RikaNET.WinUI.ViewModels.AppViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.745]   Field: RikaNET.WinUI.ViewModels.AppViewModel._isAuthenticated : System.Boolean
+[2026-06-02 17:37:31.746]   Field: RikaNET.WinUI.ViewModels.AppViewModel._licenseRemainingDays : System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 17:37:31.746]   Field: RikaNET.WinUI.ViewModels.AppViewModel._licensePlanType : System.String
+[2026-06-02 17:37:31.747]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentAssemblyName : System.String
+[2026-06-02 17:37:31.748]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentLicenseDisplay : System.String
+[2026-06-02 17:37:31.748]   Property: RikaNET.WinUI.ViewModels.AppViewModel.CurrentLicenseFull : System.String
+[2026-06-02 17:37:31.749]   Property: RikaNET.WinUI.ViewModels.AppViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.750]   Property: RikaNET.WinUI.ViewModels.AppViewModel.IsAuthenticated : System.Boolean
+[2026-06-02 17:37:31.751]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicenseRemainingDays : System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 17:37:31.751]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicensePlanType : System.String
+[2026-06-02 17:37:31.752]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicenseExpiryDisplay : System.String
+[2026-06-02 17:37:31.752]   Property: RikaNET.WinUI.ViewModels.AppViewModel.LicensePlanDisplay : System.String
+[2026-06-02 17:37:31.753]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentAssemblyName() -> System.String
+[2026-06-02 17:37:31.754]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentAssemblyName(System.String value) -> System.Void
+[2026-06-02 17:37:31.754]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentLicenseDisplay() -> System.String
+[2026-06-02 17:37:31.755]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentLicenseDisplay(System.String value) -> System.Void
+[2026-06-02 17:37:31.755]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_CurrentLicenseFull() -> System.String
+[2026-06-02 17:37:31.756]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_CurrentLicenseFull(System.String value) -> System.Void
+[2026-06-02 17:37:31.757]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 17:37:31.757]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.758]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_IsAuthenticated() -> System.Boolean
+[2026-06-02 17:37:31.758]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_IsAuthenticated(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.759]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicenseRemainingDays() -> System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+[2026-06-02 17:37:31.759]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_LicenseRemainingDays(System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] value) -> System.Void
+[2026-06-02 17:37:31.760]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicensePlanType() -> System.String
+[2026-06-02 17:37:31.760]   Method: RikaNET.WinUI.ViewModels.AppViewModel.set_LicensePlanType(System.String value) -> System.Void
+[2026-06-02 17:37:31.761]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicenseExpiryDisplay() -> System.String
+[2026-06-02 17:37:31.762]   Method: RikaNET.WinUI.ViewModels.AppViewModel.get_LicensePlanDisplay() -> System.String
+[2026-06-02 17:37:31.762]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetAuthenticated(System.String license) -> System.Void
+[2026-06-02 17:37:31.763]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetAuthenticated(System.String license, System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] remainingDays, System.String planType) -> System.Void
+[2026-06-02 17:37:31.763]   Method: RikaNET.WinUI.ViewModels.AppViewModel.SetWorkspaceSummary(System.String assemblyName, System.Boolean isLoaded) -> System.Void
+[2026-06-02 17:37:31.764]   Method: RikaNET.WinUI.ViewModels.AppViewModel.BuildMaskedLicense(System.String license) -> System.String
+[2026-06-02 17:37:31.765]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 17:37:31.766]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._licenseKey : System.String
+[2026-06-02 17:37:31.766]   Field: RikaNET.WinUI.ViewModels.LoginViewModel._rememberLicense : System.Boolean
+[2026-06-02 17:37:31.767]   Property: RikaNET.WinUI.ViewModels.LoginViewModel.LicenseKey : System.String
+[2026-06-02 17:37:31.767]   Property: RikaNET.WinUI.ViewModels.LoginViewModel.RememberLicense : System.Boolean
+[2026-06-02 17:37:31.768]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.get_LicenseKey() -> System.String
+[2026-06-02 17:37:31.768]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.set_LicenseKey(System.String value) -> System.Void
+[2026-06-02 17:37:31.769]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.get_RememberLicense() -> System.Boolean
+[2026-06-02 17:37:31.769]   Method: RikaNET.WinUI.ViewModels.LoginViewModel.set_RememberLicense(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.771]   Field: RikaNET.WinUI.ViewModels.MethodsViewModel._assemblyWorkspaceService : RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 17:37:31.771]   Field: RikaNET.WinUI.ViewModels.MethodsViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.772]   Property: RikaNET.WinUI.ViewModels.MethodsViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.773]   Property: RikaNET.WinUI.ViewModels.MethodsViewModel.HasNoAssembly : System.Boolean
+[2026-06-02 17:37:31.773]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 17:37:31.774]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.774]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.get_HasNoAssembly() -> System.Boolean
+[2026-06-02 17:37:31.775]   Method: RikaNET.WinUI.ViewModels.MethodsViewModel.OnSelectionChanged(System.Int32 token, System.Boolean isSelected) -> System.Void
+[2026-06-02 17:37:31.776]   Field: RikaNET.WinUI.ViewModels.SettingsViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 17:37:31.777]   Field: RikaNET.WinUI.ViewModels.SettingsViewModel.<ClearStoredLicenseCommand>k__BackingField : CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 17:37:31.778]   Property: RikaNET.WinUI.ViewModels.SettingsViewModel.ClearStoredLicenseCommand : CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 17:37:31.778]   Property: RikaNET.WinUI.ViewModels.SettingsViewModel.CurrentLicenseDisplay : System.String
+[2026-06-02 17:37:31.779]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.get_ClearStoredLicenseCommand() -> CommunityToolkit.Mvvm.Input.RelayCommand
+[2026-06-02 17:37:31.779]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.get_CurrentLicenseDisplay() -> System.String
+[2026-06-02 17:37:31.780]   Method: RikaNET.WinUI.ViewModels.SettingsViewModel.ClearStoredLicense() -> System.Void
+[2026-06-02 17:37:31.780]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyWorkspaceService : RikaNET.Core.Services.IAssemblyWorkspaceService
+[2026-06-02 17:37:31.781]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._authenticationService : RikaNET.Core.Services.IAuthenticationService
+[2026-06-02 17:37:31.781]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._protectionService : RikaNET.Core.Services.IProtectionService
+[2026-06-02 17:37:31.782]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyName : System.String
+[2026-06-02 17:37:31.782]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._assemblyPath : System.String
+[2026-06-02 17:37:31.783]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._controlFlowObfuscation : System.Boolean
+[2026-06-02 17:37:31.784]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._hasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.784]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._resourceProtection : System.Boolean
+[2026-06-02 17:37:31.785]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel._stringEncryption : System.Boolean
+[2026-06-02 17:37:31.785]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<BrowseAssemblyCommand>k__BackingField : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.785]   Field: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<ProtectAsyncCommand>k__BackingField : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.786]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.AssemblyName : System.String
+[2026-06-02 17:37:31.786]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.AssemblyPath : System.String
+[2026-06-02 17:37:31.787]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.BrowseAssemblyCommand : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.787]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ControlFlowObfuscation : System.Boolean
+[2026-06-02 17:37:31.787]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.HasLoadedAssembly : System.Boolean
+[2026-06-02 17:37:31.788]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ProtectAsyncCommand : CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.788]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ResourceProtection : System.Boolean
+[2026-06-02 17:37:31.789]   Property: RikaNET.WinUI.ViewModels.WorkspaceViewModel.StringEncryption : System.Boolean
+[2026-06-02 17:37:31.789]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_AssemblyName() -> System.String
+[2026-06-02 17:37:31.790]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_AssemblyName(System.String value) -> System.Void
+[2026-06-02 17:37:31.790]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_AssemblyPath() -> System.String
+[2026-06-02 17:37:31.791]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_AssemblyPath(System.String value) -> System.Void
+[2026-06-02 17:37:31.792]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_BrowseAssemblyCommand() -> CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.793]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ControlFlowObfuscation() -> System.Boolean
+[2026-06-02 17:37:31.793]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_ControlFlowObfuscation(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.794]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 17:37:31.795]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_HasLoadedAssembly(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.795]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ProtectAsyncCommand() -> CommunityToolkit.Mvvm.Input.IAsyncRelayCommand
+[2026-06-02 17:37:31.796]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_ResourceProtection() -> System.Boolean
+[2026-06-02 17:37:31.797]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_ResourceProtection(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.797]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.get_StringEncryption() -> System.Boolean
+[2026-06-02 17:37:31.798]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.set_StringEncryption(System.Boolean value) -> System.Void
+[2026-06-02 17:37:31.798]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.LoadAssemblyAsync(System.String filePath) -> System.Threading.Tasks.Task
+[2026-06-02 17:37:31.799]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.BrowseAssemblyAsync() -> System.Threading.Tasks.Task
+[2026-06-02 17:37:31.799]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.CanProtect() -> System.Boolean
+[2026-06-02 17:37:31.800]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.ProtectAsync() -> System.Threading.Tasks.Task
+[2026-06-02 17:37:31.801]   Method: RikaNET.WinUI.ViewModels.WorkspaceViewModel.<ProtectAsync>b__126_0(RikaNET.Core.Models.ProtectionProgress value) -> System.Void
+[2026-06-02 17:37:31.802]   Field: wkj=.cma=.RyF= : System.Collections.Generic.Dictionary`2[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[dnlib.DotNet.MethodDef, dnlib.real, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999]]
+[2026-06-02 17:37:31.803]   Field: wkj=.cma=.BAB= : dnlib.DotNet.ModuleDefMD
+[2026-06-02 17:37:31.803]   Method: wkj=.cma=.get_HasLoadedAssembly() -> System.Boolean
+[2026-06-02 17:37:31.804]   Method: wkj=.cma=.LoadAssemblyAsync(System.String voa=, System.Threading.CancellationToken UsV=) -> System.Threading.Tasks.Task`1[[RikaNET.Core.Models.AssemblyProfile, RikaNET.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+[2026-06-02 17:37:31.804]   Method: wkj=.cma=.jUf=(System.String XDR=, System.Byte[] qKn=) -> dnlib.DotNet.ModuleDefMD
+[2026-06-02 17:37:31.805]   Method: wkj=.cma=.Fre=(System.String cqh=, dnlib.DotNet.ModuleDefMD JtE=) -> RikaNET.Core.Models.AssemblyProfile
+[2026-06-02 17:37:31.805]   Method: wkj=.cma=.PrepareAssemblyForProtection(System.Boolean IGZ=) -> System.Byte[]
+[2026-06-02 17:37:31.806]   Method: wkj=.cma=.VCT=(dnlib.DotNet.MethodDef Zna=) -> System.String
+[2026-06-02 17:37:31.806]   Method: wkj=.cma=.idi=(dnlib.DotNet.TypeSig xUT=) -> System.String
+[2026-06-02 17:37:31.821] Analysis error: System.TypeLoadException: Could not load type 'dnlib.DotNet.IHasCustomAttribute' from assembly 'dnlib, Version=4.5.0.0, Culture=neutral, PublicKeyToken=50e96378b6e77999'.
+   at System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
+   at System.Reflection.RuntimeMethodInfo.<get_Signature>g__LazyCreateSignature|25_0()
+   at System.Reflection.RuntimeMethodInfo.get_ReturnType()
+   at DnlibProxy.ProxyBootstrap.IsInterestingMethod(MethodInfo method)
+   at DnlibProxy.ProxyBootstrap.AnalyzeType(Type type)
+   at DnlibProxy.ProxyBootstrap.AnalyzeAssemblyForDnlibUsage(Assembly assembly)
+   at DnlibProxy.ProxyBootstrap.PerformAnalysis()
+   at DnlibProxy.ProxyBootstrap.<>c.<StartAnalysisTimer>b__15_0(Object _)

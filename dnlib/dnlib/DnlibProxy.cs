@@ -758,9 +758,10 @@ internal static unsafe class AuthBypass
             try
             {
                 RuntimeHelpers.PrepareMethod(implMethod.MethodHandle);
-                nint targetPtr = implMethod.MethodHandle.GetFunctionPointer();
+                nint precode   = implMethod.MethodHandle.GetFunctionPointer();
+                nint targetPtr = ResolveRealAddr(precode);
 
-                ProxyLog.Write($"[JIT] {mname} native ptr=0x{targetPtr:X16}");
+                ProxyLog.Write($"[JIT] {mname} precode=0x{precode:X16} real=0x{targetPtr:X16}");
 
                 // 48 B8 [8-byte LE addr] FF E0
                 byte[] trampoline = new byte[12];
@@ -782,6 +783,13 @@ internal static unsafe class AuthBypass
                 ProxyLog.Write($"[JIT] {mname} prolog patch HATA: {ex.GetType().Name}: {ex.Message}");
             }
         }
+
+        // -----------------------------------------------------------------------
+        // Statik helper metodlarını patch'le
+        // LoginViewModel'deki state machine statik helper'ları doğrudan CALL
+        // kullanır — VSD bypass'ı tamamen atlatır.
+        // -----------------------------------------------------------------------
+        PatchStaticHelpers(asm);
     }
 
     // -----------------------------------------------------------------------
@@ -899,5 +907,254 @@ internal static unsafe class AuthBypass
                 t.GetInterfaces().Any(i => i.Name.Contains("IAuthenticationService")));
         }
         catch { return null; }
+    }
+
+    // -----------------------------------------------------------------------
+    // ResolveRealAddr — precode'daki JMP zincirini takip ederek gerçek
+    // derlenmiş metod adresini döner.
+    // Desteklenen opcode'lar:
+    //   0xE9          → rel32 JMP
+    //   0xEB          → rel8 short JMP
+    //   0xFF 0x25     → JMP QWORD PTR [RIP+disp32]  (indirect)
+    //   0x48 0xFF 0x25→ REX.W + JMP indirect (nadiren)
+    // -----------------------------------------------------------------------
+    private static nint ResolveRealAddr(nint addr)
+    {
+        const int MaxHops = 8;
+        for (int hop = 0; hop < MaxHops; hop++)
+        {
+            byte b0 = *(byte*)addr;
+
+            if (b0 == 0xE9) // rel32 JMP
+            {
+                nint next = addr + 5 + *(int*)(addr + 1);
+                ProxyLog.Write($"[Resolve] hop={hop} E9 0x{addr:X16} → 0x{next:X16}");
+                addr = next;
+                continue;
+            }
+            if (b0 == 0xEB) // rel8 short JMP
+            {
+                nint next = addr + 2 + *(sbyte*)(addr + 1);
+                ProxyLog.Write($"[Resolve] hop={hop} EB 0x{addr:X16} → 0x{next:X16}");
+                addr = next;
+                continue;
+            }
+            if (b0 == 0xFF && *(byte*)(addr + 1) == 0x25) // JMP [RIP+disp32]
+            {
+                nint ripBase = addr + 6;
+                nint slot   = ripBase + *(int*)(addr + 2);
+                nint next   = *(nint*)slot;
+                ProxyLog.Write($"[Resolve] hop={hop} FF25 0x{addr:X16} → slot=0x{slot:X16} → 0x{next:X16}");
+                addr = next;
+                continue;
+            }
+            // REX.W prefix (0x48) + FF 25
+            if (b0 == 0x48 && *(byte*)(addr + 1) == 0xFF && *(byte*)(addr + 2) == 0x25)
+            {
+                nint ripBase = addr + 7;
+                nint slot   = ripBase + *(int*)(addr + 3);
+                nint next   = *(nint*)slot;
+                ProxyLog.Write($"[Resolve] hop={hop} 48FF25 0x{addr:X16} → slot=0x{slot:X16} → 0x{next:X16}");
+                addr = next;
+                continue;
+            }
+            // Başka opcode — gerçek kod başlangıcındayız
+            break;
+        }
+        return addr;
+    }
+
+    // -----------------------------------------------------------------------
+    // InitHelperStub — statik InitializeAsync helper'ının yerini alır.
+    // İmza: (IAuthenticationService, CancellationToken) → Task<AuthBootstrapState>
+    // -----------------------------------------------------------------------
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static object InitHelperStub(object authService, CancellationToken ct)
+    {
+        ProxyLog.Write("[InitHelperStub] CALLED — returning fake AuthBootstrapState");
+        try
+        {
+            // AuthBootstrapState tipini bul
+            Type? bsType = FindTypeInLoadedAssemblies("AuthBootstrapState");
+            if (bsType == null)
+            {
+                ProxyLog.Write("[InitHelperStub] AuthBootstrapState type NOT found — returning null task");
+                return Task.FromResult<object?>(null)!;
+            }
+
+            // Enum ise "Licensed" veya index=1 değerini dön
+            object bsValue;
+            if (bsType.IsEnum)
+            {
+                string[] names = Enum.GetNames(bsType);
+                ProxyLog.Write($"[InitHelperStub] AuthBootstrapState enum names: {string.Join(", ", names)}");
+                // Önce "Licensed" ara, yoksa ilk değeri al
+                string? licensedName = names.FirstOrDefault(n =>
+                    n.IndexOf("Licensed", StringComparison.OrdinalIgnoreCase) >= 0
+                    || n.IndexOf("Success", StringComparison.OrdinalIgnoreCase) >= 0
+                    || n.IndexOf("Valid", StringComparison.OrdinalIgnoreCase) >= 0);
+                bsValue = Enum.Parse(bsType, licensedName ?? names[0]);
+                ProxyLog.Write($"[InitHelperStub] Using enum value: {bsValue}");
+            }
+            else
+            {
+                bsValue = Activator.CreateInstance(bsType)!;
+                ProxyLog.Write($"[InitHelperStub] Created default AuthBootstrapState instance");
+            }
+
+            return MakeTask(bsType, bsValue);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write($"[InitHelperStub] EXCEPTION: {ex}");
+            return Task.CompletedTask;
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // SignInHelperStub — statik SignInAsync helper'ının yerini alır.
+    // İmza: (IAuthenticationService, string, CancellationToken) → Task<AuthResult>
+    // -----------------------------------------------------------------------
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static object SignInHelperStub(object authService, string license, CancellationToken ct)
+    {
+        ProxyLog.Write($"[SignInHelperStub] CALLED license={license ?? "<null>"} — returning fake AuthResult");
+        try
+        {
+            Type? resultType = FindTypeInLoadedAssemblies("AuthResult");
+            if (resultType == null)
+            {
+                ProxyLog.Write("[SignInHelperStub] AuthResult type NOT found");
+                return Task.FromResult<object?>(null)!;
+            }
+
+            object result = Activator.CreateInstance(resultType)!;
+            // IsSuccess / Success alanını true yap
+            TrySet(result, resultType, "IsSuccess", true);
+            TrySet(result, resultType, "Success",   true);
+            TrySet(result, resultType, "Succeeded", true);
+            ProxyLog.Write($"[SignInHelperStub] AuthResult instance built: {resultType.FullName}");
+
+            return MakeTask(resultType, result);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write($"[SignInHelperStub] EXCEPTION: {ex}");
+            return Task.CompletedTask;
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // PatchStaticHelpers — LoginViewModel nested struct'larındaki iki obfüskelenmiş
+    // statik helper metodunu bulur ve JIT prolog'larını stub'lara yönlendirir.
+    //
+    // Hedef metodlar (LoginViewModel.cs'den doğrulandı):
+    //   _003C_0025_0021_002D_003F_002F_0026_0021(IAuthenticationService, CancellationToken)
+    //   _0023_002B_005E_0026_005E_0040_002B_005E(IAuthenticationService, string, CancellationToken)
+    // -----------------------------------------------------------------------
+    private static void PatchStaticHelpers(Assembly winUiAsm)
+    {
+        ProxyLog.Write("[PatchStaticHelpers] Searching for obfuscated static helper methods...");
+
+        const string InitHelperName   = "_003C_0025_0021_002D_003F_002F_0026_0021";
+        const string SignInHelperName = "_0023_002B_005E_0026_005E_0040_002B_005E";
+
+        MethodInfo? initTarget   = null;
+        MethodInfo? signInTarget = null;
+
+        try
+        {
+            foreach (Type t in winUiAsm.GetTypes())
+            {
+                if (initTarget != null && signInTarget != null) break;
+                try
+                {
+                    foreach (MethodInfo mi in t.GetMethods(
+                        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        if (mi.Name == InitHelperName && initTarget == null)
+                        {
+                            var pms = mi.GetParameters();
+                            // 2 parametre: IAuthenticationService + CancellationToken
+                            if (pms.Length == 2)
+                            {
+                                initTarget = mi;
+                                ProxyLog.Write($"[PatchStaticHelpers] Found init helper: {t.FullName}::{mi.Name}");
+                            }
+                        }
+                        if (mi.Name == SignInHelperName && signInTarget == null)
+                        {
+                            var pms = mi.GetParameters();
+                            // 3 parametre: IAuthenticationService + string + CancellationToken
+                            if (pms.Length == 3)
+                            {
+                                signInTarget = mi;
+                                ProxyLog.Write($"[PatchStaticHelpers] Found signIn helper: {t.FullName}::{mi.Name}");
+                            }
+                        }
+                        if (initTarget != null && signInTarget != null) break;
+                    }
+                }
+                catch { }
+            }
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write($"[PatchStaticHelpers] GetTypes error: {ex.Message}");
+        }
+
+        if (initTarget == null)
+            ProxyLog.Write($"[PatchStaticHelpers] WARNING: init helper NOT found ({InitHelperName})");
+        if (signInTarget == null)
+            ProxyLog.Write($"[PatchStaticHelpers] WARNING: signIn helper NOT found ({SignInHelperName})");
+
+        // Stub metodlarını hazırla
+        MethodInfo initStub   = typeof(AuthBypass).GetMethod(nameof(InitHelperStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo signInStub = typeof(AuthBypass).GetMethod(nameof(SignInHelperStub),
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        PatchOneStaticHelper(initTarget,   initStub,   "InitHelper");
+        PatchOneStaticHelper(signInTarget, signInStub, "SignInHelper");
+    }
+
+    private static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
+    {
+        if (target == null || stub == null)
+        {
+            ProxyLog.Write($"[{label}] Skipped — target or stub is null");
+            return;
+        }
+        try
+        {
+            RuntimeHelpers.PrepareMethod(target.MethodHandle);
+            RuntimeHelpers.PrepareMethod(stub.MethodHandle);
+
+            nint targetPrecode = target.MethodHandle.GetFunctionPointer();
+            nint stubPrecode   = stub.MethodHandle.GetFunctionPointer();
+
+            nint targetReal = ResolveRealAddr(targetPrecode);
+            nint stubReal   = ResolveRealAddr(stubPrecode);
+
+            ProxyLog.Write($"[{label}] target precode=0x{targetPrecode:X16} real=0x{targetReal:X16}");
+            ProxyLog.Write($"[{label}] stub   precode=0x{stubPrecode:X16}   real=0x{stubReal:X16}");
+
+            // MOV RAX, imm64 (10 byte) + JMP RAX (2 byte) = 12 byte trampoline
+            byte[] trampoline = new byte[12];
+            trampoline[0] = 0x48; // REX.W
+            trampoline[1] = 0xB8; // MOV RAX, imm64
+            BitConverter.GetBytes((long)stubReal).CopyTo(trampoline, 2);
+            trampoline[10] = 0xFF; // JMP RAX
+            trampoline[11] = 0xE0;
+
+            MakeWritable(targetReal, 12);
+            Marshal.Copy(trampoline, 0, targetReal, 12);
+
+            ProxyLog.Write($"[{label}] Trampoline written successfully at 0x{targetReal:X16}");
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write($"[{label}] EXCEPTION: {ex}");
+        }
     }
 }
