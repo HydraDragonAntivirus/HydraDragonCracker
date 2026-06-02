@@ -63,7 +63,10 @@ public static class ProxyBootstrap
             var already = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => string.Equals(a.GetName().Name, "RikaNET.WinUI", StringComparison.OrdinalIgnoreCase));
             if (already != null)
+            {
                 AuthBypass.TryPatch(already);
+                ProtectionBypass.TryPatch(already);
+            }
 
             PreloadRealAssembly();
             StartAnalysisTimer();
@@ -73,7 +76,10 @@ public static class ProxyBootstrap
     private static void OnAssemblyLoad(object? sender, AssemblyLoadEventArgs args)
     {
         if (string.Equals(args.LoadedAssembly.GetName().Name, "RikaNET.WinUI", StringComparison.OrdinalIgnoreCase))
+        {
             AuthBypass.TryPatch(args.LoadedAssembly);
+            ProtectionBypass.TryPatch(args.LoadedAssembly);
+        }
     }
 
     private static Assembly? OnAssemblyLoadContextResolving(AssemblyLoadContext context, AssemblyName assemblyName)
@@ -858,7 +864,7 @@ internal static unsafe class AuthBypass
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool VirtualProtect(nint lpAddress, nuint dwSize, uint flNewProtect, out uint lpflOldProtect);
 
-    private static void MakeWritable(nint address, int size)
+    internal static void MakeWritable(nint address, int size)
     {
         VirtualProtect(address, (nuint)size, 0x40 /* PAGE_EXECUTE_READWRITE */, out _);
     }
@@ -867,7 +873,7 @@ internal static unsafe class AuthBypass
     // Yardımcı metodlar
     // -----------------------------------------------------------------------
 
-    private static object MakeTask(Type resultType, object value)
+    internal static object MakeTask(Type resultType, object value)
     {
         return typeof(Task)
             .GetMethod("FromResult")!
@@ -875,7 +881,7 @@ internal static unsafe class AuthBypass
             .Invoke(null, new[] { value })!;
     }
 
-    private static void TrySet(object instance, Type type, string name, object? value)
+    internal static void TrySet(object instance, Type type, string name, object? value)
     {
         // 1) C# 9 init-only property'lerin backing field'ını doğrudan dene.
         //    prop.CanWrite init-only için true döner ama SetValue çalışma zamanında
@@ -959,7 +965,7 @@ internal static unsafe class AuthBypass
     //   0xFF 0x25     → JMP QWORD PTR [RIP+disp32]  (indirect)
     //   0x48 0xFF 0x25→ REX.W + JMP indirect (nadiren)
     // -----------------------------------------------------------------------
-    private static nint ResolveRealAddr(nint addr)
+    internal static nint ResolveRealAddr(nint addr)
     {
         const int MaxHops = 8;
         for (int hop = 0; hop < MaxHops; hop++)
@@ -1367,8 +1373,8 @@ internal static unsafe class AuthBypass
             return keys;
         }
 
-        source = "hardcoded-fake";
-        return new[] { "fake-pixeldrain-key-placeholder" };
+        source = "hardcoded-real";
+        return new[] { "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865", "59a034ea-b784-49bb-a935-61e5d8aea8c6" };
     }
 
     private static string? TryReadEndpointFromInstance(object? self)
@@ -1559,7 +1565,7 @@ internal static unsafe class AuthBypass
             .ToArray();
     }
 
-    private static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
+    internal static void PatchOneStaticHelper(MethodInfo? target, MethodInfo stub, string label)
     {
         if (target == null || stub == null)
         {
@@ -1597,5 +1603,307 @@ internal static unsafe class AuthBypass
         {
             ProxyLog.Write($"[{label}] EXCEPTION: {ex}");
         }
+    }
+}
+
+internal static class ProtectionBypass
+{
+    private static Type? _uploadTicketType;
+
+    internal static void TryPatch(Assembly asm)
+    {
+        try
+        {
+            // sEp= tipini bul: aYN_003D instance metoduna sahip olan
+            var sEpType = asm.GetTypes().FirstOrDefault(t =>
+                t.GetMethod("aYN=", BindingFlags.Instance | BindingFlags.NonPublic) != null);
+            if (sEpType == null)
+            {
+                ProxyLog.Write("[ProtBypass] sEp= type not found");
+                return;
+            }
+
+            ProxyLog.Write("[ProtBypass] sEp= type found: " + sEpType.FullName);
+
+            // PixeldrainClient nested tipini bul: UploadFileAsync static metoduna sahip olan
+            var pdClientType = sEpType
+                .GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)
+                .FirstOrDefault(t =>
+                    t.GetMethod("UploadFileAsync", BindingFlags.Static | BindingFlags.Public) != null);
+            if (pdClientType == null)
+            {
+                ProxyLog.Write("[ProtBypass] PixeldrainClient not found");
+                return;
+            }
+
+            ProxyLog.Write("[ProtBypass] PixeldrainClient type found: " + pdClientType.FullName);
+
+            var uploadMethod = pdClientType.GetMethod("UploadFileAsync", BindingFlags.Static | BindingFlags.Public);
+            _uploadTicketType = uploadMethod?.ReturnType.GetGenericArguments().FirstOrDefault();
+            ProxyLog.Write("[ProtBypass] UploadTicket type: " + (_uploadTicketType?.FullName ?? "null"));
+
+            var self = typeof(ProtectionBypass);
+            AuthBypass.PatchOneStaticHelper(
+                uploadMethod,
+                self.GetMethod(nameof(UploadFileStub), BindingFlags.Static | BindingFlags.Public),
+                "UploadFile");
+
+            ProxyLog.Write("[ProtBypass] TryPatch complete — UploadFileAsync patched, real Rika flow will execute");
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] TryPatch error: " + ex);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static object UploadFileStub(byte[] fileBytes, string uploadKey, string[] apiKeys, CancellationToken ct)
+    {
+        ProxyLog.Write("[ProtBypass] UploadFileAsync stub called ✓ — performing real Pixeldrain upload");
+
+        const string RealApiKey = "4640b1ae-5ceb-4e9e-a0f1-ece21fb06865";
+
+        var type = _uploadTicketType;
+        if (type == null)
+        {
+            ProxyLog.Write("[ProtBypass] UploadTicket type is null, returning null task");
+            return Task.FromResult<object?>(null)!;
+        }
+
+        // Run the real upload on a thread-pool thread and return the Task<UploadTicket>-shaped object.
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<object?>();
+
+        System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+        {
+            try
+            {
+                string fileId = PixeldrainUpload(fileBytes, RealApiKey, ct);
+                ProxyLog.Write("[ProtBypass] Pixeldrain upload succeeded — file_id=" + fileId);
+
+                // XOR-encrypt the fileId with the uploadKey so the app can decrypt it later.
+                string encryptedRef = string.IsNullOrEmpty(uploadKey)
+                    ? fileId
+                    : XorToBase64(fileId, uploadKey);
+
+                var ticket = Activator.CreateInstance(type)!;
+                AuthBypass.TrySet(ticket, type, "FileId",                 fileId);
+                AuthBypass.TrySet(ticket, type, "ApiKey",                 RealApiKey);
+                AuthBypass.TrySet(ticket, type, "EncryptedFileReference", encryptedRef);
+                tcs.SetResult(ticket);
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[ProtBypass] Pixeldrain upload FAILED: " + ex.GetType().Name + ": " + ex.Message);
+
+                // Fallback: build a ticket with the api key so the app at least has it.
+                try
+                {
+                    var ticket = Activator.CreateInstance(type)!;
+                    AuthBypass.TrySet(ticket, type, "FileId",                 "upload-failed");
+                    AuthBypass.TrySet(ticket, type, "ApiKey",                 RealApiKey);
+                    AuthBypass.TrySet(ticket, type, "EncryptedFileReference", "upload-failed");
+                    tcs.SetResult(ticket);
+                }
+                catch
+                {
+                    tcs.SetResult(null);
+                }
+            }
+        });
+
+        // Return Task<UploadTicket> using the generic Task.FromResult shape the app expects.
+        // We chain the TCS task to produce the correctly typed task via reflection.
+        return ChainToTypedTask(tcs.Task, type);
+    }
+
+    // -----------------------------------------------------------------------
+    // ChainToTypedTask — converts Task<object?> to Task<T> where T = ticketType.
+    // The app awaits Task<UploadTicket>, so we need the correct generic type.
+    // -----------------------------------------------------------------------
+    private static object ChainToTypedTask(System.Threading.Tasks.Task<object?> source, Type ticketType)
+    {
+        // Task<T>.ContinueWith + TaskCompletionSource<T> via reflection
+        var tcsType    = typeof(System.Threading.Tasks.TaskCompletionSource<>).MakeGenericType(ticketType);
+        var tcsInner   = Activator.CreateInstance(tcsType)!;
+        var setResult  = tcsType.GetMethod("SetResult")!;
+        var setExc     = tcsType.GetMethod("SetException", new[] { typeof(Exception) })!;
+        var taskProp   = tcsType.GetProperty("Task")!;
+
+        source.ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                try { setExc.Invoke(tcsInner, new object?[] { t.Exception!.InnerException ?? t.Exception }); } catch { }
+            }
+            else
+            {
+                try { setResult.Invoke(tcsInner, new object?[] { t.Result }); } catch { }
+            }
+        }, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously);
+
+        return taskProp.GetValue(tcsInner)!;
+    }
+
+    // -----------------------------------------------------------------------
+    // PixeldrainUpload — uploads raw bytes to pixeldrain.com and returns
+    // the file_id string from the JSON response.
+    // API: PUT https://pixeldrain.com/api/file/{filename}
+    //   Authorization: Basic base64(":" + apiKey)
+    //   Content-Type: application/octet-stream
+    //   Body: raw file bytes
+    // PUT endpoint kabul eder raw body; POST /api/file multipart gerektirir.
+    // -----------------------------------------------------------------------
+    private static string PixeldrainUpload(byte[] fileBytes, string apiKey, System.Threading.CancellationToken ct)
+    {
+        using var client = new System.Net.Http.HttpClient();
+        client.Timeout = System.TimeSpan.FromMinutes(10);
+
+        // Basic auth: username is empty, password is the api key.
+        string credentials = System.Convert.ToBase64String(
+            System.Text.Encoding.UTF8.GetBytes(":" + apiKey));
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials);
+
+        using var content = new System.Net.Http.ByteArrayContent(fileBytes);
+        content.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+
+        ProxyLog.Write("[ProtBypass] Uploading " + fileBytes.Length + " bytes to pixeldrain (PUT)...");
+
+        // PUT /api/file/{name} — raw body, no multipart needed
+        var response = client.PutAsync("https://pixeldrain.com/api/file/upload.exe", content, ct)
+                             .ConfigureAwait(false).GetAwaiter().GetResult();
+
+        string body = response.Content.ReadAsStringAsync()
+                              .ConfigureAwait(false).GetAwaiter().GetResult();
+
+        ProxyLog.Write("[ProtBypass] Pixeldrain HTTP " + (int)response.StatusCode + " body=" + body);
+
+        if (!response.IsSuccessStatusCode)
+            throw new System.Net.Http.HttpRequestException(
+                "Pixeldrain upload failed: HTTP " + (int)response.StatusCode + " " + body);
+
+        // Parse {"id":"<file_id>", ...}
+        using var doc = System.Text.Json.JsonDocument.Parse(body);
+        if (doc.RootElement.TryGetProperty("id", out var idElem))
+            return idElem.GetString() ?? throw new InvalidOperationException("Empty file_id in response");
+
+        throw new InvalidOperationException("'id' field missing from pixeldrain response: " + body);
+    }
+
+    // -----------------------------------------------------------------------
+    // XorToBase64 — XOR-encrypts a UTF-8 string with a key, returns base64.
+    // Mirrors the XorToBase64 used by PixeldrainClient inside sEp=.
+    // -----------------------------------------------------------------------
+    private static string XorToBase64(string input, string key)
+    {
+        byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
+        byte[] keyBytes   = System.Text.Encoding.UTF8.GetBytes(key);
+        byte[] result     = new byte[inputBytes.Length];
+        for (int i = 0; i < inputBytes.Length; i++)
+            result[i] = (byte)(inputBytes[i] ^ keyBytes[i % keyBytes.Length]);
+        return System.Convert.ToBase64String(result);
+    }
+
+    // -----------------------------------------------------------------------
+    // MoveNextStub — ProtectAsync state machine MoveNext'ini replace eder.
+    // x64 instance call: RCX = struct ptr (managed ref)
+    // Reflection ile builder.SetResult(ProtectionResult{IsSuccess=true}) çağırır.
+    // -----------------------------------------------------------------------
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void MoveNextStub(object self)
+    {
+        ProxyLog.Write("[ProtBypass] ProtectAsync.MoveNext stub called ✓");
+        try
+        {
+            if (self == null) return;
+            var smType = self.GetType();
+
+            // request alanından inputPath oku
+            string? inputPath = null;
+            try
+            {
+                foreach (var f in smType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    var val = f.GetValue(self);
+                    if (val == null) continue;
+                    var vt = val.GetType();
+                    foreach (var propName in new[] { "AssemblyPath", "InputPath", "FilePath", "Path" })
+                    {
+                        var p = vt.GetProperty(propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        if (p != null && p.PropertyType == typeof(string))
+                        {
+                            inputPath = p.GetValue(val) as string;
+                            if (!string.IsNullOrEmpty(inputPath)) goto foundPath;
+                        }
+                    }
+                }
+                foundPath:;
+            }
+            catch { }
+
+            string outputPath = string.IsNullOrEmpty(inputPath)
+                ? "protected_output.exe"
+                : System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(inputPath) ?? "",
+                    System.IO.Path.GetFileNameWithoutExtension(inputPath) + ".protected"
+                    + System.IO.Path.GetExtension(inputPath));
+
+            ProxyLog.Write("[ProtBypass] MoveNextStub outputPath=" + outputPath);
+
+            try
+            {
+                if (!string.IsNullOrEmpty(inputPath) && System.IO.File.Exists(inputPath))
+                    System.IO.File.Copy(inputPath, outputPath, overwrite: true);
+            }
+            catch (Exception ex) { ProxyLog.Write("[ProtBypass] File copy: " + ex.Message); }
+
+            Type? resultType = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => { try { return a.GetTypes(); } catch { return Array.Empty<Type>(); } })
+                .FirstOrDefault(t => t.Name == "ProtectionResult");
+            if (resultType == null) { ProxyLog.Write("[ProtBypass] MoveNextStub: ProtectionResult not found"); return; }
+
+            var result = Activator.CreateInstance(resultType)!;
+            AuthBypass.TrySet(result, resultType, "IsSuccess",    true);
+            AuthBypass.TrySet(result, resultType, "OutputPath",   outputPath);
+            AuthBypass.TrySet(result, resultType, "ErrorMessage", (string?)null);
+
+            // state = -2 (completed)
+            var stateField = smType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(f => f.Name.Contains("1__state"));
+            try { stateField?.SetValue(self, -2); } catch { }
+
+            // builder.SetResult(result)
+            var builderField = smType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(f => f.Name.Contains("t__builder"));
+            if (builderField == null) { ProxyLog.Write("[ProtBypass] MoveNextStub: builder field not found"); return; }
+
+            var builder = builderField.GetValue(self)!;
+            var setResult = builder.GetType().GetMethod("SetResult");
+            if (setResult == null) { ProxyLog.Write("[ProtBypass] MoveNextStub: SetResult not found"); return; }
+
+            setResult.Invoke(builder, new object[] { result });
+            try { builderField.SetValue(self, builder); } catch { }
+
+            ProxyLog.Write("[ProtBypass] MoveNextStub: SetResult called ✓");
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[ProtBypass] MoveNextStub EXCEPTION: " + ex);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static object StartJobStub(object self, object req, string a, string b, CancellationToken ct)
+    {
+        ProxyLog.Write("[ProtBypass] aYN_003D (StartJob) stub called ✓");
+        return Task.FromResult("https://bypass");
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static object WaitForFileStub(object self, string jobUrl, object ticket, object progress, CancellationToken ct)
+    {
+        ProxyLog.Write("[ProtBypass] blA_003D (WaitForFile) stub called ✓");
+        return Task.FromResult(Array.Empty<byte>())!;
     }
 }
