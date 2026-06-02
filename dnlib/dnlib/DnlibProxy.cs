@@ -56,9 +56,24 @@ public static class ProxyBootstrap
             AssemblyLoadContext.Default.Resolving -= OnAssemblyLoadContextResolving;
             AssemblyLoadContext.Default.Resolving += OnAssemblyLoadContextResolving;
 
+            // Auth bypass: RikaNET.WinUI yüklenince Dhr_003D'yi patch'le
+            AppDomain.CurrentDomain.AssemblyLoad += OnAssemblyLoad;
+
+            // Belki zaten yüklüdür (nadiren ama olabilir)
+            var already = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => string.Equals(a.GetName().Name, "RikaNET.WinUI", StringComparison.OrdinalIgnoreCase));
+            if (already != null)
+                AuthBypass.TryPatch(already);
+
             PreloadRealAssembly();
             StartAnalysisTimer();
         }
+    }
+
+    private static void OnAssemblyLoad(object? sender, AssemblyLoadEventArgs args)
+    {
+        if (string.Equals(args.LoadedAssembly.GetName().Name, "RikaNET.WinUI", StringComparison.OrdinalIgnoreCase))
+            AuthBypass.TryPatch(args.LoadedAssembly);
     }
 
     private static Assembly? OnAssemblyLoadContextResolving(AssemblyLoadContext context, AssemblyName assemblyName)
@@ -533,5 +548,304 @@ internal static class ProxyLog
         {
             return Path.Combine(Path.GetTempPath(), "dnlib_proxy_log.txt");
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Runtime auth bypass — JIT function pointer swap
+// Hedef: wkj_003D.Dhr_003D : IAuthenticationService (RikaNET.WinUI.dll)
+//   InitializeAsync(CancellationToken) -> Task<AuthBootstrapState>
+//   SignInAsync(string, bool, CancellationToken) -> Task<AuthResult>
+// Her ikisi de [MethodImpl(NoInlining)] olduğu için JIT pointer'ları
+// RuntimeHelpers.PrepareMethod ile sabitlenip unsafe pointer swap ile
+// stub'lara yönlendirilebilir.
+// ---------------------------------------------------------------------------
+internal static unsafe class AuthBypass
+{
+    private static int _patched;
+
+    // Stub delegate'leri GC'nin toplamasını engellemek için tutuyoruz
+    private static Delegate? _initStub;
+    private static Delegate? _signInStub;
+
+    internal static void TryPatch(Assembly rikaAssembly)
+    {
+        if (System.Threading.Interlocked.Exchange(ref _patched, 1) != 0)
+            return;
+
+        try
+        {
+            ProxyLog.Write("[AuthBypass] RikaNET.WinUI yüklendi, patch başlıyor...");
+            PatchMethods(rikaAssembly);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[AuthBypass] HATA: " + ex);
+        }
+    }
+
+    private static void PatchMethods(Assembly asm)
+    {
+        // wkj_003D.Dhr_003D tipini bul
+        Type? dhrType = asm.GetTypes().FirstOrDefault(t =>
+            t.FullName == "wkj_003D.Dhr_003D" ||
+            (t.Namespace == "wkj_003D" && t.Name == "Dhr_003D"));
+
+        if (dhrType == null)
+        {
+            // İsim obfüske edilmişse IAuthenticationService implementörünü ara
+            dhrType = FindAuthServiceImpl(asm);
+        }
+
+        if (dhrType == null)
+        {
+            ProxyLog.Write("[AuthBypass] Dhr_003D tipi bulunamadı.");
+            return;
+        }
+
+        ProxyLog.Write("[AuthBypass] Hedef tip: " + dhrType.FullName);
+
+        // AuthBootstrapState ve AuthResult tiplerini bul (RikaNET.Core.dll'de)
+        Type? bootstrapStateType = FindTypeBySimpleName(asm, "AuthBootstrapState")
+            ?? FindTypeInLoadedAssemblies("AuthBootstrapState");
+        Type? authResultType = FindTypeBySimpleName(asm, "AuthResult")
+            ?? FindTypeInLoadedAssemblies("AuthResult");
+
+        if (bootstrapStateType == null || authResultType == null)
+        {
+            ProxyLog.Write("[AuthBypass] AuthBootstrapState veya AuthResult tipi bulunamadı."
+                + " bootstrapState=" + (bootstrapStateType?.FullName ?? "null")
+                + " authResult=" + (authResultType?.FullName ?? "null"));
+            return;
+        }
+
+        ProxyLog.Write("[AuthBypass] AuthBootstrapState: " + bootstrapStateType.FullName);
+        ProxyLog.Write("[AuthBypass] AuthResult: " + authResultType.FullName);
+
+        // InitializeAsync patch'i
+        MethodInfo? initMethod = dhrType.GetMethod(
+            "InitializeAsync",
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null,
+            new[] { typeof(CancellationToken) },
+            null);
+
+        if (initMethod != null)
+            TrySwap(initMethod, BuildInitStub(bootstrapStateType), "InitializeAsync");
+        else
+            ProxyLog.Write("[AuthBypass] InitializeAsync metodu bulunamadı.");
+
+        // SignInAsync patch'i
+        MethodInfo? signInMethod = dhrType.GetMethod(
+            "SignInAsync",
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null,
+            new[] { typeof(string), typeof(bool), typeof(CancellationToken) },
+            null);
+
+        if (signInMethod != null)
+            TrySwap(signInMethod, BuildSignInStub(authResultType), "SignInAsync");
+        else
+            ProxyLog.Write("[AuthBypass] SignInAsync metodu bulunamadı.");
+    }
+
+    // -----------------------------------------------------------------------
+    // Stub builder'lar — runtime'da doğru Task<T> dönen delegate oluşturur
+    // -----------------------------------------------------------------------
+
+    private static Delegate BuildInitStub(Type bootstrapStateType)
+    {
+        // Task<AuthBootstrapState> dönen stub: IsReady=true, CachedLicense="RIKA-0000-0000-0000"
+        var stub = new Func<object, CancellationToken, object>((self, ct) =>
+        {
+            try
+            {
+                var state = Activator.CreateInstance(bootstrapStateType);
+                TrySetProperty(state, bootstrapStateType, "IsReady", true);
+                TrySetProperty(state, bootstrapStateType, "CachedLicense", "RIKA-0000-0000-0000");
+                ProxyLog.Write("[AuthBypass] InitializeAsync stub çağrıldı → IsReady=true");
+                // Task<AuthBootstrapState> olarak wrap et
+                return WrapInTask(bootstrapStateType, state!);
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[AuthBypass] InitializeAsync stub hatası: " + ex);
+                return WrapInTask(bootstrapStateType, Activator.CreateInstance(bootstrapStateType)!);
+            }
+        });
+        _initStub = stub;
+        return stub;
+    }
+
+    private static Delegate BuildSignInStub(Type authResultType)
+    {
+        // Task<AuthResult> dönen stub: IsSuccess=true, RemainingDays=9999, PlanType="Enterprise"
+        var stub = new Func<object, string, bool, CancellationToken, object>((self, license, rememberMe, ct) =>
+        {
+            try
+            {
+                var result = Activator.CreateInstance(authResultType);
+                TrySetProperty(result, authResultType, "IsSuccess", true);
+                TrySetProperty(result, authResultType, "RemainingDays", 9999);
+                TrySetProperty(result, authResultType, "PlanType", "Enterprise");
+                ProxyLog.Write("[AuthBypass] SignInAsync stub çağrıldı → IsSuccess=true, RemainingDays=9999");
+                return WrapInTask(authResultType, result!);
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write("[AuthBypass] SignInAsync stub hatası: " + ex);
+                return WrapInTask(authResultType, Activator.CreateInstance(authResultType)!);
+            }
+        });
+        _signInStub = stub;
+        return stub;
+    }
+
+    // -----------------------------------------------------------------------
+    // JIT pointer swap — RuntimeHelpers.PrepareMethod + unsafe yazma
+    // -----------------------------------------------------------------------
+
+    private static void TrySwap(MethodInfo target, Delegate stubDelegate, string label)
+    {
+        try
+        {
+            // Stub'ın Invoke metodunu hedef olarak kullanacağız
+            MethodInfo stubMethod = stubDelegate.Method;
+
+            RuntimeHelpers.PrepareMethod(target.MethodHandle);
+            RuntimeHelpers.PrepareMethod(stubMethod.MethodHandle);
+
+            // Her iki metodun JIT'd native code pointer'ını al
+            nint targetPtr = target.MethodHandle.GetFunctionPointer();
+            nint stubPtr = stubMethod.MethodHandle.GetFunctionPointer();
+
+            ProxyLog.Write($"[AuthBypass] {label}: target=0x{targetPtr:X} stub=0x{stubPtr:X}");
+
+            // Hedef metodun ilk byte'ını JMP rel32 ile stub'a yönlendir
+            WriteJump(targetPtr, stubPtr);
+
+            ProxyLog.Write("[AuthBypass] " + label + " patch'lendi ✓");
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[AuthBypass] " + label + " swap hatası: " + ex);
+        }
+    }
+
+    private static void WriteJump(nint from, nint to)
+    {
+        // x64: MOV RAX, imm64 + JMP RAX = 12 byte
+        // FF /4 = JMP [rax]  ama daha temiz: 48 B8 <imm64> FF E0
+        // Opcode: 48 B8 lo hi .. .. .. .. .. .. FF E0
+        byte* src = (byte*)from;
+
+        // Belleği yazılabilir yap
+        MakeWritable(from, 12);
+
+        long delta = to - from - 5;
+        if (delta >= int.MinValue && delta <= int.MaxValue)
+        {
+            // rel32 JMP — sadece 5 byte, daha temiz
+            src[0] = 0xE9;
+            int rel = (int)delta;
+            byte* relPtr = (byte*)&rel;
+            src[1] = relPtr[0];
+            src[2] = relPtr[1];
+            src[3] = relPtr[2];
+            src[4] = relPtr[3];
+        }
+        else
+        {
+            // abs64 MOV RAX + JMP RAX
+            src[0] = 0x48; src[1] = 0xB8; // MOV RAX, imm64
+            long addr = to;
+            byte* addrPtr = (byte*)&addr;
+            for (int i = 0; i < 8; i++)
+                src[2 + i] = addrPtr[i];
+            src[10] = 0xFF; src[11] = 0xE0; // JMP RAX
+        }
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool VirtualProtect(nint lpAddress, nuint dwSize, uint flNewProtect, out uint lpflOldProtect);
+
+    private static void MakeWritable(nint address, int size)
+    {
+        const uint PAGE_EXECUTE_READWRITE = 0x40;
+        VirtualProtect(address, (nuint)size, PAGE_EXECUTE_READWRITE, out _);
+    }
+
+    // -----------------------------------------------------------------------
+    // Yardımcı metodlar
+    // -----------------------------------------------------------------------
+
+    private static object WrapInTask(Type resultType, object value)
+    {
+        // Task.FromResult<T>(value) — generic yapımız runtime'da
+        var fromResult = typeof(Task).GetMethod("FromResult")!
+            .MakeGenericMethod(resultType);
+        return fromResult.Invoke(null, new[] { value })!;
+    }
+
+    private static void TrySetProperty(object? instance, Type type, string propName, object value)
+    {
+        if (instance == null) return;
+        try
+        {
+            // Önce property dene
+            var prop = type.GetProperty(propName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (prop?.CanWrite == true)
+            {
+                prop.SetValue(instance, value);
+                return;
+            }
+            // Sonra field dene (obfüskatör property yerine field kullanmış olabilir)
+            var field = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(f => f.Name.IndexOf(propName, StringComparison.OrdinalIgnoreCase) >= 0);
+            field?.SetValue(instance, value);
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("[AuthBypass] SetProperty " + propName + " hata: " + ex.Message);
+        }
+    }
+
+    private static Type? FindTypeBySimpleName(Assembly asm, string simpleName)
+    {
+        try
+        {
+            return asm.GetTypes().FirstOrDefault(t =>
+                string.Equals(t.Name, simpleName, StringComparison.OrdinalIgnoreCase));
+        }
+        catch { return null; }
+    }
+
+    private static Type? FindTypeInLoadedAssemblies(string simpleName)
+    {
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try
+            {
+                var t = asm.GetTypes().FirstOrDefault(x =>
+                    string.Equals(x.Name, simpleName, StringComparison.OrdinalIgnoreCase));
+                if (t != null) return t;
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private static Type? FindAuthServiceImpl(Assembly asm)
+    {
+        // IAuthenticationService interface'ini implement eden sealed class'ı bul
+        try
+        {
+            var types = asm.GetTypes();
+            return types.FirstOrDefault(t =>
+                t.IsClass && !t.IsAbstract &&
+                t.GetInterfaces().Any(i => i.Name.Contains("IAuthenticationService")));
+        }
+        catch { return null; }
     }
 }
