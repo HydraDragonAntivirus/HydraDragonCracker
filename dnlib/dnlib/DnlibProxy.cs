@@ -1,3 +1,5 @@
+extern alias real;
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -28,7 +30,7 @@ internal static class ProxyModule
     }
 }
 
-internal static class ProxyBootstrap
+public static class ProxyBootstrap
 {
     private static readonly object InitLock = new();
     private static Assembly? realDnlibAssembly;
@@ -98,6 +100,15 @@ internal static class ProxyBootstrap
     {
         if (realDnlibAssembly != null)
             return realDnlibAssembly;
+
+        realDnlibAssembly = AppDomain.CurrentDomain.GetAssemblies()
+            .FirstOrDefault(assembly => string.Equals(assembly.GetName().Name, "dnlib.real", StringComparison.OrdinalIgnoreCase));
+
+        if (realDnlibAssembly != null)
+        {
+            ProxyLog.Write("Real dnlib already loaded: " + realDnlibAssembly.FullName);
+            return realDnlibAssembly;
+        }
 
         var realPath = FindRealDnlibPath();
         if (realPath == null)
@@ -197,13 +208,15 @@ internal static class ProxyBootstrap
             var name = assembly.GetName().Name ?? "";
             if (name.StartsWith("System", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(name, "dnlib", StringComparison.OrdinalIgnoreCase))
+                string.Equals(name, "dnlib", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(name, "dnlib.real", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
             ProxyLog.Write("Assembly: " + assembly.FullName);
             AnalyzeAssemblyForDnlibUsage(assembly);
+            AnalyzeAssemblyMetadata(assembly);
         }
 
         ProxyLog.Write("=== analysis complete ===");
@@ -241,6 +254,18 @@ internal static class ProxyBootstrap
         {
             if (IsDnlibType(field.FieldType) || IsInterestingName(field.Name))
                 ProxyLog.Write("  Field: " + type.FullName + "." + field.Name + " : " + SafeTypeName(field.FieldType));
+
+            if (field.IsLiteral && field.FieldType == typeof(string) && IsInterestingName(field.Name))
+            {
+                try
+                {
+                    if (field.GetRawConstantValue() is string value)
+                        ProxyLog.Write("  Const string: " + type.FullName + "." + field.Name + " = " + FormatStringFinding(value));
+                }
+                catch
+                {
+                }
+            }
         }
 
         foreach (var property in SafeMembers(() => type.GetProperties(flags)))
@@ -278,7 +303,9 @@ internal static class ProxyBootstrap
 
         try
         {
-            return method.GetParameters().Any(parameter => IsDnlibType(parameter.ParameterType));
+            return method.GetParameters().Any(parameter =>
+                IsDnlibType(parameter.ParameterType) ||
+                IsInterestingName(parameter.Name ?? ""));
         }
         catch
         {
@@ -297,9 +324,154 @@ internal static class ProxyBootstrap
                lower.Contains("encrypt") ||
                lower.Contains("decrypt") ||
                lower.Contains("license") ||
+               lower.Contains("auth") ||
+               lower.Contains("api") ||
+               lower.Contains("apikey") ||
+               lower.Contains("upload") ||
+               lower.Contains("pixeldrain") ||
+               lower.Contains("ticket") ||
+               lower.Contains("fileid") ||
+               lower.Contains("endpoint") ||
+               lower.Contains("bearer") ||
+               lower.Contains("authorization") ||
+               lower.Contains("xor") ||
                lower.Contains("serial") ||
                lower.Contains("key") ||
                lower.Contains("token");
+    }
+
+    private static void AnalyzeAssemblyMetadata(Assembly assembly)
+    {
+        string path;
+        try
+        {
+            path = assembly.Location;
+        }
+        catch
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return;
+
+        try
+        {
+            using var module = real::dnlib.DotNet.ModuleDefMD.Load(path);
+            var stringFindings = 0;
+
+            foreach (var type in module.GetTypes())
+            {
+                var typeName = type.FullName;
+                var typeInteresting = IsInterestingName(typeName);
+                if (typeInteresting)
+                    ProxyLog.Write("  [metadata] Type: " + typeName);
+
+                foreach (var field in type.Fields)
+                {
+                    var fieldName = field.Name.String;
+                    if (IsInterestingName(fieldName))
+                        ProxyLog.Write("  [metadata] Field: " + typeName + "." + fieldName + " : " + field.FieldType.FullName);
+
+                    if (field.HasConstant && field.Constant.Value is string constant && (IsInterestingName(fieldName) || IsInterestingString(constant)))
+                        ProxyLog.Write("  [metadata] Const: " + typeName + "." + fieldName + " = " + FormatStringFinding(constant));
+                }
+
+                foreach (var method in type.Methods)
+                {
+                    var methodName = method.Name.String;
+                    var methodInteresting = typeInteresting || IsInterestingName(methodName);
+
+                    foreach (var param in method.ParamDefs)
+                    {
+                        if (IsInterestingName(param.Name.String))
+                        {
+                            methodInteresting = true;
+                            ProxyLog.Write("  [metadata] Param: " + typeName + "." + methodName + " -> " + param.Name);
+                        }
+                    }
+
+                    if (methodInteresting)
+                        ProxyLog.Write("  [metadata] Method: " + typeName + "." + methodName);
+
+                    if (!method.HasBody)
+                        continue;
+
+                    foreach (var instruction in method.Body.Instructions)
+                    {
+                        if (instruction.OpCode.Code != real::dnlib.DotNet.Emit.Code.Ldstr ||
+                            instruction.Operand is not string value)
+                        {
+                            continue;
+                        }
+
+                        if ((methodInteresting || typeInteresting) && IsInterestingString(value))
+                        {
+                            ProxyLog.Write("  [metadata] ldstr: " + typeName + "." + methodName + " -> " + FormatStringFinding(value));
+                            stringFindings++;
+                        }
+
+                        if (stringFindings >= 80)
+                        {
+                            ProxyLog.Write("  [metadata] string scan capped at 80 findings for " + assembly.GetName().Name);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ProxyLog.Write("  [metadata] scan failed: " + ex.GetType().Name + ": " + ex.Message);
+        }
+    }
+
+    private static bool IsInterestingString(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        var lower = value.ToLowerInvariant();
+        return lower.Contains("http://") ||
+               lower.Contains("https://") ||
+               lower.Contains("pixeldrain") ||
+               lower.Contains("api") ||
+               lower.Contains("apikey") ||
+               lower.Contains("upload") ||
+               lower.Contains("authorization") ||
+               lower.Contains("bearer") ||
+               lower.Contains("license") ||
+               lower.Contains("token") ||
+               lower.Contains("secret") ||
+               lower.Contains("file_id") ||
+               lower.Contains("fileid") ||
+               LooksLikeSecret(value);
+    }
+
+    private static bool LooksLikeSecret(string value)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length < 20)
+            return false;
+
+        var base64ish = trimmed.Count(c => char.IsLetterOrDigit(c) || c is '+' or '/' or '=');
+        var hexish = trimmed.Count(Uri.IsHexDigit);
+        return base64ish >= trimmed.Length * 0.9 || hexish >= trimmed.Length * 0.9;
+    }
+
+    private static string FormatStringFinding(string value)
+    {
+        var trimmed = value.Replace("\r", "\\r").Replace("\n", "\\n");
+        if (trimmed.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            trimmed.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return trimmed.Length <= 160 ? trimmed : trimmed[..80] + "...<len=" + trimmed.Length + ">";
+        }
+
+        if (trimmed.Length <= 12)
+            return "<len=" + trimmed.Length + ">";
+
+        return trimmed[..Math.Min(6, trimmed.Length)] + "..." + trimmed[^Math.Min(6, trimmed.Length)..] + " <len=" + trimmed.Length + ">";
     }
 
     private static bool IsDnlibType(Type type)

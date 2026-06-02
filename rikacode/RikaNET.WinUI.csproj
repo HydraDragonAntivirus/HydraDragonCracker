@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RikaNET.WinUI</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="-----_--" />
+    <None Remove="---_----" />
+    <EmbeddedResource Include="-----_--" LogicalName="$*$&lt;&gt;_+^" />
+    <EmbeddedResource Include="---_----" LogicalName="#$&amp;_^?^*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WinUI">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.WinUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Windows.AppLifecycle.Projection">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.Windows.AppLifecycle.Projection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.InteractiveExperiences.Projection">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.InteractiveExperiences.Projection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Windows.SDK.NET">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.Windows.SDK.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="RikaNET.Core">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\RikaNET.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CommunityToolkit.Mvvm">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\CommunityToolkit.Mvvm.dll</HintPath>
+    </Reference>
+    <Reference Include="dnlib">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\dnlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Windows.ApplicationModel.Resources.Projection">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\Microsoft.Windows.ApplicationModel.Resources.Projection.dll</HintPath>
+    </Reference>
+    <Reference Include="WinRT.Runtime">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rika Inc\Rika.NET\WinRT.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using dnlib.DotNet.Writer;
@@ -54,8 +55,8 @@ static void InjectLoadLog(ModuleDef module)
         cctor = new MethodDefUser(
             ".cctor",
             MethodSig.CreateStatic(module.CorLibTypes.Void),
-            MethodImplAttributes.IL | MethodImplAttributes.Managed,
-            MethodAttributes.Private | MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
+            dnlib.DotNet.MethodImplAttributes.IL | dnlib.DotNet.MethodImplAttributes.Managed,
+            dnlib.DotNet.MethodAttributes.Private | dnlib.DotNet.MethodAttributes.Static | dnlib.DotNet.MethodAttributes.SpecialName | dnlib.DotNet.MethodAttributes.RTSpecialName);
         globalType.Methods.Add(cctor);
     }
 
@@ -78,6 +79,16 @@ static void InjectLoadLog(ModuleDef module)
         Instruction.Create(OpCodes.Call, module.Import(typeof(Path).GetMethod(nameof(Path.Combine), new[] { typeof(string), typeof(string) })!)),
         Instruction.Create(OpCodes.Ldstr, "[dnlib.real] loaded through dnlib proxy" + Environment.NewLine),
         Instruction.Create(OpCodes.Call, module.Import(typeof(File).GetMethod(nameof(File.AppendAllText), new[] { typeof(string), typeof(string) })!)),
+        Instruction.Create(OpCodes.Ldstr, "DnlibProxy.ProxyBootstrap, dnlib"),
+        Instruction.Create(OpCodes.Ldc_I4_0),
+        Instruction.Create(OpCodes.Call, module.Import(typeof(Type).GetMethod(nameof(Type.GetType), new[] { typeof(string), typeof(bool) })!)),
+        Instruction.Create(OpCodes.Ldstr, "Touch"),
+        Instruction.Create(OpCodes.Ldc_I4, (int)(BindingFlags.Public | BindingFlags.Static)),
+        Instruction.Create(OpCodes.Callvirt, module.Import(typeof(Type).GetMethod(nameof(Type.GetMethod), new[] { typeof(string), typeof(BindingFlags) })!)),
+        Instruction.Create(OpCodes.Ldnull),
+        Instruction.Create(OpCodes.Ldnull),
+        Instruction.Create(OpCodes.Callvirt, module.Import(typeof(MethodBase).GetMethod(nameof(MethodBase.Invoke), new[] { typeof(object), typeof(object[]) })!)),
+        Instruction.Create(OpCodes.Pop),
         Instruction.Create(OpCodes.Leave_S, ret),
         handlerStart,
         Instruction.Create(OpCodes.Leave_S, ret),

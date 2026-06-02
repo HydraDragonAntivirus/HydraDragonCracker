@@ -18,6 +18,8 @@ The build output contains:
 - `dnlib.real.dll`: renamed original dnlib DLL used by type forwarding
 - `dnlib_proxy_log.txt`: created at runtime next to the target executable
 
+The proxy analysis is tuned for the Rika.NET protection/auth flow. It logs metadata hits for names such as `ApiKey`, `apiKeys`, `uploadKey`, `UploadTicket`, `PixeldrainClient`, `DeleteFileAsync`, `UploadFileAsync`, `XorKey`, and related obfuscated `ldstr` tokens. Potential secret-like strings are redacted in the log.
+
 ## Test Layout
 
 To test with `RikaNET.WinUI.exe`, put the proxy `dnlib.dll` next to the executable and keep the renamed original as `dnlib.real.dll` in the same folder.
