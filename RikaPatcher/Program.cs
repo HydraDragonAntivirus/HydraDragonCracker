@@ -1,9 +1,10 @@
 // RikaNET.WinUI.dll License Patcher
-// Keşif sonuçlarına göre hedef metodlar:
-//   wkj=.Dhr=/<SignInAsync>d__14::MoveNext
-//   wkj=.Dhr=/<InitializeAsync>d__13::MoveNext
-//   wkj=.Dhr=/<RikaNET-Core-Services-IAuthenticationService-ResetHardwareIdAsync>d__29::MoveNext
-//   LoginViewModel/<SignInAsync>d__47::<her adı ne olursa>
+// Field dump sonuçlarına göre:
+//   wkj=.Dhr=/<SignInAsync>d__14       : <>t__builder = AsyncTaskMethodBuilder`1<AuthResult>
+//   wkj=.Dhr=/<InitializeAsync>d__13   : <>t__builder = AsyncTaskMethodBuilder`1<AuthBootstrapState>
+//   wkj=.Dhr=/...ResetHardwareId d__29 : <>t__builder = AsyncTaskMethodBuilder`1<AuthResult>
+//   LoginViewModel/<SignInAsync>d__47   : <>t__builder = AsyncTaskMethodBuilder (non-generic)
+//   LoginViewModel/<InitializeAsync>d__41: <>t__builder = AsyncTaskMethodBuilder (non-generic)
 
 using System;
 using System.IO;
@@ -28,234 +29,151 @@ class Program
             return 0;
         }
 
-        // WinUI DLL'i hedef — implementasyonlar burada
         string dllPath = args.Length > 0
             ? args[0]
             : Path.Combine("..", "Rika Inc", "Rika.NET", "RikaNET.WinUI.dll");
 
-        // Core DLL — model tipleri için referans
-        string coreDllPath = args.Length > 1
-            ? args[1]
-            : Path.Combine(Path.GetDirectoryName(dllPath)!, "RikaNET.Core.dll");
+        string coreDllPath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(dllPath))!, "RikaNET.Core.dll");
 
-        if (!File.Exists(dllPath))
+        if (!File.Exists(dllPath))  { Console.Error.WriteLine($"[!] WinUI DLL yok: {dllPath}"); return 1; }
+        if (!File.Exists(coreDllPath)) { Console.Error.WriteLine($"[!] Core DLL yok: {coreDllPath}"); return 1; }
+
+        Console.WriteLine($"[*] WinUI: {dllPath}");
+        Console.WriteLine($"[*] Core:  {coreDllPath}");
+
+        var coreModule = ModuleDefMD.Load(coreDllPath, new ModuleCreationOptions { TryToLoadPdbFromDisk = false });
+        var winuiModule = ModuleDefMD.Load(dllPath, new ModuleCreationOptions { TryToLoadPdbFromDisk = false });
+
+        var authResultType  = FindType(coreModule, "RikaNET.Core.Models.AuthResult")!;
+        var bootstrapType   = FindType(coreModule, "RikaNET.Core.Models.AuthBootstrapState")!;
+
+        if (authResultType == null || bootstrapType == null)
         {
-            Console.Error.WriteLine($"[!] WinUI DLL bulunamadı: {dllPath}");
-            return 1;
-        }
-        if (!File.Exists(coreDllPath))
-        {
-            Console.Error.WriteLine($"[!] Core DLL bulunamadı: {coreDllPath}");
-            return 1;
-        }
-
-        Console.WriteLine($"[*] WinUI yükleniyor: {dllPath}");
-        Console.WriteLine($"[*] Core yükleniyor:  {coreDllPath}");
-
-        var resolver = new AssemblyResolver();
-        resolver.DefaultModuleContext = new ModuleContext(resolver);
-        resolver.AddToCache(ModuleDefMD.Load(coreDllPath, resolver.DefaultModuleContext));
-
-        var ctx = new ModuleContext(resolver);
-        resolver.DefaultModuleContext = ctx;
-
-        var module = ModuleDefMD.Load(dllPath, ctx);
-
-        // Core modülünden tip referanslarını al
-        var coreModule = resolver.Resolve(
-            new AssemblyNameInfo("RikaNET.Core"),
-            module)?.ManifestModule;
-
-        if (coreModule == null)
-        {
-            // Fallback: doğrudan yükle
-            coreModule = ModuleDefMD.Load(coreDllPath);
-        }
-
-        var authResultType = FindType(coreModule, "RikaNET.Core.Models.AuthResult");
-        var bootstrapType = FindType(coreModule, "RikaNET.Core.Models.AuthBootstrapState");
-
-        if (authResultType == null)
-        {
-            Console.Error.WriteLine("[!] AuthResult tipi bulunamadı.");
-            return 1;
-        }
-        if (bootstrapType == null)
-        {
-            Console.Error.WriteLine("[!] AuthBootstrapState tipi bulunamadı.");
-            return 1;
+            Console.Error.WriteLine("[!] Core model tipleri bulunamadı."); return 1;
         }
 
         int patchCount = 0;
 
-        foreach (var type in module.GetTypes())
+        foreach (var type in winuiModule.GetTypes())
         {
-            string typeName = type.FullName;
+            string tn = type.FullName;
 
-            // --- SignInAsync state machine ---
-            if (typeName.Contains("SignInAsync") && typeName.Contains("d__"))
+            // 1. wkj=.Dhr=/<SignInAsync>d__14  →  MoveNext
+            if (tn.Contains("Dhr=") && tn.Contains("SignInAsync") && tn.Contains("d__"))
             {
-                foreach (var method in type.Methods.Where(m => m.HasBody))
+                var mv = type.Methods.FirstOrDefault(m => m.Name == "MoveNext" && m.HasBody);
+                if (mv != null)
                 {
-                    if (IsSignInStateMachine(method, type))
-                    {
-                        Console.WriteLine($"[*] SignIn SM bulundu: {typeName}::{method.Name}");
-                        PatchSignInStateMachine(module, coreModule, method, authResultType);
-                        patchCount++;
-                    }
-                }
-            }
-
-            // --- InitializeAsync state machine ---
-            if (typeName.Contains("InitializeAsync") && typeName.Contains("d__"))
-            {
-                foreach (var method in type.Methods.Where(m => m.HasBody))
-                {
-                    if (method.Name == "MoveNext")
-                    {
-                        Console.WriteLine($"[*] Initialize SM bulundu: {typeName}::{method.Name}");
-                        PatchInitializeStateMachine(module, coreModule, method, bootstrapType);
-                        patchCount++;
-                    }
-                }
-            }
-
-            // --- ResetHardwareId state machine ---
-            if (typeName.Contains("ResetHardware") && typeName.Contains("d__"))
-            {
-                foreach (var method in type.Methods.Where(m => m.HasBody && m.Name == "MoveNext"))
-                {
-                    Console.WriteLine($"[*] ResetHWID SM bulundu: {typeName}::{method.Name}");
-                    PatchResetHwidStateMachine(module, coreModule, method, authResultType);
+                    Console.WriteLine($"[*] SignIn (wkj) SM: {tn}");
+                    PatchWithAuthResult(winuiModule, coreModule, mv, authResultType, isSuccess: true, days: 9999, plan: "Enterprise");
                     patchCount++;
                 }
             }
 
-            // --- LoginViewModel SignInAsync (kısa metot) ---
-            // Bu metot zaten AuthResult.get_IsSuccess çağırıyor, true döndürmeli
-            if (typeName.Contains("LoginViewModel") && typeName.Contains("SignInAsync") && typeName.Contains("d__"))
+            // 2. wkj=.Dhr=/<InitializeAsync>d__13  →  MoveNext
+            if (tn.Contains("Dhr=") && tn.Contains("InitializeAsync") && tn.Contains("d__"))
             {
-                foreach (var method in type.Methods.Where(m => m.HasBody))
+                var mv = type.Methods.FirstOrDefault(m => m.Name == "MoveNext" && m.HasBody);
+                if (mv != null)
                 {
-                    if (method.Body.Instructions.Count < 20 &&
-                        method.Body.Instructions.Any(i =>
-                            i.Operand is MemberRef mr && mr.Name.String.Contains("IsSuccess")))
-                    {
-                        Console.WriteLine($"[*] LoginVM SignIn kısa metot: {typeName}::{method.Name}");
-                        // Bu metot sadece IsSuccess okuyup return ediyor — true döndür
-                        PatchReturnTrue(method);
-                        patchCount++;
-                    }
+                    Console.WriteLine($"[*] Initialize (wkj) SM: {tn}");
+                    PatchWithBootstrap(winuiModule, coreModule, mv, bootstrapType);
+                    patchCount++;
+                }
+            }
+
+            // 3. wkj=.Dhr=/...ResetHardwareId...d__29  →  MoveNext
+            if (tn.Contains("Dhr=") && tn.Contains("ResetHardware") && tn.Contains("d__"))
+            {
+                var mv = type.Methods.FirstOrDefault(m => m.Name == "MoveNext" && m.HasBody);
+                if (mv != null)
+                {
+                    Console.WriteLine($"[*] ResetHWID (wkj) SM: {tn}");
+                    PatchWithAuthResult(winuiModule, coreModule, mv, authResultType, isSuccess: true, days: 9999, plan: "Enterprise");
+                    patchCount++;
+                }
+            }
+
+            // 4. LoginViewModel/<SignInAsync>d__47  →  MoveNext (void, non-generic builder)
+            if (tn.Contains("LoginViewModel") && tn.Contains("SignInAsync") && tn.Contains("d__"))
+            {
+                var mv = type.Methods.FirstOrDefault(m => m.Name == "MoveNext" && m.HasBody);
+                if (mv != null)
+                {
+                    Console.WriteLine($"[*] SignIn (LoginVM) SM: {tn}");
+                    PatchLoginVMSignIn(winuiModule, coreModule, mv, type, authResultType);
+                    patchCount++;
+                }
+            }
+
+            // 5. LoginViewModel/<InitializeAsync>d__41  →  MoveNext (void, non-generic builder)
+            if (tn.Contains("LoginViewModel") && tn.Contains("InitializeAsync") && tn.Contains("d__"))
+            {
+                var mv = type.Methods.FirstOrDefault(m => m.Name == "MoveNext" && m.HasBody);
+                if (mv != null)
+                {
+                    Console.WriteLine($"[*] Initialize (LoginVM) SM: {tn}");
+                    PatchLoginVMInitialize(winuiModule, coreModule, mv, type, bootstrapType);
+                    patchCount++;
                 }
             }
         }
 
         Console.WriteLine($"\n[*] Toplam {patchCount} patch uygulandı.");
-
-        if (patchCount == 0)
-        {
-            Console.Error.WriteLine("[!] Patch uygulanamadı!");
-            return 1;
-        }
+        if (patchCount == 0) { Console.Error.WriteLine("[!] Patch uygulanamadı!"); return 1; }
 
         string outPath = Path.Combine(
             Path.GetDirectoryName(Path.GetFullPath(dllPath))!,
             Path.GetFileNameWithoutExtension(dllPath) + ".patched.dll");
 
-        var opts = new ModuleWriterOptions(module)
+        winuiModule.Write(outPath, new ModuleWriterOptions(winuiModule)
         {
             MetadataOptions = { Flags = MetadataFlags.PreserveAll },
-        };
+        });
 
-        module.Write(outPath, opts);
-        Console.WriteLine($"\n[+] Kaydedildi: {outPath}");
-        Console.WriteLine($"[+] Orijinal ile değiştir:");
+        Console.WriteLine($"\n[+] Yazıldı: {outPath}");
+        Console.WriteLine($"[+] Uygulamak için:");
         Console.WriteLine($"    copy \"{outPath}\" \"{Path.GetFullPath(dllPath)}\"");
-
         return 0;
     }
 
-    // SignIn state machine mi? MoveNext veya obfuscated tek method
-    static bool IsSignInStateMachine(MethodDef method, TypeDef declaringType)
+    // ─── wkj= state machine patch: generic builder, Task<T> SetResult ───────────
+
+    static void PatchWithAuthResult(
+        ModuleDef wm, ModuleDef cm, MethodDef method, TypeDef authResultType,
+        bool isSuccess, int days, string plan)
     {
-        if (method.Name == "MoveNext") return true;
+        var decl = method.DeclaringType;
 
-        // Obfuscated kısa isimli tek metot — doğrulama için AuthResult referansı ara
-        if (method.Body.Instructions.Any(i =>
-            i.Operand is MemberRef mr &&
-            (mr.DeclaringType?.Name.String.Contains("AuthResult") == true ||
-             mr.Name.String.Contains("IsSuccess"))))
-            return true;
+        // <>t__builder : AsyncTaskMethodBuilder`1<AuthResult>
+        var builderField = decl.Fields.FirstOrDefault(f =>
+            f.Name.String == "<>t__builder" &&
+            f.FieldType.FullName.Contains("AuthResult"));
 
-        // Task builder SetResult çağırıyorsa async SM
-        if (method.Body.Instructions.Any(i =>
-            i.Operand is MemberRef mr2 && mr2.Name.String.Contains("SetResult")))
-            return true;
-
-        return false;
-    }
-
-    // SignIn state machine'i patch et:
-    // SetResult(new AuthResult { IsSuccess=true, RemainingDays=9999, PlanType="Enterprise" })
-    static void PatchSignInStateMachine(
-        ModuleDef winuiModule, ModuleDef coreModule,
-        MethodDef method, TypeDef authResultType)
-    {
-        var body = method.Body;
-
-        // Task<AuthResult> builder'ı bul — state field ve builder field
-        var declaringType = method.DeclaringType;
-
-        var builderField = declaringType.Fields.FirstOrDefault(f =>
-            f.FieldType.TypeName.Contains("AsyncTaskMethodBuilder") &&
-            f.FieldType.TypeName.Contains("AuthResult"));
-
-        var stateField = declaringType.Fields.FirstOrDefault(f =>
-            f.Name.String.Contains("state") || f.Name.String == "<>1__state");
+        var stateField = decl.Fields.FirstOrDefault(f => f.Name.String == "<>1__state");
 
         if (builderField == null)
         {
-            Console.Error.WriteLine($"  [!] Builder field bulunamadı: {declaringType.FullName}");
-            // Basit return true ile patch
-            PatchReturnTrue(method);
+            Console.Error.WriteLine($"  [!] builder field bulunamadı: {decl.FullName}");
             return;
         }
 
-        var ctor = method.Module.Import(authResultType.FindDefaultConstructor());
-        var isSuccessSetter = method.Module.Import(
-            FindMethodByName(authResultType, "set_IsSuccess"));
-        var remainingDaysSetter = FindMethodByName(authResultType, "set_RemainingDays");
-        var planTypeSetter = FindMethodByName(authResultType, "set_PlanType");
+        var ctor             = wm.Import(authResultType.FindDefaultConstructor());
+        var setIsSuccess     = wm.Import(FindSetter(authResultType, "IsSuccess")!);
+        var setRemainingDays = FindSetter(authResultType, "RemainingDays");
+        var setPlanType      = FindSetter(authResultType, "PlanType");
 
-        if (isSuccessSetter == null)
-        {
-            Console.Error.WriteLine($"  [!] set_IsSuccess bulunamadı.");
-            return;
-        }
-
-        // SetResult metodunu bul (Task builder üzerinde)
-        MethodDef? setResultMethod = null;
-        foreach (var instr in body.Instructions)
-        {
-            if (instr.Operand is MemberRef mr && mr.Name.String.Contains("SetResult"))
-            {
-                setResultMethod = null; // MemberRef olarak bırak
-                break;
-            }
-        }
-
+        var body = method.Body;
         body.Instructions.Clear();
         body.ExceptionHandlers.Clear();
+        body.Variables.Clear();
 
-        var locals = body.Variables;
-        locals.Clear();
-
-        var authLocal = new Local(winuiModule.Import(authResultType).ToTypeSig());
-        locals.Add(authLocal);
+        var local = new Local(wm.Import(authResultType).ToTypeSig());
+        body.Variables.Add(local);
 
         var il = body.Instructions;
 
-        // state = -2 (tamamlandı işareti)
+        // state = -2
         if (stateField != null)
         {
             il.Add(Instruction.Create(OpCodes.Ldarg_0));
@@ -263,227 +181,78 @@ class Program
             il.Add(Instruction.Create(OpCodes.Stfld, stateField));
         }
 
-        // AuthResult result = new AuthResult()
+        // var result = new AuthResult()
         il.Add(Instruction.Create(OpCodes.Newobj, ctor));
-        il.Add(Instruction.Create(OpCodes.Stloc, authLocal));
+        il.Add(Instruction.Create(OpCodes.Stloc, local));
 
         // result.IsSuccess = true
-        il.Add(Instruction.Create(OpCodes.Ldloc, authLocal));
+        il.Add(Instruction.Create(OpCodes.Ldloc, local));
         il.Add(Instruction.Create(OpCodes.Ldc_I4_1));
-        il.Add(Instruction.Create(OpCodes.Call, isSuccessSetter));
+        il.Add(Instruction.Create(OpCodes.Call, setIsSuccess));
 
-        // result.RemainingDays = 9999
-        if (remainingDaysSetter != null)
+        // result.RemainingDays = new int?(9999)
+        if (setRemainingDays != null)
         {
-            var setter = winuiModule.Import(remainingDaysSetter);
-            // Nullable<int> için box gerekiyor
-            var nullableIntCtor = FindNullableIntCtor(winuiModule);
-            il.Add(Instruction.Create(OpCodes.Ldloc, authLocal));
+            var nullableIntCtor = MakeNullableIntCtor(wm);
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Ldc_I4, days));
             if (nullableIntCtor != null)
-            {
-                il.Add(Instruction.Create(OpCodes.Ldc_I4, 9999));
                 il.Add(Instruction.Create(OpCodes.Newobj, nullableIntCtor));
-            }
-            else
-            {
-                il.Add(Instruction.Create(OpCodes.Ldc_I4, 9999));
-            }
-            il.Add(Instruction.Create(OpCodes.Call, setter));
+            il.Add(Instruction.Create(OpCodes.Call, wm.Import(setRemainingDays)));
         }
 
         // result.PlanType = "Enterprise"
-        if (planTypeSetter != null)
+        if (setPlanType != null)
         {
-            il.Add(Instruction.Create(OpCodes.Ldloc, authLocal));
-            il.Add(Instruction.Create(OpCodes.Ldstr, "Enterprise"));
-            il.Add(Instruction.Create(OpCodes.Call, winuiModule.Import(planTypeSetter)));
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Ldstr, plan));
+            il.Add(Instruction.Create(OpCodes.Call, wm.Import(setPlanType)));
         }
 
-        // builder.SetResult(result) — builder field üzerinden
-        il.Add(Instruction.Create(OpCodes.Ldarg_0));
-        il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
-        il.Add(Instruction.Create(OpCodes.Ldloc, authLocal));
-
-        // SetResult çağrısı için MemberRef oluştur
-        var builderTypeSig = builderField.FieldType as GenericInstSig;
-        if (builderTypeSig != null)
-        {
-            var setResultRef = BuildSetResultRef(winuiModule, builderField, authResultType);
-            if (setResultRef != null)
-                il.Add(Instruction.Create(OpCodes.Call, setResultRef));
-        }
-
-        il.Add(Instruction.Create(OpCodes.Ret));
-
-        body.SimplifyBranches();
-        body.OptimizeBranches();
-        Console.WriteLine($"  [+] SignIn patched → IsSuccess=true, RemainingDays=9999, PlanType=Enterprise");
-    }
-
-    static IMethod? BuildSetResultRef(ModuleDef module, FieldDef builderField, TypeDef resultType)
-    {
-        try
-        {
-            var sig = builderField.FieldType as GenericInstSig;
-            if (sig == null) return null;
-
-            var builderTypeDef = sig.GenericType.TypeDefOrRef.ResolveTypeDef();
-            if (builderTypeDef == null) return null;
-
-            var setResultDef = builderTypeDef.Methods.FirstOrDefault(m =>
-                m.Name == "SetResult");
-            if (setResultDef == null) return null;
-
-            return module.Import(setResultDef);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    static IMethod? FindNullableIntCtor(ModuleDef module)
-    {
-        try
-        {
-            var nullableType = module.CorLibTypes.GetTypeRef("System", "Nullable`1");
-            var intSig = module.CorLibTypes.Int32;
-            var nullableIntSig = new GenericInstSig(
-                new ClassSig(nullableType), intSig);
-
-            var memberRef = new MemberRefUser(module, ".ctor",
-                MethodSig.CreateInstance(module.CorLibTypes.Void, intSig),
-                nullableIntSig.ToTypeDefOrRef());
-
-            return memberRef;
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    // InitializeAsync state machine patch
-    static void PatchInitializeStateMachine(
-        ModuleDef winuiModule, ModuleDef coreModule,
-        MethodDef method, TypeDef bootstrapType)
-    {
-        var declaringType = method.DeclaringType;
-
-        var builderField = declaringType.Fields.FirstOrDefault(f =>
-            f.FieldType.TypeName.Contains("AsyncTaskMethodBuilder") &&
-            f.FieldType.TypeName.Contains("AuthBootstrap"));
-
-        var stateField = declaringType.Fields.FirstOrDefault(f =>
-            f.Name.String.Contains("state") || f.Name.String == "<>1__state");
-
-        if (builderField == null)
-        {
-            Console.Error.WriteLine($"  [!] InitializeAsync builder field bulunamadı.");
-            return;
-        }
-
-        var ctor = winuiModule.Import(bootstrapType.FindDefaultConstructor());
-        var isReadySetter = winuiModule.Import(FindMethodByName(bootstrapType, "set_IsReady"));
-        var requiresUpdateSetter = FindMethodByName(bootstrapType, "set_RequiresUpdate");
-        var cachedLicenseSetter = FindMethodByName(bootstrapType, "set_CachedLicense");
-        var messageSetter = FindMethodByName(bootstrapType, "set_Message");
-
-        if (isReadySetter == null)
-        {
-            Console.Error.WriteLine($"  [!] set_IsReady bulunamadı.");
-            return;
-        }
-
-        var body = method.Body;
-        body.Instructions.Clear();
-        body.ExceptionHandlers.Clear();
-        body.Variables.Clear();
-
-        var stateLocal = new Local(bootstrapType.ToTypeSig());
-        body.Variables.Add(stateLocal);
-
-        var il = body.Instructions;
-
-        if (stateField != null)
+        // builder.SetResult(result)
+        var setResult = ResolveSetResult(wm, builderField);
+        if (setResult != null)
         {
             il.Add(Instruction.Create(OpCodes.Ldarg_0));
-            il.Add(Instruction.Create(OpCodes.Ldc_I4, -2));
-            il.Add(Instruction.Create(OpCodes.Stfld, stateField));
+            il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Call, setResult));
         }
-
-        il.Add(Instruction.Create(OpCodes.Newobj, ctor));
-        il.Add(Instruction.Create(OpCodes.Stloc, stateLocal));
-
-        il.Add(Instruction.Create(OpCodes.Ldloc, stateLocal));
-        il.Add(Instruction.Create(OpCodes.Ldc_I4_1));
-        il.Add(Instruction.Create(OpCodes.Call, isReadySetter));
-
-        if (requiresUpdateSetter != null)
-        {
-            il.Add(Instruction.Create(OpCodes.Ldloc, stateLocal));
-            il.Add(Instruction.Create(OpCodes.Ldc_I4_0));
-            il.Add(Instruction.Create(OpCodes.Call, winuiModule.Import(requiresUpdateSetter)));
-        }
-
-        if (cachedLicenseSetter != null)
-        {
-            il.Add(Instruction.Create(OpCodes.Ldloc, stateLocal));
-            il.Add(Instruction.Create(OpCodes.Ldstr, "RIKA-0000-0000-0000"));
-            il.Add(Instruction.Create(OpCodes.Call, winuiModule.Import(cachedLicenseSetter)));
-        }
-
-        if (messageSetter != null)
-        {
-            il.Add(Instruction.Create(OpCodes.Ldloc, stateLocal));
-            il.Add(Instruction.Create(OpCodes.Ldnull));
-            il.Add(Instruction.Create(OpCodes.Call, winuiModule.Import(messageSetter)));
-        }
-
-        il.Add(Instruction.Create(OpCodes.Ldarg_0));
-        il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
-        il.Add(Instruction.Create(OpCodes.Ldloc, stateLocal));
-
-        var setResultRef = BuildSetResultRef(winuiModule, builderField, bootstrapType);
-        if (setResultRef != null)
-            il.Add(Instruction.Create(OpCodes.Call, setResultRef));
 
         il.Add(Instruction.Create(OpCodes.Ret));
-
         body.SimplifyBranches();
-        body.OptimizeBranches();
-        Console.WriteLine($"  [+] Initialize patched → IsReady=true, CachedLicense=RIKA-0000-0000-0000");
+        Console.WriteLine($"  [+] AuthResult patched: IsSuccess=true, RemainingDays={days}, PlanType={plan}");
     }
 
-    static void PatchResetHwidStateMachine(
-        ModuleDef winuiModule, ModuleDef coreModule,
-        MethodDef method, TypeDef authResultType)
+    static void PatchWithBootstrap(
+        ModuleDef wm, ModuleDef cm, MethodDef method, TypeDef bootstrapType)
     {
-        var declaringType = method.DeclaringType;
+        var decl = method.DeclaringType;
 
-        var builderField = declaringType.Fields.FirstOrDefault(f =>
-            f.FieldType.TypeName.Contains("AsyncTaskMethodBuilder") &&
-            f.FieldType.TypeName.Contains("AuthResult"));
+        var builderField = decl.Fields.FirstOrDefault(f =>
+            f.Name.String == "<>t__builder" &&
+            f.FieldType.FullName.Contains("AuthBootstrap"));
 
-        var stateField = declaringType.Fields.FirstOrDefault(f =>
-            f.Name.String == "<>1__state");
+        var stateField = decl.Fields.FirstOrDefault(f => f.Name.String == "<>1__state");
 
         if (builderField == null)
         {
-            Console.Error.WriteLine($"  [!] ResetHWID builder field bulunamadı.");
+            Console.Error.WriteLine($"  [!] builder field bulunamadı: {decl.FullName}");
             return;
         }
 
-        var ctor = winuiModule.Import(authResultType.FindDefaultConstructor());
-        var isSuccessSetter = winuiModule.Import(FindMethodByName(authResultType, "set_IsSuccess"));
-        if (isSuccessSetter == null) return;
+        var ctor              = wm.Import(bootstrapType.FindDefaultConstructor());
+        var setIsReady        = wm.Import(FindSetter(bootstrapType, "IsReady")!);
+        var setRequiresUpdate = FindSetter(bootstrapType, "RequiresUpdate");
+        var setCachedLicense  = FindSetter(bootstrapType, "CachedLicense");
+        var setMessage        = FindSetter(bootstrapType, "Message");
 
         var body = method.Body;
         body.Instructions.Clear();
         body.ExceptionHandlers.Clear();
         body.Variables.Clear();
 
-        var local = new Local(authResultType.ToTypeSig());
+        var local = new Local(wm.Import(bootstrapType).ToTypeSig());
         body.Variables.Add(local);
 
         var il = body.Instructions;
@@ -497,41 +266,228 @@ class Program
 
         il.Add(Instruction.Create(OpCodes.Newobj, ctor));
         il.Add(Instruction.Create(OpCodes.Stloc, local));
+
         il.Add(Instruction.Create(OpCodes.Ldloc, local));
         il.Add(Instruction.Create(OpCodes.Ldc_I4_1));
-        il.Add(Instruction.Create(OpCodes.Call, isSuccessSetter));
+        il.Add(Instruction.Create(OpCodes.Call, setIsReady));
 
-        il.Add(Instruction.Create(OpCodes.Ldarg_0));
-        il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
-        il.Add(Instruction.Create(OpCodes.Ldloc, local));
+        if (setRequiresUpdate != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Ldc_I4_0));
+            il.Add(Instruction.Create(OpCodes.Call, wm.Import(setRequiresUpdate)));
+        }
 
-        var setResultRef = BuildSetResultRef(winuiModule, builderField, authResultType);
-        if (setResultRef != null)
-            il.Add(Instruction.Create(OpCodes.Call, setResultRef));
+        if (setCachedLicense != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Ldstr, "RIKA-0000-0000-0000"));
+            il.Add(Instruction.Create(OpCodes.Call, wm.Import(setCachedLicense)));
+        }
+
+        if (setMessage != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Ldnull));
+            il.Add(Instruction.Create(OpCodes.Call, wm.Import(setMessage)));
+        }
+
+        var setResult = ResolveSetResult(wm, builderField);
+        if (setResult != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldarg_0));
+            il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
+            il.Add(Instruction.Create(OpCodes.Ldloc, local));
+            il.Add(Instruction.Create(OpCodes.Call, setResult));
+        }
 
         il.Add(Instruction.Create(OpCodes.Ret));
-
         body.SimplifyBranches();
-        body.OptimizeBranches();
-        Console.WriteLine($"  [+] ResetHWID patched → IsSuccess=true");
+        Console.WriteLine($"  [+] AuthBootstrapState patched: IsReady=true, CachedLicense=RIKA-0000-0000-0000");
     }
 
-    // Metodu temizleyip ldc.i4.1 + ret ile replace et (bool dönen metodlar için)
-    static void PatchReturnTrue(MethodDef method)
+    // ─── LoginViewModel SM'leri: non-generic builder, async Task (void result) ───
+
+    // LoginVM SignIn d__47: MoveNext → Task<AuthResult> awaiter kullanıyor
+    // Builder non-generic (Task) — sadece SetResult() çağırır, result yok
+    // Ama bu SM AuthResult döndürmüyor, void Task. Yapılacak: awaiter'ı bypass et,
+    // doğrudan başarı olarak SetResult çağır.
+    static void PatchLoginVMSignIn(
+        ModuleDef wm, ModuleDef cm, MethodDef method, TypeDef smType, TypeDef authResultType)
     {
+        var stateField = smType.Fields.FirstOrDefault(f => f.Name.String == "<>1__state");
+        var builderField = smType.Fields.FirstOrDefault(f =>
+            f.Name.String == "<>t__builder" &&
+            f.FieldType.FullName.Contains("AsyncTaskMethodBuilder") &&
+            !f.FieldType.FullName.Contains("`1")); // non-generic
+
+        if (builderField == null)
+        {
+            Console.Error.WriteLine($"  [!] LoginVM SignIn builder bulunamadı.");
+            // Fallback: MoveNext'i direkt temizle
+            SimplePatchVoid(method);
+            return;
+        }
+
+        var setResult = ResolveSetResultVoid(wm, builderField);
+
         var body = method.Body;
         body.Instructions.Clear();
         body.ExceptionHandlers.Clear();
         body.Variables.Clear();
 
-        body.Instructions.Add(Instruction.Create(OpCodes.Ldc_I4_1));
+        var il = body.Instructions;
+
+        if (stateField != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldarg_0));
+            il.Add(Instruction.Create(OpCodes.Ldc_I4, -2));
+            il.Add(Instruction.Create(OpCodes.Stfld, stateField));
+        }
+
+        if (setResult != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldarg_0));
+            il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
+            il.Add(Instruction.Create(OpCodes.Call, setResult));
+        }
+
+        il.Add(Instruction.Create(OpCodes.Ret));
+        body.SimplifyBranches();
+        Console.WriteLine($"  [+] LoginVM SignIn MoveNext patched → immediate SetResult");
+    }
+
+    static void PatchLoginVMInitialize(
+        ModuleDef wm, ModuleDef cm, MethodDef method, TypeDef smType, TypeDef bootstrapType)
+    {
+        var stateField = smType.Fields.FirstOrDefault(f => f.Name.String == "<>1__state");
+        var builderField = smType.Fields.FirstOrDefault(f =>
+            f.Name.String == "<>t__builder" &&
+            f.FieldType.FullName.Contains("AsyncTaskMethodBuilder") &&
+            !f.FieldType.FullName.Contains("`1"));
+
+        if (builderField == null)
+        {
+            SimplePatchVoid(method);
+            return;
+        }
+
+        var setResult = ResolveSetResultVoid(wm, builderField);
+
+        var body = method.Body;
+        body.Instructions.Clear();
+        body.ExceptionHandlers.Clear();
+        body.Variables.Clear();
+
+        var il = body.Instructions;
+
+        if (stateField != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldarg_0));
+            il.Add(Instruction.Create(OpCodes.Ldc_I4, -2));
+            il.Add(Instruction.Create(OpCodes.Stfld, stateField));
+        }
+
+        if (setResult != null)
+        {
+            il.Add(Instruction.Create(OpCodes.Ldarg_0));
+            il.Add(Instruction.Create(OpCodes.Ldflda, builderField));
+            il.Add(Instruction.Create(OpCodes.Call, setResult));
+        }
+
+        il.Add(Instruction.Create(OpCodes.Ret));
+        body.SimplifyBranches();
+        Console.WriteLine($"  [+] LoginVM Initialize MoveNext patched → immediate SetResult");
+    }
+
+    static void SimplePatchVoid(MethodDef method)
+    {
+        var body = method.Body;
+        body.Instructions.Clear();
+        body.ExceptionHandlers.Clear();
+        body.Variables.Clear();
         body.Instructions.Add(Instruction.Create(OpCodes.Ret));
-        Console.WriteLine($"  [+] ReturnTrue patched");
+        Console.WriteLine($"  [+] SimplePatchVoid applied");
+    }
+
+    // ─── Builder SetResult resolver ───────────────────────────────────────────
+
+    // Generic builder: AsyncTaskMethodBuilder`1<T>.SetResult(T)
+    static IMethod? ResolveSetResult(ModuleDef module, FieldDef builderField)
+    {
+        try
+        {
+            var genInstSig = builderField.FieldType as GenericInstSig;
+            if (genInstSig == null) return null;
+
+            var builderTypeDef = genInstSig.GenericType.TypeDefOrRef.ResolveTypeDef();
+            if (builderTypeDef == null) return null;
+
+            var setResultDef = builderTypeDef.Methods.FirstOrDefault(m => m.Name == "SetResult");
+            if (setResultDef == null) return null;
+
+            // MemberRef ile instantiate et: AsyncTaskMethodBuilder`1<T>.SetResult(T result)
+            var declRef = new TypeRefUser(module,
+                builderTypeDef.Namespace, builderTypeDef.Name,
+                module.CorLibTypes.AssemblyRef);
+
+            var genInst = new GenericInstSig(new ClassSig(declRef), genInstSig.GenericArguments[0]);
+            var declRefInst = new TypeSpecUser(genInst);
+
+            var sig = MethodSig.CreateInstance(module.CorLibTypes.Void,
+                genInstSig.GenericArguments[0]);
+
+            var memberRef = new MemberRefUser(module, "SetResult", sig, declRefInst);
+            return memberRef;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"  [!] SetResult resolve hatası: {ex.Message}");
+            return null;
+        }
+    }
+
+    // Non-generic builder: AsyncTaskMethodBuilder.SetResult()
+    static IMethod? ResolveSetResultVoid(ModuleDef module, FieldDef builderField)
+    {
+        try
+        {
+            var classSig = builderField.FieldType.ToClassOrValueTypeSig();
+            if (classSig == null) return null;
+
+            var builderTypeDef = classSig.TypeDefOrRef.ResolveTypeDef();
+            if (builderTypeDef == null) return null;
+
+            var setResultDef = builderTypeDef.Methods.FirstOrDefault(m =>
+                m.Name == "SetResult" && m.Parameters.Count == 1 /* this */ );
+            if (setResultDef == null) return null;
+
+            return module.Import(setResultDef);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"  [!] SetResultVoid resolve hatası: {ex.Message}");
+            return null;
+        }
+    }
+
+    static IMethod? MakeNullableIntCtor(ModuleDef module)
+    {
+        try
+        {
+            var nullableRef = module.CorLibTypes.GetTypeRef("System", "Nullable`1");
+            var intSig = module.CorLibTypes.Int32;
+            var genInst = new GenericInstSig(new ValueTypeSig(nullableRef), intSig);
+            var spec = new TypeSpecUser(genInst);
+            var sig = MethodSig.CreateInstance(module.CorLibTypes.Void, intSig);
+            return new MemberRefUser(module, ".ctor", sig, spec);
+        }
+        catch { return null; }
     }
 
     static TypeDef? FindType(ModuleDef module, string fullName) =>
         module.GetTypes().FirstOrDefault(t => t.FullName == fullName);
 
-    static MethodDef? FindMethodByName(TypeDef type, string name) =>
-        type.Methods.FirstOrDefault(m => m.Name == name);
+    static MethodDef? FindSetter(TypeDef type, string propName) =>
+        type.Methods.FirstOrDefault(m => m.Name.String == $"set_{propName}");
 }

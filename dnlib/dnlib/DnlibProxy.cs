@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Threading;
+using System.Threading.Tasks;
 
 [assembly: AssemblyTitle("dnlib")]
 [assembly: AssemblyDescription("dnlib managed proxy for local testing")]
