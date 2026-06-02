@@ -618,37 +618,170 @@ internal static unsafe class AuthBypass
         ProxyLog.Write("[AuthBypass] AuthBootstrapState: " + BootstrapStateType.FullName);
         ProxyLog.Write("[AuthBypass] AuthResult: " + AuthResultType.FullName);
 
-        // InitializeAsync(CancellationToken) -> Task<AuthBootstrapState>
-        MethodInfo? initMethod = dhrType.GetMethod(
-            "InitializeAsync",
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            null,
-            new[] { typeof(CancellationToken) },
-            null);
+        // IAuthenticationService interface tipini bul
+        Type? ifaceType = dhrType.GetInterfaces()
+            .FirstOrDefault(i => i.Name.Contains("IAuthenticationService"));
 
-        if (initMethod != null)
-            TrySwap(initMethod,
-                typeof(AuthBypass).GetMethod(nameof(InitStub),
-                    BindingFlags.Static | BindingFlags.NonPublic)!,
-                "InitializeAsync");
-        else
-            ProxyLog.Write("[AuthBypass] InitializeAsync metodu bulunamadı.");
+        if (ifaceType == null)
+        {
+            ProxyLog.Write("[AuthBypass] IAuthenticationService interface tipi bulunamadı.");
+            return;
+        }
 
-        // SignInAsync(string, bool, CancellationToken) -> Task<AuthResult>
-        MethodInfo? signInMethod = dhrType.GetMethod(
-            "SignInAsync",
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            null,
-            new[] { typeof(string), typeof(bool), typeof(CancellationToken) },
-            null);
+        ProxyLog.Write("[AuthBypass] Interface tipi: " + ifaceType.FullName);
 
-        if (signInMethod != null)
-            TrySwap(signInMethod,
-                typeof(AuthBypass).GetMethod(nameof(SignInStub),
-                    BindingFlags.Static | BindingFlags.NonPublic)!,
-                "SignInAsync");
-        else
-            ProxyLog.Write("[AuthBypass] SignInAsync metodu bulunamadı.");
+        // Stub metodları hazırla ve JIT'e derlet
+        MethodInfo stubInit = typeof(AuthBypass).GetMethod(
+            nameof(InitStub), BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo stubSignIn = typeof(AuthBypass).GetMethod(
+            nameof(SignInStub), BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        RuntimeHelpers.PrepareMethod(stubInit.MethodHandle);
+        RuntimeHelpers.PrepareMethod(stubSignIn.MethodHandle);
+
+        nint initPtr   = stubInit.MethodHandle.GetFunctionPointer();
+        nint signInPtr = stubSignIn.MethodHandle.GetFunctionPointer();
+
+        ProxyLog.Write($"[VTable] stubInit=0x{initPtr:X16} stubSignIn=0x{signInPtr:X16}");
+
+        // -----------------------------------------------------------------------
+        // .NET 8 x64 MethodTable layout (coreclr/vm/methodtable.h):
+        //   +0x00 DWORD  m_dwFlags
+        //   +0x04 DWORD  m_BaseSize
+        //   +0x08 WORD   m_wFlags2
+        //   +0x0A WORD   m_wToken
+        //   +0x0C WORD   m_wNumVirtuals
+        //   +0x0E WORD   m_wNumInterfaces
+        //   +0x10 PTR    m_pParentMethodTable
+        //   +0x18 PTR    m_pLoaderModule
+        //   +0x20 PTR    m_pWriteableData
+        //   +0x28 PTR    m_pEEClass / m_pCanonMT
+        //   +0x30 PTR    m_pPerInstInfo
+        //   +0x38 PTR    m_pInterfaceMap
+        //   +0x40        vtable slots başlar (her biri 8 byte, x64)
+        //
+        // InterfaceInfo_t (her biri 16 byte, x64):
+        //   +0x00 PTR    m_pMethodTable  (8 byte)
+        //   +0x08 WORD   m_wStartSlot    (2 byte, +6 byte pad)
+        // -----------------------------------------------------------------------
+
+        nint mt            = dhrType.TypeHandle.Value;
+        ushort numVirtuals = *(ushort*)(mt + 0x0C);
+        ushort numIfaces   = *(ushort*)(mt + 0x0E);
+        nint ifaceMapPtr   = *(nint*)(mt + 0x38);
+        nint ifaceMT       = ifaceType.TypeHandle.Value;
+
+        ProxyLog.Write($"[VTable] mt=0x{mt:X16} numVirtuals={numVirtuals} numIfaces={numIfaces}");
+        ProxyLog.Write($"[VTable] ifaceMapPtr=0x{ifaceMapPtr:X16} ifaceMT=0x{ifaceMT:X16}");
+
+        // InterfaceInfo_t dizisinde IAuthenticationService'i bul → startSlot
+        const int kInfoSize = 16; // sizeof(InterfaceInfo_t) on x64
+        ushort startSlot = ushort.MaxValue;
+
+        for (int i = 0; i < numIfaces; i++)
+        {
+            nint  entryMT   = *(nint*) (ifaceMapPtr + i * kInfoSize);
+            ushort entrySlot = *(ushort*)(ifaceMapPtr + i * kInfoSize + 8);
+            ProxyLog.Write($"[VTable] IfaceMap[{i}] mt=0x{entryMT:X16} startSlot={entrySlot}");
+
+            if (entryMT == ifaceMT)
+                startSlot = entrySlot;
+        }
+
+        if (startSlot == ushort.MaxValue)
+        {
+            ProxyLog.Write("[VTable] IAuthenticationService InterfaceInfo girişi bulunamadı.");
+            return;
+        }
+
+        ProxyLog.Write($"[VTable] IAuthenticationService startSlot={startSlot}");
+
+        // GetInterfaceMap → InterfaceMethods[i] dizisi interface slot sırasını verir.
+        // Vtable'daki interface slot adresi: mt + 0x40 + (startSlot + i) * 8
+        InterfaceMapping mapping = dhrType.GetInterfaceMap(ifaceType);
+
+        const int kVTableBase = 0x40; // sizeof(MethodTable header) on .NET 8 x64
+
+        for (int i = 0; i < mapping.InterfaceMethods.Length; i++)
+        {
+            MethodInfo ifaceMethod = mapping.InterfaceMethods[i];
+            nint slotAddr = mt + kVTableBase + (startSlot + i) * 8;
+            nint currentVal = *(nint*)slotAddr;
+
+            ProxyLog.Write($"[VTable] slot[{startSlot + i}] method={ifaceMethod.Name} "
+                + $"addr=0x{slotAddr:X16} current=0x{currentVal:X16}");
+
+            nint stubPtr = 0;
+            if (ifaceMethod.Name == "InitializeAsync")
+                stubPtr = initPtr;
+            else if (ifaceMethod.Name == "SignInAsync")
+                stubPtr = signInPtr;
+
+            if (stubPtr == 0)
+            {
+                ProxyLog.Write($"[VTable] {ifaceMethod.Name} için stub yok, atlanıyor.");
+                continue;
+            }
+
+            MakeWritable(slotAddr, 8);
+            *(nint*)slotAddr = stubPtr;
+            ProxyLog.Write($"[VTable] {ifaceMethod.Name} vtable slot patch'lendi → 0x{stubPtr:X16} ✓");
+        }
+
+        // -----------------------------------------------------------------------
+        // JIT Prolog Patch — vtable patch'e ek güvence
+        // VSD önbelleği vtable slot'u yoksaysa bile bu patch her zaman çalışır.
+        // Trampoline: 48 B8 [8-byte LE stub adresi] FF E0
+        //   MOV RAX, imm64   (10 byte)
+        //   JMP RAX          (2 byte)
+        // -----------------------------------------------------------------------
+        ProxyLog.Write("[JIT] Prolog patch başlıyor...");
+
+        var implPatchTargets = new (string Name, nint StubPtr)[]
+        {
+            ("InitializeAsync", initPtr),
+            ("SignInAsync",     signInPtr),
+        };
+
+        foreach (var (mname, stubPtr) in implPatchTargets)
+        {
+            MethodInfo? implMethod = dhrType
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(m => m.Name == mname);
+
+            if (implMethod == null)
+            {
+                ProxyLog.Write($"[JIT] {mname} impl metodu bulunamadı, atlanıyor.");
+                continue;
+            }
+
+            try
+            {
+                RuntimeHelpers.PrepareMethod(implMethod.MethodHandle);
+                nint targetPtr = implMethod.MethodHandle.GetFunctionPointer();
+
+                ProxyLog.Write($"[JIT] {mname} native ptr=0x{targetPtr:X16}");
+
+                // 48 B8 [8-byte LE addr] FF E0
+                byte[] trampoline = new byte[12];
+                trampoline[0] = 0x48; // MOV RAX, imm64 — REX.W prefix
+                trampoline[1] = 0xB8; // opcode
+                long addr = (long)(ulong)stubPtr;
+                for (int b = 0; b < 8; b++)
+                    trampoline[2 + b] = (byte)(addr >> (b * 8));
+                trampoline[10] = 0xFF; // JMP RAX
+                trampoline[11] = 0xE0;
+
+                MakeWritable(targetPtr, 12);
+                Marshal.Copy(trampoline, 0, targetPtr, 12);
+
+                ProxyLog.Write($"[JIT] {mname} prolog patch'lendi → 0x{stubPtr:X16} ✓");
+            }
+            catch (Exception ex)
+            {
+                ProxyLog.Write($"[JIT] {mname} prolog patch HATA: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -701,56 +834,6 @@ internal static unsafe class AuthBypass
         {
             ProxyLog.Write("[AuthBypass] SignInStub hata: " + ex.Message);
             return Task.CompletedTask;
-        }
-    }
-
-    // -----------------------------------------------------------------------
-    // JIT pointer swap
-    // -----------------------------------------------------------------------
-
-    private static void TrySwap(MethodInfo target, MethodInfo stub, string label)
-    {
-        try
-        {
-            RuntimeHelpers.PrepareMethod(target.MethodHandle);
-            RuntimeHelpers.PrepareMethod(stub.MethodHandle);
-
-            nint targetPtr = target.MethodHandle.GetFunctionPointer();
-            nint stubPtr = stub.MethodHandle.GetFunctionPointer();
-
-            ProxyLog.Write($"[AuthBypass] {label}: target=0x{targetPtr:X16} stub=0x{stubPtr:X16}");
-
-            MakeWritable(targetPtr, 12);
-            WriteJump((byte*)targetPtr, (byte*)stubPtr);
-
-            ProxyLog.Write("[AuthBypass] " + label + " patch'lendi ✓");
-        }
-        catch (Exception ex)
-        {
-            ProxyLog.Write("[AuthBypass] " + label + " swap hatası: " + ex);
-        }
-    }
-
-    private static void WriteJump(byte* from, byte* to)
-    {
-        long delta = (long)to - (long)from - 5;
-        if (delta >= int.MinValue && delta <= int.MaxValue)
-        {
-            from[0] = 0xE9; // JMP rel32
-            int rel = (int)delta;
-            from[1] = (byte)(rel & 0xFF);
-            from[2] = (byte)((rel >> 8) & 0xFF);
-            from[3] = (byte)((rel >> 16) & 0xFF);
-            from[4] = (byte)((rel >> 24) & 0xFF);
-        }
-        else
-        {
-            // MOV RAX, imm64 + JMP RAX (12 bytes)
-            from[0] = 0x48; from[1] = 0xB8;
-            long addr = (long)to;
-            for (int i = 0; i < 8; i++)
-                from[2 + i] = (byte)((addr >> (i * 8)) & 0xFF);
-            from[10] = 0xFF; from[11] = 0xE0; // JMP RAX
         }
     }
 
