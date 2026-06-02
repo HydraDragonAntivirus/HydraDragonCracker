@@ -1648,7 +1648,37 @@ internal static class ProtectionBypass
                 self.GetMethod(nameof(UploadFileStub), BindingFlags.Static | BindingFlags.Public),
                 "UploadFile");
 
-            ProxyLog.Write("[ProtBypass] TryPatch complete — UploadFileAsync patched, real Rika flow will execute");
+            // Patch StartJob (aYN=) — sEp= üzerindeki instance metot
+            var startJobMethod = sEpType.GetMethod("aYN=", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (startJobMethod != null)
+            {
+                AuthBypass.PatchOneStaticHelper(
+                    startJobMethod,
+                    self.GetMethod(nameof(StartJobStub), BindingFlags.Static | BindingFlags.Public),
+                    "StartJob");
+                ProxyLog.Write("[ProtBypass] aYN= (StartJob) patched ✓");
+            }
+            else
+            {
+                ProxyLog.Write("[ProtBypass] aYN= method not found on sEp= type — skipped");
+            }
+
+            // Patch WaitForFile (blA=) — sEp= üzerindeki instance metot
+            var waitForFileMethod = sEpType.GetMethod("blA=", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (waitForFileMethod != null)
+            {
+                AuthBypass.PatchOneStaticHelper(
+                    waitForFileMethod,
+                    self.GetMethod(nameof(WaitForFileStub), BindingFlags.Static | BindingFlags.Public),
+                    "WaitForFile");
+                ProxyLog.Write("[ProtBypass] blA= (WaitForFile) patched ✓");
+            }
+            else
+            {
+                ProxyLog.Write("[ProtBypass] blA= method not found on sEp= type — skipped");
+            }
+
+            ProxyLog.Write("[ProtBypass] TryPatch complete — UploadFileAsync + StartJob + WaitForFile patched");
         }
         catch (Exception ex)
         {
